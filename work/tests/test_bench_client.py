@@ -168,6 +168,29 @@ class ValidityTests(unittest.TestCase):
         self.assertFalse(validity["cache_telemetry_available"])
         self.assertFalse(validity["cache_policy_satisfied"])
 
+    def test_resident_context_requires_observed_reuse(self):
+        validity = bench_client.evaluate_validity(
+            [self.result(prompt_tokens=8192, cached_prompt_tokens=8191)],
+            expected_prompt_tokens=8192,
+            max_tokens=2,
+            workload_kind="controlled_fixed_output",
+            cache_prompt="on",
+            min_cached_prompt_tokens=8191,
+        )
+        self.assertEqual(validity["status"], "VALID")
+        self.assertTrue(validity["minimum_cached_prompt_tokens_satisfied"])
+
+        invalid = bench_client.evaluate_validity(
+            [self.result(prompt_tokens=8192, cached_prompt_tokens=4096)],
+            expected_prompt_tokens=8192,
+            max_tokens=2,
+            workload_kind="controlled_fixed_output",
+            cache_prompt="on",
+            min_cached_prompt_tokens=8191,
+        )
+        self.assertEqual(invalid["status"], "INVALID")
+        self.assertIn("minimum_cached_prompt_tokens_satisfied", invalid["invalid_reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()

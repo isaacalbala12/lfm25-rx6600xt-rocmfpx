@@ -66,6 +66,7 @@ def percentile(values: list[float], q: float) -> float | None:
 
 def distribution(values: list[float]) -> dict:
     return {
+        "p5": percentile(values, 0.05),
         "p50": percentile(values, 0.50),
         "p95": percentile(values, 0.95),
         "p99": percentile(values, 0.99),
@@ -342,6 +343,7 @@ def evaluate_validity(
     max_tokens: int,
     workload_kind: str,
     cache_prompt: str,
+    min_cached_prompt_tokens: int = 0,
 ) -> dict:
     fixed = workload_kind == "controlled_fixed_output"
     checks = {
@@ -358,6 +360,11 @@ def evaluate_validity(
         )
     else:
         checks["cache_policy_satisfied"] = checks["cache_telemetry_available"]
+    if min_cached_prompt_tokens > 0:
+        checks["minimum_cached_prompt_tokens_satisfied"] = checks["cache_telemetry_available"] and all(
+            r.cached_prompt_tokens is not None and r.cached_prompt_tokens >= min_cached_prompt_tokens
+            for r in results
+        )
 
     required = [value for value in checks.values() if value is not None]
     valid = all(required)
@@ -394,6 +401,8 @@ def main() -> int:
         default="controlled_fixed_output",
     )
     ap.add_argument("--arrival-stagger-ms", type=float, default=0.0)
+    ap.add_argument("--prime-resident-context", action="store_true")
+    ap.add_argument("--min-cached-prompt-tokens", type=int, default=0)
     ap.add_argument("--record-text", action="store_true")
     ap.add_argument("--label", default="run")
     ap.add_argument("--output", type=Path, required=True)
@@ -402,6 +411,8 @@ def main() -> int:
         ap.error("concurrency/repetitions must be positive and warmup non-negative")
     if args.arrival_stagger_ms < 0:
         ap.error("arrival stagger must be non-negative")
+    if args.min_cached_prompt_tokens < 0:
+        ap.error("minimum cached prompt tokens must be non-negative")
     try:
         forced_slot_ids = parse_slot_ids(args.slot_ids, args.concurrency)
     except ValueError as exc:
@@ -410,6 +421,13 @@ def main() -> int:
         ap.error("--slot-ids is required with --slot-policy forced")
     if args.slot_policy != "forced" and forced_slot_ids is not None:
         ap.error("--slot-ids requires --slot-policy forced")
+    if args.prime_resident_context:
+        if args.cache_prompt != "on":
+            ap.error("--prime-resident-context requires --cache-prompt on")
+        if args.slot_policy not in {"compact", "forced"}:
+            ap.error("--prime-resident-context requires compact or forced slots")
+        if args.warmup != 0:
+            ap.error("--prime-resident-context requires --warmup 0; priming is the warmup")
 
     endpoint = args.base_url.rstrip("/") + "/v1/completions"
     tokenizer = load_tokenizer(args.tokenizer or args.model)
@@ -434,16 +452,25 @@ def main() -> int:
         "cache_prompt": args.cache_prompt,
         "workload_kind": args.workload_kind,
         "arrival_stagger_ms": args.arrival_stagger_ms,
+        "prime_resident_context": args.prime_resident_context,
+        "min_cached_prompt_tokens": args.min_cached_prompt_tokens,
     }
     print(json.dumps(config, ensure_ascii=False), flush=True)
 
-    def payload_for(i: int, slot_id: int | None = None) -> dict:
-        prompt_seed = args.seed if args.prompt_mode == "identical" else args.seed + i * 7919
+    def payload_for(
+        i: int,
+        slot_id: int | None = None,
+        *,
+        stable_slot_index: int | None = None,
+        max_tokens: int | None = None,
+    ) -> dict:
+        prompt_index = stable_slot_index if stable_slot_index is not None else i
+        prompt_seed = args.seed if args.prompt_mode == "identical" else args.seed + prompt_index * 7919
         ids = load_prompt_ids(tokenizer, args.prompt_tokens, prompt_seed)
         return make_payload(
             request_model=request_model,
             prompt_ids=ids,
-            max_tokens=args.max_tokens,
+            max_tokens=args.max_tokens if max_tokens is None else max_tokens,
             temperature=args.temperature,
             top_p=args.top_p,
             sampler_seed=args.sampler_seed,
@@ -452,6 +479,30 @@ def main() -> int:
             special_token_ids=special_token_ids,
             slot_id=slot_id,
         )
+
+    prime_results: list[RequestResult] = []
+    if args.prime_resident_context:
+        prime_barrier = Barrier(args.concurrency + 1)
+        with ThreadPoolExecutor(max_workers=args.concurrency) as prime_pool:
+            prime_payloads = [
+                payload_for(
+                    i,
+                    (forced_slot_ids[i] if args.slot_policy == "forced" else i),
+                    stable_slot_index=i,
+                    max_tokens=1,
+                )
+                for i in range(args.concurrency)
+            ]
+
+            def prime_one(payload: dict) -> RequestResult:
+                prime_barrier.wait()
+                return post_stream(endpoint, payload, args.timeout, count_text_tokens, args.record_text)
+
+            prime_futures = [prime_pool.submit(prime_one, payload) for payload in prime_payloads]
+            prime_barrier.wait()
+            prime_results = [future.result() for future in prime_futures]
+        if not all(result.ok and result.prompt_tokens == args.prompt_tokens for result in prime_results):
+            print("resident-context priming failed", file=sys.stderr, flush=True)
 
     for i in range(args.warmup):
         warm_slot = (forced_slot_ids or [0])[0] if args.slot_policy in {"compact", "forced"} else None
@@ -470,6 +521,7 @@ def main() -> int:
                     args.warmup + rep * args.concurrency + i,
                     (forced_slot_ids[i] if args.slot_policy == "forced" else i)
                     if args.slot_policy in {"compact", "forced"} else None,
+                    stable_slot_index=i if args.prime_resident_context else None,
                 )
                 for i in range(args.concurrency)
             ]
@@ -495,7 +547,12 @@ def main() -> int:
     record = {
         "schema_version": 2,
         "metric_definition": "sum(successful completion_tokens) / (last response end - first request start)",
-        "metric_scope": "HTTP service throughput including prefill, queueing, decode, streaming and transport",
+        "metric_scope": (
+            "HTTP throughput after explicit resident-context priming; measured requests include cache lookup, "
+            "queueing, decode, streaming and transport but exclude initial context fill"
+            if args.prime_resident_context
+            else "HTTP service throughput including prefill, queueing, decode, streaming and transport"
+        ),
         "workload_kind": args.workload_kind,
         "label": args.label,
         "base_url": args.base_url,
@@ -523,12 +580,22 @@ def main() -> int:
         "cache_prompt": args.cache_prompt,
         "ignore_eos": args.workload_kind == "controlled_fixed_output",
         "arrival_stagger_ms": args.arrival_stagger_ms,
+        "resident_context": {
+            "primed": args.prime_resident_context,
+            "minimum_cached_prompt_tokens": args.min_cached_prompt_tokens,
+            "prime": summarize(prime_results) if prime_results else None,
+            "prime_raw": (
+                [serializable_request(result, min(r.request_started_s for r in prime_results)) for result in prime_results]
+                if prime_results else []
+            ),
+        },
         "validity": evaluate_validity(
             all_results,
             expected_prompt_tokens=args.prompt_tokens,
             max_tokens=args.max_tokens,
             workload_kind=args.workload_kind,
             cache_prompt=args.cache_prompt,
+            min_cached_prompt_tokens=args.min_cached_prompt_tokens,
         ),
         "repetitions_detail": rep_summaries,
         "aggregate": aggregate,

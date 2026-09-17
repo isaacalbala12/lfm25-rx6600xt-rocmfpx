@@ -1,5 +1,18 @@
 # Registro de experimentos
 
+## V4-CONTEXT-CAPACITY-01 — KEEP
+
+- Hypothesis: four slots can expose at least 8192 effective tokens each without
+  interpreting `-c` as a per-slot value.
+- Configuration: FP4_FAST, q8/q8 KV, R0/K0, `-c 34816`,
+  `--kv-unified-per-slot 8704`, `-np 4`, b4096/u128.
+- Evidence: `/props` reports `n_ctx=8704`; `/slots` reports four independent
+  8704-token slots; 4/4 simultaneous 8192-token prompts completed.
+- Weight eligibility: FP4_FAST whole-artifact BPW is 4.2771; Q4_0 is 4.7276.
+- Harness change: resident-context priming is separate from measured decode,
+  and promotion requires observed cache reuse rather than assuming residency.
+- Decision: **KEEP** protocol and context configuration.
+
 Protocolo vigente desde 2026-09-17: prompts de 128 tokens generados por
 `safe_corpus_cycle_v1`, 64 tokens de salida fija, tokens especiales excluidos
 por `logit_bias`, caché de prompt desactivada, KV q8, `b512/ub128`, FA activado,

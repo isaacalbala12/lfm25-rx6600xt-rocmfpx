@@ -34,6 +34,8 @@ SLOT_POLICY=${SLOT_POLICY:-auto}
 SLOT_IDS=${SLOT_IDS:-}
 WORKLOAD_KIND=${WORKLOAD_KIND:-controlled_fixed_output}
 ARRIVAL_STAGGER_MS=${ARRIVAL_STAGGER_MS:-0}
+PRIME_RESIDENT_CONTEXT=${PRIME_RESIDENT_CONTEXT:-0}
+MIN_CACHED_PROMPT_TOKENS=${MIN_CACHED_PROMPT_TOKENS:-0}
 
 usage() {
   echo "Usage: GPU_RESERVATION_CONFIRMED=1 $0 --server BIN --model GGUF [options] [-- server-extra-args...]" >&2
@@ -81,6 +83,10 @@ if [[ "$RESOURCE_SAMPLER_MODE" != "required" && "$RESOURCE_SAMPLER_MODE" != "dis
   echo "RESOURCE_SAMPLER_MODE must be required or disabled" >&2
   exit 2
 fi
+if [[ "$PRIME_RESIDENT_CONTEXT" != "0" && "$PRIME_RESIDENT_CONTEXT" != "1" ]]; then
+  echo "PRIME_RESIDENT_CONTEXT must be 0 or 1" >&2
+  exit 2
+fi
 if [[ "$RESOURCE_SAMPLER_MODE" == "required" && ! -f "$RESOURCE_SAMPLER" ]]; then
   echo "resource sampler is required but missing: $RESOURCE_SAMPLER" >&2
   exit 2
@@ -114,6 +120,7 @@ fi
     "$PROMPT_TOKENS" "$MAX_TOKENS" "$REPETITIONS" "$WARMUP" "$BENCH_SEED"
   printf 'concurrencies=%q\ncache_prompt=%q\nprompt_mode=%q\nslot_policy=%q\nslot_ids=%q\nworkload_kind=%q\narrival_stagger_ms=%q\n' \
     "$CONCURRENCIES" "$CACHE_PROMPT" "$PROMPT_MODE" "$SLOT_POLICY" "$SLOT_IDS" "$WORKLOAD_KIND" "$ARRIVAL_STAGGER_MS"
+  printf 'prime_resident_context=%q\nmin_cached_prompt_tokens=%q\n' "$PRIME_RESIDENT_CONTEXT" "$MIN_CACHED_PROMPT_TOKENS"
   printf 'resource_sampler_mode=%q\nresource_sampler=%q\n' "$RESOURCE_SAMPLER_MODE" "$RESOURCE_SAMPLER"
   printf 'fixed_server_args=-ngl\ 99\ -fa\ on\ -np\ 4\ -cb\ %q\ --cache-reuse\ 0\n' "$cache_server_arg"
   printf 'server_args='; printf '%q ' "${SERVER_ARGS[@]}"; printf '\n'
@@ -230,6 +237,10 @@ for concurrency in $CONCURRENCIES; do
   if [[ -n "$SLOT_IDS" ]]; then
     slot_args=(--slot-ids "$SLOT_IDS")
   fi
+  resident_args=()
+  if [[ "$PRIME_RESIDENT_CONTEXT" == "1" ]]; then
+    resident_args=(--prime-resident-context --min-cached-prompt-tokens "$MIN_CACHED_PROMPT_TOKENS")
+  fi
   "$PYTHON" "$SCRIPT_DIR/bench_client.py" \
     --base-url "http://$HOST:$PORT" \
     --model "$MODEL" --tokenizer "$TOKENIZER" --request-model "$MODEL" \
@@ -239,6 +250,7 @@ for concurrency in $CONCURRENCIES; do
     --prompt-mode "$PROMPT_MODE" --cache-prompt "$CACHE_PROMPT" \
     --slot-policy "$SLOT_POLICY" "${slot_args[@]}" \
     --workload-kind "$WORKLOAD_KIND" --arrival-stagger-ms "$ARRIVAL_STAGGER_MS" \
+    "${resident_args[@]}" \
     --label "${LABEL}-c${concurrency}" --output "$OUTPUT_DIR/c${concurrency}.json" \
     | tee "$OUTPUT_DIR/c${concurrency}.stdout.jsonl"
 done
