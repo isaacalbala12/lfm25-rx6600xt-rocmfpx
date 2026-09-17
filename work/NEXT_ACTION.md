@@ -2,7 +2,7 @@
 
 ## Checkpoint V3
 
-El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva en un commit local de `campaign-v3`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.
+El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva tanto en un commit local de `campaign-v3` como en el checkpoint local ROCmFPX `2678844a0af778c7c41b2d552667e9a05d98248c`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.
 
 El arnés V3 está corregido y sus ocho tests pasan. El mapa de ejecución prueba que `ROCmFPXVulkan0` usa el backend Vulkan propio del plugin, no `ggml/src/ggml-vulkan`. El perfil 2048/u128 y el censo actual están en `work/PROFILE_V3.md` y `work/SHAPE_CENSUS_V3.csv`.
 
