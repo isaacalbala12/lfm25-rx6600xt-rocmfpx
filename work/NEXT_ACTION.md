@@ -10,10 +10,17 @@ control. Do not use the intentionally invalid 256-token smoke as a result.
 After FPX C1–C4, repeat the exact protocol with upstream Vulkan Q4_0. Populate
 `work/CONTEXT8K_BASELINES.json` before enabling profiling or changing code.
 
-Completed: Profile A and B are now populated. FPX wins resident C4 by 5.98%;
-upstream wins simultaneous long-prefill by 6.33%. Next: run Profile C with
-1/2/3 resident decoders plus one fresh 8K prefill, then profile FPX C1 versus
-C4 with timestamps separated for Q8_1 preparation and MMV.
+Completed: Profiles A, B and C are populated. FPX wins resident C4 by 5.98%;
+upstream wins simultaneous long-prefill by 6.33%. Profile C demonstrates severe
+scheduler starvation: one fresh 8K prefill leaves resident decoders at only
+1.01–1.45% of their control delivery rate for about 4.3 seconds.
+
+Next: add an opt-in logical prefill-chunk limit in the server scheduler, leaving
+the backend ubatch fixed at 128. Compare the current unlimited logical batch
+against 128/256-token scheduler chunks with Profile C, then verify the winning
+candidate does not regress Profile A C4 or Profile B beyond the measured TTFT
+tradeoff. Separately profile FPX C1 versus C4 with timestamps for
+`quantize_q8_1_x4` and `mul_mat_vec_rocmfp4_fast_q8_1_f32`.
 
 ## Checkpoint V3
 

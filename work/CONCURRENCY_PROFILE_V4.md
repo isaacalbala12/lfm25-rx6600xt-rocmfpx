@@ -63,7 +63,36 @@ baseline.
 Upstream wins this long-prefill control by 6.33%. This is consistent with the
 V3 gate/up and down profile and does not contradict the FPX decode win.
 
+## Profile C — resident decode versus a fresh 8K prefill
+
+The interference client first primes 8192 tokens per resident decoder, measures
+a 768-token cache-hit decode control, and then repeats that decode while a
+previously unused slot receives an uncached 8192-token prompt. The interference
+window starts only after every resident decoder has emitted content and ends at
+the first content token of the new request. Delivery events are counted at the
+HTTP stream boundary and are therefore reported as event-token rate rather than
+silently assuming a second tokenizer.
+
+| Resident decoders + fresh prefill | Control aggregate | During prefill | Retention | Decoder ITL p95 | New-user TTFT |
+|---|---:|---:|---:|---:|---:|
+| 1 + 1 | 115.29 | 1.16 | 1.01% | 2144.95 ms | 4292.61 ms |
+| 2 + 1 | 189.78 | 2.33 | 1.23% | 2184.65 ms | 4298.10 ms |
+| 3 + 1 | 239.98 | 3.48 | 1.45% | 2188.54 ms | 4304.59 ms |
+
+All three cases are VALID: the resident prompts observed at least 8188 cached
+tokens, both decode phases completed their full output, and the new 8K prefill
+observed zero cached tokens. Per-user rates inside each window remain almost
+identical (coefficient of variation 0 to 0.0006), so the immediate problem is
+not one user winning over another. The long prefill monopolizes useful GPU
+service for roughly 4.3 seconds and stalls every resident decoder together.
+
+Evidence: `work/results/v4-profile-c-fpx-q8/`.
+
+Decision: **KEEP evidence / REJECT current scheduling for interactive service**.
+The next candidate must cap the number of prompt tokens admitted to one logical
+scheduler iteration; changing shader geometry cannot repair this starvation.
+
 ## Pending measurements
 
-Profile C interference, non-invasive C1/C4 operation profiling and the first
-new optimization are populated by the next checkpoint.
+Non-invasive C1/C4 operation profiling, separated Q8_1 preparation versus MMV,
+and the first scheduler candidate are populated by the next checkpoint.

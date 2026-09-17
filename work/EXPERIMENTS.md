@@ -168,6 +168,20 @@ transporte desde el primer envío hasta la última respuesta.
 - Decode FP4_FAST usa RHS Q8_1 y `mul_mat_vec_rocmfp4_fast_q8_1_f32` para N pequeño.
 - Prefill 2048/u128 está dominado por matmuls FP4_FAST gate/up y down; véanse `work/PLUGIN_EXECUTION_MAP.md`, `work/SHAPE_CENSUS_V3.csv` y `work/PROFILE_V3.md`.
 - Decisión: **KEEP** como evidencia; siguiente familia: GEMV FP4_FAST N=1/2/4, aún sin variante promocionable.
+
+## EXP-V4-PREFILL-INTERFERENCE-R0K0 — KEEP evidence / REJECT scheduling
+
+- Fixed control: ROCmFPXVulkan0 FP4_FAST (4.2771 artifact BPW), q8/q8 KV,
+  R0/K0, 9216 tokens per slot, backend ubatch 128.
+- One uncached 8192-token prefill reduced resident decode delivery to 1.01%,
+  1.23% and 1.45% of control with respectively 1, 2 and 3 active decoders.
+- Decoder ITL p95 rose from single-digit/low-double-digit milliseconds to
+  2145–2189 ms while the new request reached first token in about 4.3 seconds.
+- Per-user variation remained negligible; all resident users stalled together.
+- Evidence: `work/results/v4-profile-c-fpx-q8/`.
+- Decision: evidence **KEEP**; current unlimited logical prompt scheduling is
+  **REJECT** for interactive concurrent service. Prototype a bounded prompt
+  chunk per scheduler iteration without changing the ubatch control.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation

@@ -78,6 +78,34 @@
     "fpx_output_delta_percent_vs_upstream": -6.330438870898538,
     "decision": "upstream wins simultaneous long-prefill; FPX remains resident-decode winner"
   },
-  "interference": {},
+  "interference": {
+    "protocol": "prime resident 8192-token contexts, measure 768-token decode control, then repeat decode while a fresh slot prefills an uncached 8192-token prompt",
+    "result_dir": "work/results/v4-profile-c-fpx-q8",
+    "status": "VALID",
+    "rocmfpx_vulkan_fp4_fast_q8": {
+      "one_decode_plus_one_prefill": {
+        "baseline_aggregate_event_tok_s": 115.29085694859144,
+        "during_prefill_aggregate_event_tok_s": 1.1647921244963617,
+        "retention": 0.010103074565711193,
+        "decoder_itl_p95_ms": 2144.9533704998885,
+        "prefill_ttft_ms": 4292.61144100019
+      },
+      "two_decode_plus_one_prefill": {
+        "baseline_aggregate_event_tok_s": 189.78069537545502,
+        "during_prefill_aggregate_event_tok_s": 2.326609367117509,
+        "retention": 0.012259462757867086,
+        "decoder_itl_p95_ms": 2184.648791149766,
+        "prefill_ttft_ms": 4298.100119999617
+      },
+      "three_decode_plus_one_prefill": {
+        "baseline_aggregate_event_tok_s": 239.97532597903916,
+        "during_prefill_aggregate_event_tok_s": 3.4846538158597182,
+        "retention": 0.014520883768542471,
+        "decoder_itl_p95_ms": 2188.54251245034,
+        "prefill_ttft_ms": 4304.588287000115
+      }
+    },
+    "decision": "current scheduler starves resident decode during long prefill; cap logical prompt admission per scheduler iteration"
+  },
   "dynamic_service": {}
 }
