@@ -1824,9 +1824,23 @@ std::mutex vk_memory_logger::log_mutex;
 static bool vk_perf_logger_enabled = false;
 static bool vk_perf_logger_concurrent = false;
 static bool vk_enable_sync_logger = false;
+static bool vk_selection_logger_enabled = false;
+// -1 keeps the upstream selector, 0 forces one subgroup, 1 selects the
+// four-subgroup hybrid reduction for N=2/4, and 2 forces it for all N.
+static int vk_rocmfp4_fast_dmmv_wg = -1;
 // number of calls between perf logger prints
 static uint32_t vk_perf_logger_frequency = 1;
 static std::string vk_pipeline_stats_filter;
+
+static bool ggml_vk_env_enabled(const char * name) {
+    const char * value = getenv(name);
+    if (value == nullptr || value[0] == '\0') {
+        return false;
+    }
+    const std::string normalized(value);
+    return normalized != "0" && normalized != "false" && normalized != "FALSE" &&
+           normalized != "off" && normalized != "OFF" && normalized != "no" && normalized != "NO";
+}
 
 class vk_perf_logger {
   public:
@@ -6749,10 +6763,25 @@ static void ggml_vk_instance_init() {
         vk_instance.pfn_vkCmdInsertDebugUtilsLabelEXT = (PFN_vkCmdInsertDebugUtilsLabelEXT) vkGetInstanceProcAddr(vk_instance.instance, "vkCmdInsertDebugUtilsLabelEXT");
     }
 
-    vk_perf_logger_enabled = getenv("GGML_VK_PERF_LOGGER") != nullptr;
-    vk_perf_logger_concurrent = getenv("GGML_VK_PERF_LOGGER_CONCURRENT") != nullptr;
-    vk_enable_sync_logger = getenv("GGML_VK_SYNC_LOGGER") != nullptr;
-    vk_memory_logger_enabled = getenv("GGML_VK_MEMORY_LOGGER") != nullptr;
+    vk_perf_logger_enabled = ggml_vk_env_enabled("GGML_VK_PERF_LOGGER");
+    vk_perf_logger_concurrent = ggml_vk_env_enabled("GGML_VK_PERF_LOGGER_CONCURRENT");
+    vk_enable_sync_logger = ggml_vk_env_enabled("GGML_VK_SYNC_LOGGER");
+    vk_memory_logger_enabled = ggml_vk_env_enabled("GGML_VK_MEMORY_LOGGER");
+    vk_selection_logger_enabled = ggml_vk_env_enabled("GGML_VK_SELECTION_LOGGER");
+    if (const char * value = getenv("GGML_VK_ROCMFP4_FAST_DMMV_WG")) {
+        if (strcmp(value, "subgroup") == 0 || strcmp(value, "0") == 0) {
+            vk_rocmfp4_fast_dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
+        } else if (strcmp(value, "large") == 0 || strcmp(value, "1") == 0) {
+            vk_rocmfp4_fast_dmmv_wg = DMMV_WG_SIZE_LARGE;
+        } else if (strcmp(value, "large-all") == 0 || strcmp(value, "2") == 0) {
+            vk_rocmfp4_fast_dmmv_wg = 2;
+        } else if (strcmp(value, "auto") != 0 && value[0] != '\0') {
+            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, or large-all");
+        }
+    }
+    if (vk_selection_logger_enabled) {
+        std::cerr << "VKSEL event=backend source=rocmfpx-vulkan-plugin" << std::endl;
+    }
     const char* GGML_VK_PIPELINE_STATS = getenv("GGML_VK_PIPELINE_STATS");
     if (GGML_VK_PIPELINE_STATS != nullptr) {
         vk_pipeline_stats_filter = GGML_VK_PIPELINE_STATS;
@@ -7187,6 +7216,22 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context * 
         if (ctx->device->vendor_id == VK_VENDOR_ID_INTEL) {
             dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
         }
+        if (a_type == GGML_TYPE_Q4_0_ROCMFP4_FAST && vk_rocmfp4_fast_dmmv_wg >= 0) {
+            // Measured on gfx1032: the large reduction wins for every observed
+            // N=4 shape and for the M=2048 N=2 projections, but regresses the
+            // M=6144/10752 N=2 projections by 39-49%.
+            const bool target_n = num_cols == 4 || (num_cols == 2 && m == 2048);
+            if (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_SUBGROUP) {
+                dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
+            } else if (target_n || vk_rocmfp4_fast_dmmv_wg == 2) {
+                dmmv_wg = DMMV_WG_SIZE_LARGE;
+            }
+        }
+        if (vk_selection_logger_enabled && a_type == GGML_TYPE_Q4_0_ROCMFP4_FAST) {
+            std::cerr << "VKSEL event=dmmv_selector m=" << m << " n=" << num_cols << " k=" << k
+                      << " reduction=" << (dmmv_wg == DMMV_WG_SIZE_LARGE ? "large_hybrid" : "subgroup")
+                      << std::endl;
+        }
         return ctx->device->pipeline_dequant_mul_mat_vec_q8_1_f32[dmmv_wg][a_type][num_cols-1];
     }
 
@@ -7514,6 +7559,13 @@ static void ggml_vk_dispatch_pipeline(ggml_backend_vk_context* ctx, vk_context& 
     const uint32_t wg0 = CEIL_DIV(elements[0], pipeline->wg_denoms[0]);
     const uint32_t wg1 = CEIL_DIV(elements[1], pipeline->wg_denoms[1]);
     const uint32_t wg2 = CEIL_DIV(elements[2], pipeline->wg_denoms[2]);
+    if (vk_selection_logger_enabled) {
+        std::cerr << "VKSEL event=dispatch pipeline=" << pipeline->name
+                  << " elements=" << elements[0] << ',' << elements[1] << ',' << elements[2]
+                  << " workgroups=" << wg0 << ',' << wg1 << ',' << wg2
+                  << " wg_denoms=" << pipeline->wg_denoms[0] << ',' << pipeline->wg_denoms[1] << ',' << pipeline->wg_denoms[2]
+                  << " registers=" << pipeline->register_count << std::endl;
+    }
     VK_LOG_DEBUG("ggml_vk_dispatch_pipeline(" << pipeline->name << ", {";
     for (auto& buffer : descriptor_buffer_infos) {
         std::cerr << "(" << buffer.buffer << ", " << buffer.offset << ", " << buffer.range << "), ";
@@ -8793,6 +8845,24 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
 
     const uint32_t split_k = ggml_vk_guess_split_k(ctx, ne01, ne11, ne10, disable_split_k, pipeline);
 
+    if (vk_selection_logger_enabled) {
+        std::cerr << "VKSEL event=mul_mat tensor=" << src0->name
+                  << " src0_type=" << ggml_type_name(src0->type)
+                  << " src1_type=" << ggml_type_name(src1->type)
+                  << " m=" << ne01 << " n=" << ne11 << " k=" << ne10
+                  << " src0_ne=" << ne00 << ',' << ne01 << ',' << ne02 << ',' << ne03
+                  << " src1_ne=" << ne10 << ',' << ne11 << ',' << ne12 << ',' << ne13
+                  << " src0_nb=" << src0->nb[0] << ',' << src0->nb[1] << ',' << src0->nb[2] << ',' << src0->nb[3]
+                  << " src1_nb=" << src1->nb[0] << ',' << src1->nb[1] << ',' << src1->nb[2] << ',' << src1->nb[3]
+                  << " src0_contig=" << ggml_is_contiguous(src0)
+                  << " src1_contig=" << ggml_is_contiguous(src1)
+                  << " quantize_rhs=" << quantize_y
+                  << " x_convert=" << qx_needs_dequant
+                  << " y_convert=" << qy_needs_dequant
+                  << " split_k=" << split_k
+                  << " pipeline=" << pipeline->name << std::endl;
+    }
+
     const uint64_t qx_sz = src0->type == GGML_TYPE_Q6_0_ROCMFPX ?
         ggml_vk_tensor_nbytes(src0) :
         ggml_type_size(src0->type) * x_ne / ggml_blck_size(src0->type);
@@ -9121,6 +9191,24 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
 
     const bool qx_needs_dequant = x_non_contig;
     const bool qy_needs_dequant = !quantize_y && ((src1->type != GGML_TYPE_F16 && !f16_f32_kernel) || y_non_contig);
+
+    if (vk_selection_logger_enabled) {
+        std::cerr << "VKSEL event=mul_mat_vec tensor=" << src0->name
+                  << " src0_type=" << ggml_type_name(src0->type)
+                  << " src1_type=" << ggml_type_name(src1->type)
+                  << " m=" << ne01 << " n=" << ne11 << " k=" << ne10
+                  << " src0_ne=" << ne00 << ',' << ne01 << ',' << ne02 << ',' << ne03
+                  << " src1_ne=" << ne10 << ',' << ne11 << ',' << ne12 << ',' << ne13
+                  << " src0_nb=" << src0->nb[0] << ',' << src0->nb[1] << ',' << src0->nb[2] << ',' << src0->nb[3]
+                  << " src1_nb=" << src1->nb[0] << ',' << src1->nb[1] << ',' << src1->nb[2] << ',' << src1->nb[3]
+                  << " src0_contig=" << ggml_is_contiguous(src0)
+                  << " src1_contig=" << ggml_is_contiguous(src1)
+                  << " batch_n=" << batch_n
+                  << " quantize_rhs=" << quantize_y
+                  << " x_convert=" << qx_needs_dequant
+                  << " y_convert=" << qy_needs_dequant
+                  << " pipeline=" << dmmv->name << std::endl;
+    }
 
     // Not implemented
     GGML_ASSERT(y_non_contig || !qy_needs_dequant);  // NOLINT

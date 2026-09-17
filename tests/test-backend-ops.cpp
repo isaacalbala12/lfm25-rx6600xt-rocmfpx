@@ -8570,6 +8570,13 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
     std::vector<std::unique_ptr<test_case>> test_cases;
     std::default_random_engine rng(0);
 
+    // Correctness controls for the LFM decode shapes targeted by the N=2/4
+    // workgroup experiment. The normal backend test compares against CPU.
+    for (int64_t n : {2, 4}) {
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32, 10752, n,  2048, {1, 1}, {1, 1}));
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n, 10752, {1, 1}, {1, 1}));
+    }
+
     // unary ops
     for (ggml_type type : {GGML_TYPE_F16, GGML_TYPE_F32}) {
         for (int v : {0, 1}) {
@@ -10507,6 +10514,16 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
 static std::vector<std::unique_ptr<test_case>> make_test_cases_perf() {
     std::vector<std::unique_ptr<test_case>> test_cases;
 
+    // LFM2.5-2.6B ROCmFPX Vulkan decode census. These go through the normal
+    // graph planner and plugin selector, including Q8_1 RHS preparation. N=6
+    // covers the observed boundary/fallback case as well as the target N=1/2/4.
+    for (int64_t n : {1, 2, 4, 6}) {
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32, 10752, n,  2048, {1, 1}, {1, 1}));
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n, 10752, {1, 1}, {1, 1}));
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  6144, n,  2048, {1, 1}, {1, 1}));
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n,  2048, {1, 1}, {1, 1}));
+    }
+
     // Long-sequence Mamba-2 shapes that select the SSD matmul path on capable
     // CUDA/HIP devices. GGML_CUDA_DISABLE_SSD=1 provides a same-binary scan
     // baseline for tuning and regression measurements.
@@ -11453,6 +11470,15 @@ int main(int argc, char ** argv) {
 
     // load and enumerate backends
     ggml_backend_load_all();
+    // The ROCmFPX sidecar is normally loaded by llama_backend_init(), while this
+    // ggml-level executable intentionally does not link the llama runtime. Allow
+    // the benchmark to load the exact backend module under test directly.
+    if (const char * path = getenv("ROCMFPX_BACKEND_PATH")) {
+        if (ggml_backend_load(path) == nullptr) {
+            fprintf(stderr, "failed to load ROCmFPX backend: %s\n", path);
+            return 1;
+        }
+    }
 
     // Create printer for output format
     std::unique_ptr<printer> output_printer = create_printer(output_format);

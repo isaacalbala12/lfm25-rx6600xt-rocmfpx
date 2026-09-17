@@ -11,6 +11,7 @@
 #include <cstring>
 #include <limits>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 
 //
@@ -505,6 +506,19 @@ bool llama_memory_recurrent::prepare(const std::vector<llama_ubatch> & ubatches)
 bool llama_memory_recurrent::find_slot(const llama_ubatch & ubatch) {
     const uint32_t n_seq_tokens = ubatch.n_seq_tokens;
     const uint32_t n_seqs       = ubatch.n_seqs;
+    const char * trace_env = getenv("LLAMA_RECURRENT_TRACE");
+    const bool trace = trace_env != nullptr && atoi(trace_env) != 0;
+    if (trace) {
+        std::ostringstream ids;
+        for (uint32_t s = 0; s < n_seqs; ++s) {
+            if (s > 0) {
+                ids << ',';
+            }
+            ids << ubatch.seq_id[s*n_seq_tokens][0];
+        }
+        LLAMA_LOG_WARN("RSTRACE event=find_begin ids=[%s] n_seqs=%u n_seq_tokens=%u head=%u n=%u used=%u\n",
+                ids.str().c_str(), n_seqs, n_seq_tokens, head, n, used);
+    }
 
     // if we have enough unused cells before the current head ->
     //   better to start searching from the beginning of the cache, hoping to fill it
@@ -708,6 +722,18 @@ bool llama_memory_recurrent::find_slot(const llama_ubatch & ubatch) {
     n    = max - min + 1;
     used = std::count_if(cells.begin(), cells.end(),
         [](const mem_cell & cell){ return !cell.is_empty(); });
+
+    if (trace) {
+        std::ostringstream tails;
+        for (uint32_t s = 0; s < n_seqs; ++s) {
+            if (s > 0) {
+                tails << ',';
+            }
+            tails << cells[ubatch.seq_id[s*n_seq_tokens][0]].tail;
+        }
+        LLAMA_LOG_WARN("RSTRACE event=find_end head=%u n=%u used=%u min=%d max=%d tails=[%s] rs_z=%d\n",
+                head, n, used, min, max, tails.str().c_str(), rs_z);
+    }
 
     // sanity check
     return n >= n_seqs;

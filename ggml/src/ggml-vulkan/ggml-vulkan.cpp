@@ -4111,6 +4111,8 @@ static bool ggml_vk_matmul_int_shmem_support(const vk_device& device, const std:
         case GGML_TYPE_Q5_1:    block_a_size = std430_size({{16, 4}, {4, 4}, {fp2_size, fp2_align}});         break; // qs[16/4] + qh + dm(vec2)
         case GGML_TYPE_Q8_0:    block_a_size = std430_size({{32, 4}, {fp_size,  fp_align}});                  break; // qs[8] + dm
         case GGML_TYPE_MXFP4:   block_a_size = std430_size({{32, 4}, {fp_size,  fp_align}});                  break; // qs[8] + d
+        case GGML_TYPE_Q4_0_ROCMFP4:
+        case GGML_TYPE_Q4_0_ROCMFP4_FAST: block_a_size = std430_size({{32, 4}, {fp_size, fp_align}});          break; // qs[8] + d
         case GGML_TYPE_Q2_K:    block_a_size = std430_size({{ 8, 4}, {2, 2}, {fp2_size, fp2_align}});         break; // qs[2] + scales(u8vec2) + dm(vec2)
         case GGML_TYPE_Q3_K:    block_a_size = std430_size({{16, 4}, {fp2_size, fp2_align}});                 break; // qs[4] + d_scales(vec2)
         case GGML_TYPE_Q4_K:    block_a_size = std430_size({{16, 4}, {fp2_size, fp2_align}});                 break; // qs[4] + dm(vec2)
@@ -5033,6 +5035,8 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
             CREATE_MMQ(GGML_TYPE_Q5_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_0], matmul_q5_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
             CREATE_MMQ(GGML_TYPE_Q5_1, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_1], matmul_q5_1_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
             CREATE_MMQ(GGML_TYPE_Q8_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q8_0], matmul_q8_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4], matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST], matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
 
             CREATE_MMQ(GGML_TYPE_MXFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_MXFP4], matmul_mxfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
 
@@ -5210,6 +5214,8 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
             CREATE_MMQ(GGML_TYPE_Q5_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_0].f32acc, matmul_q5_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
             CREATE_MMQ(GGML_TYPE_Q5_1, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_1].f32acc, matmul_q5_1_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
             CREATE_MMQ(GGML_TYPE_Q8_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q8_0].f32acc, matmul_q8_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
+            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4].f32acc, matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
+            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST].f32acc, matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
 
             CREATE_MMQ(GGML_TYPE_Q2_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q2_K].f32acc, matmul_q2_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, );
             CREATE_MMQ(GGML_TYPE_Q3_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q3_K].f32acc, matmul_q3_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, );
@@ -7962,6 +7968,29 @@ static bool ggml_vk_is_rocmfpx_weight_type(ggml_type type) {
     }
 }
 
+// On gfx1032, the integer-dot ROCmFPX path is faster for the actual server
+// schedule even when its isolated N=124 microbenchmark is slower: it avoids a
+// severe four-slot batching regression in the scalar path. Keep it enabled by
+// default; GGML_VK_ROCMFPX_INTDOT=off remains available for an A/B control.
+static bool ggml_vk_rocmfpx_use_intdot(ggml_type type, uint64_t n) {
+    if (!ggml_vk_is_rocmfpx_weight_type(type)) {
+        return true;
+    }
+
+    const char * mode = getenv("GGML_VK_ROCMFPX_INTDOT");
+    if (mode != nullptr) {
+        if (strcmp(mode, "off") == 0) {
+            return false;
+        }
+        if (strcmp(mode, "on") == 0) {
+            return true;
+        }
+    }
+
+    GGML_UNUSED(n);
+    return true;
+}
+
 static vk_matmul_pipeline ggml_vk_get_mul_mat_mat_pipeline(ggml_backend_vk_context * ctx, ggml_type src0_type, ggml_type src1_type, ggml_prec prec) {
     VK_LOG_DEBUG("ggml_vk_get_mul_mat_mat_pipeline(" << ggml_type_name(src0_type) << ", " << ggml_type_name(src1_type) << ", " << prec << ")");
     if (src0_type == GGML_TYPE_F32 && src1_type == GGML_TYPE_F32) {
@@ -9558,7 +9587,7 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
 
     const bool y_f32_kernel = src1->type == GGML_TYPE_F32 && !y_non_contig;
 
-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0;
+    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne11);
 
     // Check for mmq first
     vk_matmul_pipeline mmp = quantize_y ? ggml_vk_get_mul_mat_mat_pipeline(ctx, src0->type, GGML_TYPE_Q8_1, (ggml_prec)dst->op_params[0]) : nullptr;
@@ -9891,7 +9920,7 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
     const bool y_non_contig = !ggml_vk_dim01_contiguous(src1);
 
     const bool f16_f32_kernel = src1->type == GGML_TYPE_F32;
-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_should_use_mmvq(ctx->device, ne01, ne11, ne10, src0->type);
+    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne11) && ggml_vk_should_use_mmvq(ctx->device, ne01, ne11, ne10, src0->type);
 
     vk_pipeline to_fp16_vk_0 = nullptr;
     vk_pipeline to_fp16_vk_1 = nullptr;
@@ -10498,7 +10527,7 @@ static void ggml_vk_mul_mat_id_q_f16(ggml_backend_vk_context * ctx, vk_context& 
 
     const bool y_f32_kernel = src1->type == GGML_TYPE_F32 && !y_non_contig;
 
-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0;
+    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne11);
 
     // Check for mmq first
     vk_matmul_pipeline mmp = quantize_y ? ggml_vk_get_mul_mat_mat_id_pipeline(ctx, src0->type, GGML_TYPE_Q8_1, (ggml_prec)dst->op_params[0]) : nullptr;
@@ -10808,7 +10837,7 @@ static void ggml_vk_mul_mat_vec_id_q_f16(ggml_backend_vk_context * ctx, vk_conte
     const bool y_non_contig = !ggml_vk_dim01_contiguous(src1);
 
     const bool f16_f32_kernel = src1->type == GGML_TYPE_F32;
-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_should_use_mmvq(ctx->device, ne01, ne12, ne10, src0->type);
+    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne12) && ggml_vk_should_use_mmvq(ctx->device, ne01, ne12, ne10, src0->type);
 
     vk_pipeline to_fp16_vk_0 = nullptr;
     vk_pipeline to_fp16_vk_1 = nullptr;
