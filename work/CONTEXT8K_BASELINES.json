@@ -25,8 +25,59 @@
       "eligible": true
     }
   },
-  "resident_decode": {},
-  "prefill_c4": {},
+  "resident_decode": {
+    "protocol": "prime each slot, require >=8188 cached tokens, then measure 256 output tokens",
+    "rocmfpx_vulkan_fp4_fast_q8": {
+      "result_dir": "work/results/v4-profile-a-fpx-q8",
+      "status": "VALID",
+      "median_tok_s": {"c1": 113.1328068914737, "c2": 184.86494251126862, "c3": 225.5551361910709, "c4": 265.79069411578814},
+      "scaling": {"c2_over_c1": 1.6340524697544743, "c3_over_c1": 1.9937199684919151, "c4_over_c1": 2.349368864954941},
+      "parallel_efficiency_c4": 0.5873422162387353,
+      "c4_per_user_p5_tok_s": 65.11336610392732,
+      "c4_per_user_p50_tok_s": 66.51533468120809,
+      "c4_itl_p95_ms": 15.33303649989648,
+      "c4_ttft_p95_ms": 285.82573695034625,
+      "global_vram_peak_bytes": 2207555584
+    },
+    "upstream_vulkan_q4_0_q8": {
+      "result_dir": "work/results/v4-profile-a-upstream-q40-q8",
+      "status": "VALID",
+      "median_tok_s": {"c1": 109.48123057887283, "c2": 179.49533649311383, "c3": 220.6335881834151, "c4": 250.7862862144049},
+      "scaling": {"c2_over_c1": 1.6395078457197392, "c3_over_c1": 2.0152640504389066, "c4_over_c1": 2.290678364578051},
+      "parallel_efficiency_c4": 0.5726695911445128,
+      "c4_per_user_p5_tok_s": 62.17837402092978,
+      "c4_per_user_p50_tok_s": 62.739514494030175,
+      "c4_itl_p95_ms": 16.026857499764446,
+      "c4_ttft_p95_ms": 272.6761732000796,
+      "global_vram_peak_bytes": 2401218560
+    },
+    "fpx_c4_delta_percent_vs_upstream": 5.982946253690284
+  },
+  "prefill_c4": {
+    "protocol": "four simultaneous 8192-token uncached prompts plus 256 output tokens",
+    "rocmfpx_vulkan_fp4_fast_q8": {
+      "result_dir": "work/results/v4-profile-b-fpx-q8",
+      "status": "VALID",
+      "aggregate_output_tok_s": 48.81791206696078,
+      "aggregate_input_tok_s": 1562.173186142745,
+      "wall_s": 20.975907338999605,
+      "ttft_p95_ms": 17371.920051199777,
+      "e2e_p95_ms": 20972.647008449665,
+      "global_vram_peak_bytes": 2207715328
+    },
+    "upstream_vulkan_q4_0_q8": {
+      "result_dir": "work/results/v4-profile-b-upstream-q40-q8",
+      "status": "VALID",
+      "aggregate_output_tok_s": 52.117160070872316,
+      "aggregate_input_tok_s": 1667.7491222679141,
+      "wall_s": 19.648039121999318,
+      "ttft_p95_ms": 15818.225229049904,
+      "e2e_p95_ms": 19644.532559699383,
+      "global_vram_peak_bytes": 2401402880
+    },
+    "fpx_output_delta_percent_vs_upstream": -6.330438870898538,
+    "decision": "upstream wins simultaneous long-prefill; FPX remains resident-decode winner"
+  },
   "interference": {},
   "dynamic_service": {}
 }

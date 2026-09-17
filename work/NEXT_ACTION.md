@@ -10,6 +10,11 @@ control. Do not use the intentionally invalid 256-token smoke as a result.
 After FPX C1–C4, repeat the exact protocol with upstream Vulkan Q4_0. Populate
 `work/CONTEXT8K_BASELINES.json` before enabling profiling or changing code.
 
+Completed: Profile A and B are now populated. FPX wins resident C4 by 5.98%;
+upstream wins simultaneous long-prefill by 6.33%. Next: run Profile C with
+1/2/3 resident decoders plus one fresh 8K prefill, then profile FPX C1 versus
+C4 with timestamps separated for Q8_1 preparation and MMV.
+
 ## Checkpoint V3
 
 El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva tanto en un commit local de `campaign-v3` como en el checkpoint local ROCmFPX `2678844a0af778c7c41b2d552667e9a05d98248c`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.

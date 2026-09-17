@@ -13,6 +13,18 @@
   and promotion requires observed cache reuse rather than assuming residency.
 - Decision: **KEEP** protocol and context configuration.
 
+## V4-BASELINE-8K-01 — KEEP split baseline
+
+- Profile A resident decode: FPX S1/S2/S3/S4 =
+  113.13/184.86/225.56/265.79 tok/s; upstream Q4_0 =
+  109.48/179.50/220.63/250.79. FPX C4 delta +5.98%.
+- FPX C4 user p5/p50 = 65.11/66.52 tok/s; ITL p95 15.33 ms.
+- Profile B simultaneous uncached 8192/256 C4: FPX 48.82 output tok/s,
+  1562.17 input tok/s and TTFT p95 17.37 s; upstream 52.12, 1667.75 and
+  15.82 s respectively.
+- Decision: **KEEP FPX** as resident-decode control; **KEEP upstream** as the
+  long-prefill control. No universal winner is declared.
+
 Protocolo vigente desde 2026-09-17: prompts de 128 tokens generados por
 `safe_corpus_cycle_v1`, 64 tokens de salida fija, tokens especiales excluidos
 por `logit_bias`, caché de prompt desactivada, KV q8, `b512/ub128`, FA activado,
