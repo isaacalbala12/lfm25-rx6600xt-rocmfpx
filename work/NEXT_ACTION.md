@@ -24,8 +24,10 @@ tradeoff. Separately profile FPX C1 versus C4 with timestamps for
 
 Implementation checkpoint: ROCmFPX `e9e88220302846f82e0fb86320c728f73f2a72e6`
 adds opt-in `LLAMA_SERVER_PREFILL_CHUNK_TOKENS`; default zero preserves R0.
-The Release server builds successfully. Benchmark evidence is deliberately not
-claimed until the Profile C A/B completes.
+The Release server builds successfully. Chunk128 raises resident decode
+retention from 1.01–1.45% to 11.28–15.63% and reduces ITL p95 from more than
+2.1 seconds to 85–90 ms, at a 0.77–0.97 second TTFT cost. It remains STAGE.
+Run chunk256 next, then the no-interference C4 guardrail for the winner.
 
 ## Checkpoint V3
 

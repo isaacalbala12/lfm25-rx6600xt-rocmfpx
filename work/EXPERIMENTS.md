@@ -182,6 +182,20 @@ transporte desde el primer envío hasta la última respuesta.
 - Decision: evidence **KEEP**; current unlimited logical prompt scheduling is
   **REJECT** for interactive concurrent service. Prototype a bounded prompt
   chunk per scheduler iteration without changing the ubatch control.
+
+## EXP-V4-SCHED-CHUNK128 — STAGE
+
+- Change: opt-in `LLAMA_SERVER_PREFILL_CHUNK_TOKENS=128` caps prompt tokens
+  admitted from one slot per logical scheduler iteration. Backend ubatch stays
+  at 128; default zero preserves the old behavior.
+- With 1/2/3 resident decoders plus one uncached 8K prefill, decode retention
+  rises from 1.01/1.23/1.45% to 11.28/13.35/15.63%.
+- Resident ITL p95 falls from 2145–2189 ms to 85–90 ms. New-user TTFT rises
+  from about 4.30 seconds to 5.06–5.27 seconds.
+- All output/cache/uncached-prefill invariants pass and per-user fairness is
+  preserved. Evidence: `work/results/v4-profile-c-fpx-q8-chunk128/`.
+- Decision: **STAGE**. Compare chunk256, then check resident C4 without a fresh
+  prefill before considering promotion.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation

@@ -92,7 +92,30 @@ Decision: **KEEP evidence / REJECT current scheduling for interactive service**.
 The next candidate must cap the number of prompt tokens admitted to one logical
 scheduler iteration; changing shader geometry cannot repair this starvation.
 
+### Scheduler candidate: 128 prompt tokens per logical iteration
+
+`LLAMA_SERVER_PREFILL_CHUNK_TOKENS=128` bounds only prompt admission by the
+server scheduler. Backend `-ub 128`, weights, KV, context and kernels remain
+unchanged. The default value zero preserves the control.
+
+| Resident decoders + fresh prefill | Retention control | Retention chunk128 | ITL p95 control | ITL p95 chunk128 | TTFT chunk128 |
+|---|---:|---:|---:|---:|---:|
+| 1 + 1 | 1.01% | 11.28% | 2144.95 ms | 85.24 ms | 5061.95 ms |
+| 2 + 1 | 1.23% | 13.35% | 2184.65 ms | 87.72 ms | 5158.57 ms |
+| 3 + 1 | 1.45% | 15.63% | 2188.54 ms | 89.60 ms | 5271.76 ms |
+
+All candidate cases are VALID. Resident fairness is unchanged: every decoder
+received exactly 66 delivery events during the prefill in each case. The
+candidate increases new-user TTFT by 0.77–0.97 seconds, but changes multi-second
+resident stalls into roughly 80–90 ms inter-token intervals. This is a large
+service-quality improvement even though aggregate decode remains far below its
+no-prefill control.
+
+Evidence: `work/results/v4-profile-c-fpx-q8-chunk128/`.
+Decision: **STAGE**, pending the 256-token tradeoff and no-interference C4 check.
+
 ## Pending measurements
 
 Non-invasive C1/C4 operation profiling, separated Q8_1 preparation versus MMV,
-and the first scheduler candidate are populated by the next checkpoint.
+the 256-token scheduler candidate, and the no-interference C4 guardrail are
+populated by the next checkpoint.

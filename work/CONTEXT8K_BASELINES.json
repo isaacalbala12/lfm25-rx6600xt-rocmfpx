@@ -105,7 +105,27 @@
         "prefill_ttft_ms": 4304.588287000115
       }
     },
-    "decision": "current scheduler starves resident decode during long prefill; cap logical prompt admission per scheduler iteration"
+    "chunk128": {
+      "result_dir": "work/results/v4-profile-c-fpx-q8-chunk128",
+      "status": "VALID",
+      "one_decode_plus_one_prefill": {
+        "retention": 0.11278494717097064,
+        "decoder_itl_p95_ms": 85.23776479996741,
+        "prefill_ttft_ms": 5061.951038999723
+      },
+      "two_decode_plus_one_prefill": {
+        "retention": 0.13353283315553252,
+        "decoder_itl_p95_ms": 87.7217320503405,
+        "prefill_ttft_ms": 5158.565488000022
+      },
+      "three_decode_plus_one_prefill": {
+        "retention": 0.15634545409786973,
+        "decoder_itl_p95_ms": 89.60389269977895,
+        "prefill_ttft_ms": 5271.760454999821
+      },
+      "decision": "STAGE"
+    },
+    "decision": "unlimited logical prompt scheduling rejected for interactive service; chunk128 staged pending chunk256 and C4 guardrail"
   },
   "dynamic_service": {}
 }
