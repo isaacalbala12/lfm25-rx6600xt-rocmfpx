@@ -1,0 +1,13 @@
+workload,phase,backend,weight_type,rhs_type,tensor_family,M,N,K,contiguous,quantize_rhs,pipeline,calls_or_samples,gpu_time_us_per_call,source,notes
+128/64 mixed C1+C4,decode,ROCmFPXVulkan0,FP4_FAST,F32,ffn_gate_up,10752,1,2048,true,true,mul_mat_vec_rocmfp4_fast_q8_1_f32,3786,,work/results/v3-shape-128x64-plugin/server.log,selection-trace aggregate
+128/64 mixed C1+C4,decode,ROCmFPXVulkan0,FP4_FAST,F32,ffn_gate_up,10752,4,2048,true,true,mul_mat_vec_rocmfp4_fast_q8_1_f32,3836,,work/results/v3-shape-128x64-plugin/server.log,selection-trace aggregate
+128/64 mixed C1+C4,decode,ROCmFPXVulkan0,FP4_FAST,F32,ffn_down,2048,1,10752,true,true,mul_mat_vec_rocmfp4_fast_q8_1_f32,1893,,work/results/v3-shape-128x64-plugin/server.log,selection-trace aggregate
+128/64 mixed C1+C4,decode,ROCmFPXVulkan0,FP4_FAST,F32,ffn_down,2048,4,10752,true,true,mul_mat_vec_rocmfp4_fast_q8_1_f32,1918,,work/results/v3-shape-128x64-plugin/server.log,selection-trace aggregate
+128/64 mixed C1+C4,decode,ROCmFPXVulkan0,FP4_FAST,F32,shortconv_in,6144,1,2048,true,true,mul_mat_vec_rocmfp4_fast_q8_1_f32,2794,,work/results/v3-shape-128x64-plugin/server.log,selection-trace aggregate
+128/64 mixed C1+C4,decode,ROCmFPXVulkan0,FP4_FAST,F32,shortconv_out,2048,1,2048,true,true,mul_mat_vec_rocmfp4_fast_q8_1_f32,3802,,work/results/v3-shape-128x64-plugin/server.log,selection-trace aggregate
+2048/8,prefill,ROCmFPXVulkan0,FP4_FAST,Q8_1,ffn_gate_up,10752,128,2048,true,true,matmul_rocmfp4_fast_q8_1_m,58,417.973-530.021,work/results/v3-shape-2048-plugin/server.log,profiled ubatches after cold block
+2048/8,prefill,ROCmFPXVulkan0,FP4_FAST,Q8_1,ffn_down,2048,128,10752,true,true,matmul_rocmfp4_fast_q8_1_m,29,568.307-680.048,work/results/v3-shape-2048-plugin/server.log,profiled ubatches
+2048/8,prefill,ROCmFPXVulkan0,FP4_FAST,Q8_1,shortconv_in,6144,128,2048,true,true,matmul_rocmfp4_fast_q8_1_m,22,237.652-457.646,work/results/v3-shape-2048-plugin/server.log,profiled ubatches
+2048/8,prefill,ROCmFPXVulkan0,FP4_FAST,Q8_1,shortconv_out,2048,128,2048,true,true,matmul_rocmfp4_fast_q8_1_m,38,94.949-122.831,work/results/v3-shape-2048-plugin/server.log,profiled ubatches
+dynamic 128 varied lengths,decode,ROCmFPXVulkan0,FP4_FAST,Q8_1,recurrent active set,,,2048,true,true,dense sequential recurrent microbatch,multiple,,,work/results/v3-dynamic-dense-server.log,"logical 0-3; physical active IDs remain dense across completions/cancel/reuse"
+

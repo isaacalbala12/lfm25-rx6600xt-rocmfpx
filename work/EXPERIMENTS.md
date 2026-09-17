@@ -118,3 +118,28 @@ transporte desde el primer envío hasta la última respuesta.
 - vLLM ROCm FP16 histórico: ~45,7 tok/s C4 y ~6,94 GiB VRAM, muy por debajo de
   Vulkan. Mantener como control funcional, no como candidato de producción.
 - Decisión: **REJECT** para RX 6600 XT / C<=4.
+
+## EXP-V3-HARNESS-VALIDITY — KEEP
+
+- Se separaron `controlled_fixed_output` y `service_eos_enabled`; el segundo ya no bloquea EOS ni otros tokens especiales.
+- El orquestador devuelve 3 y conserva `status=INVALID` si falla finalización, presupuesto fijo, conteo, prompt efectivo o política de caché. Telemetría ausente ya no significa cero.
+- Se registran ejecutable y objetos mapeados, hash del modelo antes/después y sampler local reproducible u opción explícita sin sampler.
+- Ocho tests unitarios pasan. Smoke fijo y servicio: `work/results/v3-harness-*`.
+- Decisión: **KEEP**.
+
+## EXP-V3-SPARSE-PHYSICAL-SEQUENCES — STAGE
+
+- Reproductor original: C3 compacto 199,77–201,76 tok/s; `{0,1,3}` 131,18–131,91; `{0,2,3}` 131,33–132,25. C2 compacto 163,79–163,95; `{0,3}` 97,18–98,79.
+- La traza demuestra que `split_equal(sequential=true)` parte conjuntos dispersos en dos microbatches recurrentes por paso.
+- Relajar directamente el selector produjo asserts de máscara de atención y se revirtió (**REJECT** para ambas variantes).
+- Candidato: IDs físicos densos separados de IDs lógicos, lote ordenado por ID físico y migración diferida hasta el final de `post_decode()`.
+- El reproductor normal con cuatro duraciones, llegada escalonada, desconexión y reciclaje termina correctamente (`work/results/v3-dynamic-dense.json`).
+- Las mejores tandas C3 recuperan 176,98–193,93 tok/s, pero otras caen a 91,7–98,5 con batches densos y mclk alternando 541/1000 MHz.
+- Decisión: **STAGE**. Falta confirmación C4 A/B/B/A estable y logits; el camino sigue opt-in y no admite speculative decoding.
+
+## EXP-V3-PLUGIN-PROFILE — KEEP evidence
+
+- `ROCmFPXVulkan0` ejecuta `extensions/rocmfpx-vulkan/backend`, no el Vulkan integrado.
+- Decode FP4_FAST usa RHS Q8_1 y `mul_mat_vec_rocmfp4_fast_q8_1_f32` para N pequeño.
+- Prefill 2048/u128 está dominado por matmuls FP4_FAST gate/up y down; véanse `work/PLUGIN_EXECUTION_MAP.md`, `work/SHAPE_CENSUS_V3.csv` y `work/PROFILE_V3.md`.
+- Decisión: **KEEP** como evidencia; siguiente familia: GEMV FP4_FAST N=1/2/4, aún sin variante promocionable.

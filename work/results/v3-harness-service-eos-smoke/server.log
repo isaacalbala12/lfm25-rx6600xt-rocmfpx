@@ -1,0 +1,23 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+0.00.071.923 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.072.548 W srv  llama_server: -----------------
+0.00.072.552 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.072.552 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.072.553 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.072.553 W srv  llama_server: -----------------
+0.00.073.890 I srv    load_model: loading model 'work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf'
+0.02.373.468 I cmn          init: llama threadpool init, n_threads = 4
+0.02.413.133 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 1024, kv_unified = 'false'
+0.02.413.180 W srv    load_model: LLAMA_SERVER_COMPACT_SLOTS = 1
+0.02.418.032 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.02.418.066 I srv  llama_server: model loaded
+0.02.418.071 I srv  llama_server: listening on http://127.0.0.1:18132
+0.12.312.221 I slot get_availabl: id  0 | task -1 | selected lowest available slot (compact policy)
+0.12.312.252 I slot launch_slot_: id  0 | task 1 | processing task, is_child = 0
+0.12.639.668 I slot print_timing: id  0 | task 1 | prompt eval time =      61.58 ms /    32 tokens (    1.92 ms per token,   519.64 tokens per second)
+0.12.639.674 I slot print_timing: id  0 | task 1 |        eval time =     265.80 ms /    32 tokens (    8.57 ms per token,   116.63 tokens per second)
+0.12.639.675 I slot print_timing: id  0 | task 1 |       total time =     327.38 ms /    64 tokens
+0.12.639.679 I slot print_timing: id  0 | task 1 |    graphs reused =         31
+0.12.639.708 I slot      release: id  0 | task 1 | stop processing: n_tokens = 63, truncated = 0
+0.18.324.524 I srv    operator(): operator(): cleaning up before exit...

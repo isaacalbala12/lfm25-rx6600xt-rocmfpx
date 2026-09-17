@@ -1,0 +1,724 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+0.00.081.308 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.084.443 W srv  llama_server: -----------------
+0.00.084.446 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.084.446 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.084.446 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.084.446 W srv  llama_server: -----------------
+0.00.086.739 I srv    load_model: loading model 'work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf'
+0.02.085.519 I cmn          init: llama threadpool init, n_threads = 4
+0.02.085.631 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=0 used=0
+0.02.085.634 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.085.659 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.02.085.660 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.208.520 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.02.208.532 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.208.579 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.02.208.584 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.239.342 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 131072, kv_unified = 'false'
+0.02.239.443 W srv    load_model: LLAMA_SERVER_COMPACT_SLOTS = 1
+0.02.239.448 W srv    load_model: LLAMA_SERVER_BATCH_TRACE = 1
+0.02.251.389 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.02.251.460 I srv  llama_server: model loaded
+0.02.251.468 I srv  llama_server: listening on http://127.0.0.1:18142
+0.17.309.531 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.17.309.567 I slot launch_slot_: id  0 | task 1 | processing task, is_child = 0
+0.17.309.740 W srv        decode: BATCHTRACE off=0 tokens=124 prompt_tokens=124 decode_tokens=0 logical_ids=[0] physical_ids=[0] has_output=0
+0.17.309.821 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=124 head=0 n=1 used=0
+0.17.309.826 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.17.309.964 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=124 head=0 n=1 used=0
+0.17.309.967 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.17.388.752 W srv        decode: BATCHTRACE off=0 tokens=4 prompt_tokens=4 decode_tokens=0 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.388.810 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=4 head=0 n=1 used=1
+0.17.388.813 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.388.906 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=4 head=0 n=1 used=1
+0.17.388.911 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.404.557 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.404.603 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.404.606 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.404.632 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.404.633 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.415.457 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.415.486 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.415.489 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.415.505 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.415.507 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.423.961 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.423.993 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.423.996 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.424.013 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.424.014 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.432.458 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.432.478 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.432.480 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.432.493 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.432.494 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.440.947 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.440.991 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.440.994 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.441.019 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.441.020 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.449.575 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.449.613 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.449.616 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.449.639 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.449.640 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.458.167 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.458.208 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.458.211 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.458.236 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.458.237 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.467.095 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.467.134 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.467.137 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.467.161 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.467.162 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.475.703 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.475.750 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.475.753 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.475.777 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.475.780 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.484.276 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.484.314 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.484.317 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.484.337 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.484.339 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.492.826 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.492.878 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.492.881 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.492.903 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.492.904 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.501.177 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.501.199 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.501.203 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.501.219 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.501.221 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.509.663 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.509.707 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.509.709 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.509.732 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.509.734 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.518.217 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.518.254 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.518.256 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.518.277 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.518.279 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.526.736 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.526.778 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.526.781 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.526.803 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.526.805 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.535.246 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.535.282 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.535.285 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.535.306 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.535.307 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.543.762 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.543.804 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.543.807 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.543.831 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.543.833 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.552.299 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.552.327 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.552.329 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.552.345 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.552.346 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.560.878 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.560.913 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.560.915 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.560.932 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.560.933 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.569.509 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.569.548 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.569.551 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.569.574 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.569.575 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.578.062 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.578.094 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.578.097 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.578.115 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.578.116 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.586.554 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.586.593 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.586.596 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.586.617 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.586.619 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.595.115 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.595.162 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.595.165 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.595.189 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.595.191 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.603.961 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.604.015 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.604.020 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.604.058 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.604.061 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.613.483 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.613.534 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.613.539 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.613.575 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.613.579 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.622.477 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.622.515 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.622.517 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.622.539 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.622.540 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.631.011 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.631.061 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.631.064 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.631.092 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.631.093 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.639.554 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.639.600 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.639.603 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.639.626 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.639.627 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.647.932 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.647.956 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.647.958 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.647.973 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.647.975 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.656.315 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.656.354 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.656.357 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.656.381 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.656.382 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.664.690 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.664.715 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.664.717 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.664.733 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.664.735 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.673.076 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.673.109 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.673.111 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.673.132 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.673.133 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.681.490 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.681.525 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.681.528 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.681.547 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.681.548 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.689.925 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.689.959 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.689.962 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.689.983 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.689.984 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.698.282 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.698.313 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.698.315 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.698.333 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.698.335 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.706.760 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.706.796 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.706.799 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.706.821 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.706.822 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.715.146 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.715.176 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.715.179 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.715.197 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.715.199 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.723.534 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.723.571 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.723.573 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.723.594 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.723.595 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.731.955 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.731.987 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.731.990 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.732.008 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.732.010 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.740.345 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.740.383 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.740.385 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.740.407 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.740.408 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.748.732 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.748.759 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.748.762 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.748.779 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.748.781 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.757.134 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.757.170 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.757.173 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.757.194 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.757.196 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.765.480 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.765.508 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.765.510 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.765.527 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.765.529 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.773.872 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.773.907 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.773.910 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.773.932 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.773.934 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.782.250 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.782.279 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.782.281 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.782.300 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.782.301 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.790.653 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.790.692 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.790.695 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.790.719 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.790.721 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.799.040 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.799.063 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.799.065 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.799.080 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.799.082 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.807.387 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.807.424 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.807.427 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.807.448 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.807.450 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.815.772 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.815.802 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.815.804 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.815.822 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.815.824 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.824.191 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.824.229 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.824.232 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.824.256 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.824.258 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.832.568 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.832.595 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.832.597 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.832.613 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.832.614 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.840.999 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.841.036 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.841.039 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.841.061 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.841.063 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.849.357 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.849.380 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.849.382 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.849.398 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.849.400 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.857.716 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.857.753 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.857.756 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.857.779 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.857.781 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.866.110 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.866.135 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.866.137 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.866.154 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.866.156 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.874.507 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.874.544 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.874.547 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.874.570 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.874.572 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.882.892 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.882.914 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.882.916 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.882.931 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.882.933 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.891.270 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.891.316 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.891.319 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.891.342 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.891.343 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.899.750 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.899.790 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.899.793 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.899.814 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.899.816 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.908.240 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.908.286 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.908.290 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.908.314 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.908.315 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.916.771 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.916.812 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.916.815 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.916.839 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.916.840 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.925.268 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.925.313 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.925.317 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.925.340 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.925.341 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.933.654 W srv        decode: BATCHTRACE off=0 tokens=1 prompt_tokens=0 decode_tokens=1 logical_ids=[0] physical_ids=[0] has_output=1
+0.17.933.673 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.933.675 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.933.689 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=1
+0.17.933.690 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=-1
+0.17.942.026 I slot print_timing: id  0 | task 1 | prompt eval time =      94.92 ms /   128 tokens (    0.74 ms per token,  1348.52 tokens per second)
+0.17.942.031 I slot print_timing: id  0 | task 1 |        eval time =     537.50 ms /    64 tokens (    8.53 ms per token,   117.21 tokens per second)
+0.17.942.032 I slot print_timing: id  0 | task 1 |       total time =     632.42 ms /   192 tokens
+0.17.942.037 I slot print_timing: id  0 | task 1 |    graphs reused =         63
+0.17.942.090 I slot      release: id  0 | task 1 | stop processing: n_tokens = 191, truncated = 0
+0.17.949.016 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.17.949.053 I slot launch_slot_: id  0 | task 67 | processing task, is_child = 0
+0.17.949.187 W srv        decode: BATCHTRACE off=0 tokens=124 prompt_tokens=124 decode_tokens=0 logical_ids=[0] physical_ids=[0] has_output=0
+0.17.949.252 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=124 head=0 n=1 used=0
+0.17.949.257 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.17.949.386 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=124 head=0 n=1 used=0
+0.17.949.390 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.18.012.726 I slot get_availabl: id  3 | task -1 | selected slot by id (3)
+0.18.012.963 W srv  assign_compa: SEQCOMPACT event=assign logical=3 physical=1 swapped_logical=1 swapped_physical=3
+0.18.012.991 I slot launch_slot_: id  3 | task 69 | processing task, is_child = 0
+0.18.012.994 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.18.013.197 W srv  assign_compa: SEQCOMPACT event=assign logical=1 physical=2 swapped_logical=2 swapped_physical=3
+0.18.013.212 I slot launch_slot_: id  1 | task 70 | processing task, is_child = 0
+0.18.024.719 W srv        decode: BATCHTRACE off=0 tokens=252 prompt_tokens=252 decode_tokens=0 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.024.886 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=4 head=0 n=1 used=1
+0.18.024.891 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=1
+0.18.024.892 W RSTRACE event=find_begin ids=[1,2] n_seqs=2 n_seq_tokens=64 head=0 n=3 used=3
+0.18.024.893 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.18.024.894 W RSTRACE event=find_begin ids=[1,2] n_seqs=2 n_seq_tokens=56 head=1 n=2 used=3
+0.18.024.896 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.18.025.122 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=4 head=0 n=2 used=1
+0.18.025.126 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=1
+0.18.032.992 W RSTRACE event=find_begin ids=[1,2] n_seqs=2 n_seq_tokens=64 head=0 n=3 used=3
+0.18.032.998 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.18.101.786 W RSTRACE event=find_begin ids=[1,2] n_seqs=2 n_seq_tokens=56 head=1 n=2 used=3
+0.18.101.798 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.18.192.879 W srv        decode: BATCHTRACE off=0 tokens=9 prompt_tokens=8 decode_tokens=1 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.193.000 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=1 n=2 used=3
+0.18.193.010 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.193.013 W RSTRACE event=find_begin ids=[1,2] n_seqs=2 n_seq_tokens=3 head=0 n=3 used=3
+0.18.193.017 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.18.193.112 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=1 n=2 used=3
+0.18.193.117 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.205.216 W RSTRACE event=find_begin ids=[1,2] n_seqs=2 n_seq_tokens=3 head=0 n=3 used=3
+0.18.205.228 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.18.246.168 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.246.216 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=1 n=2 used=3
+0.18.246.220 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.246.275 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=1 n=3 used=3
+0.18.246.278 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.273.094 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.273.164 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.273.171 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.273.288 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.273.296 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.285.317 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.285.363 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.285.368 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.285.421 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.285.424 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.296.433 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.296.465 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.296.468 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.296.501 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.296.503 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.307.296 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.307.345 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.307.348 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.307.396 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.307.401 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.318.340 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.318.380 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.318.382 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.318.416 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.318.418 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.329.163 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.329.204 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.329.207 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.329.246 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.329.247 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.340.067 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.340.112 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.340.115 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.340.150 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.340.152 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.351.170 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.351.215 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.351.218 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.351.264 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.351.266 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.362.431 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.362.480 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.362.483 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.362.531 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.362.533 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.373.642 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.373.692 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.373.696 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.373.751 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.373.753 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.384.812 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.384.872 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.384.875 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.384.921 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.384.923 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.395.757 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.395.793 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.395.796 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.395.830 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.395.831 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.406.540 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.406.574 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.406.576 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.406.612 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.406.613 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.417.324 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.417.353 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.417.356 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.417.387 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.417.389 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.428.178 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.428.215 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.428.218 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.428.254 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.428.255 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.439.145 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.439.179 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.439.183 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.439.218 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.439.220 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.449.935 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.449.963 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.449.966 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.450.000 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.450.001 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.460.681 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.460.715 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.460.717 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.460.750 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.460.751 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.471.558 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.471.606 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.471.609 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.471.649 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.471.650 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.482.444 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.482.485 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.482.488 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.482.523 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.482.525 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.493.302 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.493.344 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.493.347 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.493.384 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.493.387 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.504.041 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.504.079 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.504.082 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.504.117 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.504.119 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.514.823 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.514.883 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.514.886 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.514.928 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.514.930 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.525.804 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.525.865 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.525.869 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.525.906 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.525.907 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.536.732 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.536.774 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.536.777 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.536.815 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.536.816 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.547.567 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.547.609 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.547.612 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.547.647 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.547.648 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.558.623 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.558.681 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.558.685 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.558.730 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.558.732 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.569.760 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.569.814 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.569.818 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.569.901 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.569.903 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.580.719 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.580.761 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.580.763 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.580.801 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.580.802 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.591.803 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.591.874 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.591.878 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.591.921 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.591.922 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.602.830 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.602.888 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.602.891 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.602.935 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.602.937 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.613.781 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.613.821 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.613.824 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.613.895 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.613.896 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.624.805 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.624.864 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.624.867 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.624.906 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.624.907 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.635.749 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.635.787 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.635.790 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.635.825 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.635.826 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.646.730 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.646.774 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.646.777 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.646.812 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.646.814 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.657.755 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.657.798 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.657.801 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.657.837 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.657.838 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.668.778 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.668.816 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.668.819 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.668.876 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.668.878 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.679.711 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.679.756 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.679.759 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.679.800 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.679.802 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.690.766 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.690.811 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.690.814 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.690.887 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.690.890 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.701.812 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.701.866 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.701.870 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.701.907 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.701.909 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.712.752 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.712.796 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.712.799 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.712.836 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.712.838 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.723.760 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.723.808 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.723.811 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.723.883 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.723.886 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.734.795 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.734.839 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.734.843 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.734.897 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.734.898 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.745.761 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.745.805 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.745.808 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.745.859 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.745.860 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.756.773 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.756.821 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.756.824 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.756.885 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.756.887 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.767.791 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.767.835 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.767.837 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.767.888 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.767.890 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.778.757 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.778.801 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.778.804 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.778.841 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.778.843 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.789.833 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.789.910 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.789.913 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.789.959 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.789.961 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.800.859 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.800.899 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.800.902 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.800.940 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.800.941 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.811.802 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.811.875 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.811.878 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.811.919 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.811.921 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.823.054 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.823.103 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.823.107 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.823.162 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.823.165 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.834.127 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.834.171 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.834.174 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.834.214 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.834.215 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.845.187 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.845.238 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.845.242 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.845.296 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.845.300 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.856.413 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.856.471 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.856.476 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.856.528 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.856.532 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.867.460 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.867.505 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.867.509 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.867.556 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.867.560 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.878.481 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.878.531 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.878.534 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.878.583 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.878.585 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.890.003 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.890.069 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.890.073 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.890.127 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.890.134 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.901.250 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.901.308 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.901.312 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.901.362 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.901.367 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.912.494 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.912.546 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.912.549 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.912.600 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.912.605 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.923.837 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.923.911 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.923.915 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.923.964 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.923.969 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.934.997 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 logical_ids=[0,1,3] physical_ids=[0,1,2] has_output=1
+0.18.935.051 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.935.054 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.935.110 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.935.112 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.945.502 I slot print_timing: id  0 | task 67 | prompt eval time =     237.80 ms /   128 tokens (    1.86 ms per token,   538.27 tokens per second)
+0.18.945.506 I slot print_timing: id  0 | task 67 |        eval time =     758.61 ms /    64 tokens (   12.04 ms per token,    83.05 tokens per second)
+0.18.945.507 I slot print_timing: id  0 | task 67 |       total time =     996.41 ms /   192 tokens
+0.18.945.508 I slot print_timing: id  0 | task 67 |    graphs reused =        124
+0.18.945.536 I slot      release: id  0 | task 67 | stop processing: n_tokens = 191, truncated = 0
+0.18.947.285 W srv  compact_acti: SEQCOMPACT event=move logical=1 physical_from=2 physical_to=0 freed_logical=0
+0.18.947.877 W srv        decode: BATCHTRACE off=0 tokens=2 prompt_tokens=0 decode_tokens=2 logical_ids=[1,3] physical_ids=[0,1] has_output=1
+0.19.011.225 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=0 n=3 used=2
+0.19.011.235 W RSTRACE event=find_end head=1 n=2 used=2 min=1 max=2 tails=[1,2] rs_z=-1
+0.19.014.385 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=0 n=2 used=2
+0.19.014.394 W RSTRACE event=find_end head=1 n=2 used=2 min=1 max=2 tails=[1,2] rs_z=-1
+0.19.087.412 I slot print_timing: id  1 | task 70 | prompt eval time =     219.46 ms /   128 tokens (    1.71 ms per token,   583.26 tokens per second)
+0.19.087.416 I slot print_timing: id  1 | task 70 |        eval time =     843.39 ms /    64 tokens (   13.39 ms per token,    74.70 tokens per second)
+0.19.087.416 I slot print_timing: id  1 | task 70 |       total time =    1062.85 ms /   192 tokens
+0.19.087.418 I slot print_timing: id  1 | task 70 |    graphs reused =        124
+0.19.087.443 I slot      release: id  1 | task 70 | stop processing: n_tokens = 191, truncated = 0
+0.19.088.886 W srv  compact_acti: SEQCOMPACT event=move logical=3 physical_from=1 physical_to=0 freed_logical=1
+0.19.089.156 I slot print_timing: id  3 | task 69 | prompt eval time =     221.70 ms /   128 tokens (    1.73 ms per token,   577.36 tokens per second)
+0.19.089.158 I slot print_timing: id  3 | task 69 |        eval time =     843.04 ms /    64 tokens (   13.38 ms per token,    74.73 tokens per second)
+0.19.089.159 I slot print_timing: id  3 | task 69 |       total time =    1064.74 ms /   192 tokens
+0.19.089.160 I slot print_timing: id  3 | task 69 |    graphs reused =        124
+0.19.089.186 I slot      release: id  3 | task 69 | stop processing: n_tokens = 191, truncated = 0
+0.24.895.569 I srv    operator(): operator(): cleaning up before exit...

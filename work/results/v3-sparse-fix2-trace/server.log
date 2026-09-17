@@ -1,0 +1,118 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+0.00.070.393 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.070.829 W srv  llama_server: -----------------
+0.00.070.831 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.070.832 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.070.832 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.070.832 W srv  llama_server: -----------------
+0.00.072.051 I srv    load_model: loading model 'work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf'
+0.01.986.787 I cmn          init: llama threadpool init, n_threads = 4
+0.01.986.889 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=0 used=0
+0.01.986.894 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.01.986.922 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.01.986.928 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.016.419 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.02.016.424 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.016.442 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.02.016.443 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.026.810 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 1024, kv_unified = 'false'
+0.02.026.880 W srv    load_model: LLAMA_SERVER_COMPACT_SLOTS = 1
+0.02.026.881 W srv    load_model: LLAMA_SERVER_BATCH_TRACE = 1
+0.02.032.313 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.02.032.359 I srv  llama_server: model loaded
+0.02.032.364 I srv  llama_server: listening on http://127.0.0.1:18138
+0.17.647.511 I slot get_availabl: id  3 | task -1 | selected slot by id (3)
+0.17.647.551 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.17.647.633 W srv        decode: BATCHTRACE off=0 tokens=12 prompt_tokens=12 decode_tokens=0 active_ids=[3] has_output=0
+0.17.647.677 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=12 head=0 n=1 used=0
+0.17.647.682 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.17.647.710 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=12 head=0 n=1 used=0
+0.17.647.713 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.17.654.586 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.17.654.603 I slot launch_slot_: id  0 | task 2 | processing task, is_child = 0
+0.17.654.604 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.17.654.612 I slot launch_slot_: id  1 | task 3 | processing task, is_child = 0
+0.17.692.473 W srv        decode: BATCHTRACE off=0 tokens=28 prompt_tokens=28 decode_tokens=0 active_ids=[0,1,3] has_output=1
+0.17.692.528 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=12 head=0 n=1 used=1
+0.17.692.532 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=1
+0.17.692.533 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=4 head=1 n=2 used=3
+0.17.692.535 W RSTRACE event=find_end head=0 n=1 used=3 min=0 max=0 tails=[0] rs_z=-1
+0.17.692.585 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=12 head=0 n=1 used=1
+0.17.692.589 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=1
+0.17.696.893 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=4 head=1 n=2 used=3
+0.17.696.900 W RSTRACE event=find_end head=0 n=1 used=3 min=0 max=0 tails=[0] rs_z=-1
+0.17.741.555 W srv        decode: BATCHTRACE off=0 tokens=9 prompt_tokens=8 decode_tokens=1 active_ids=[0,1,3] has_output=1
+0.17.741.598 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=1 used=3
+0.17.741.600 W RSTRACE event=find_end head=0 n=1 used=3 min=0 max=0 tails=[0] rs_z=-1
+0.17.741.601 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=4 head=0 n=1 used=3
+0.17.741.602 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.17.741.630 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=2 used=3
+0.17.741.631 W RSTRACE event=find_end head=0 n=1 used=3 min=0 max=0 tails=[0] rs_z=-1
+0.17.745.430 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=4 head=0 n=1 used=3
+0.17.745.442 W RSTRACE event=find_end head=1 n=2 used=3 min=1 max=2 tails=[1,2] rs_z=-1
+0.17.769.516 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 active_ids=[0,1,3] has_output=1
+0.17.769.563 W RSTRACE event=find_begin ids=[0,1,3] n_seqs=3 n_seq_tokens=1 head=1 n=2 used=3
+0.17.769.567 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.17.769.606 W RSTRACE event=find_begin ids=[0,1,3] n_seqs=3 n_seq_tokens=1 head=1 n=3 used=3
+0.17.769.611 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/sources/ROCmFPX/ggml/src/ggml.c:5592: GGML_ASSERT(q->ne[3] % mask->ne[3] == 0) failed
+⚠️ warning: The current terminal doesn't support styling.  Styled output might not appear as expected.
+[New LWP 82498]
+[New LWP 82474]
+[New LWP 82473]
+[New LWP 82472]
+[New LWP 82471]
+[New LWP 82470]
+[New LWP 82469]
+[New LWP 82468]
+[New LWP 82467]
+[New LWP 82466]
+[New LWP 82465]
+[New LWP 82464]
+[New LWP 82463]
+[New LWP 82462]
+[New LWP 82461]
+[New LWP 82460]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/x86_64-linux-gnu/libthread_db.so.1".
+__syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+⚠️ warning: 56	../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S: No such file or directory
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+56	in ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S
+#1  0x0000755a9aea039c in __internal_syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=<optimized out>, a5=0, a6=0, nr=61) at ./nptl/cancellation.c:49
+⚠️ warning: 49	./nptl/cancellation.c: No such file or directory
+#2  __syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=<optimized out>, a5=a5@entry=0, a6=a6@entry=0, nr=61) at ./nptl/cancellation.c:75
+75	in ./nptl/cancellation.c
+#3  0x0000755a9af1cacf in __GI___wait4 (pid=<optimized out>, stat_loc=<optimized out>, options=<optimized out>, usage=<optimized out>) at ../sysdeps/unix/sysv/linux/wait4.c:30
+⚠️ warning: 30	../sysdeps/unix/sysv/linux/wait4.c: No such file or directory
+#4  0x0000755aa11296db in ggml_print_backtrace () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libggml-base.so.0
+#5  0x0000755aa112984d in ggml_abort () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libggml-base.so.0
+#6  0x0000755aa1134ce6 in ggml_flash_attn_ext () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libggml-base.so.0
+#7  0x0000755aa073af48 in llm_graph_context::build_attn_mha(ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, long, float, int) const () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#8  0x0000755aa073b6fe in llm_graph_context::build_attn(llm_graph_input_attn_kv*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, ggml_tensor*, float, int) const () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#9  0x0000755aa08d1c04 in llama_model_lfm2::graph<false>::graph(llama_model const&, llm_graph_params const&) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#10 0x0000755aa08d0189 in llama_model_lfm2::build_arch_graph(llm_graph_params const&) const () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#11 0x0000755aa07cbe8f in llama_model::build_graph(llm_graph_params const&) const () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#12 0x0000755aa06fdb67 in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#13 0x0000755aa07022db in llama_context::decode(llama_batch const&) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#14 0x0000755aa0703d6e in llama_decode () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama.so.0
+#15 0x0000755aa1355ed5 in std::_Function_handler<void (), server_context_impl::decode(int&, int, llama_batch&)::{lambda()#1}>::_M_invoke(std::_Any_data const&) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama-server-impl.so
+#16 0x0000755aa130f535 in server_queue::yield_to_queue(std::function<void ()>&&) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama-server-impl.so
+#17 0x0000755aa136fed8 in server_context_impl::decode(int&, int, llama_batch&) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama-server-impl.so
+#18 0x0000755aa13718a7 in server_context_impl::update_slots() () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama-server-impl.so
+#19 0x0000755aa130ffd8 in server_queue::start_loop(long) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama-server-impl.so
+#20 0x0000755aa12c8ea0 in llama_server(common_params&, int, char**) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama-server-impl.so
+#21 0x0000755aa12cab52 in llama_server(int, char**) () from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libllama-server-impl.so
+#22 0x0000755a9ae2a601 in __libc_start_call_main (main=main@entry=0x631c2cac1050 <main>, argc=argc@entry=29, argv=argv@entry=0x7ffea380bf18) at ../sysdeps/nptl/libc_start_call_main.h:59
+⚠️ warning: 59	../sysdeps/nptl/libc_start_call_main.h: No such file or directory
+#23 0x0000755a9ae2a718 in __libc_start_main_impl (main=0x631c2cac1050 <main>, argc=29, argv=0x7ffea380bf18, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7ffea380bf08) at ../csu/libc-start.c:360
+⚠️ warning: 360	../csu/libc-start.c: No such file or directory
+#24 0x0000631c2cac1085 in _start ()
+[Inferior 1 (process 82454) detached]

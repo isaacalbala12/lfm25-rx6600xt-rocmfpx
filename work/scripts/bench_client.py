@@ -31,7 +31,7 @@ from urllib.request import Request, urlopen
 class RequestResult:
     ok: bool
     prompt_tokens: int
-    cached_prompt_tokens: int
+    cached_prompt_tokens: int | None
     output_tokens: int
     output_token_source: str
     ttft_ms: float | None
@@ -46,6 +46,8 @@ class RequestResult:
     request_started_s: float
     response_ended_s: float
     timings: dict
+    stream_done_received: bool
+    protocol_error: str | None
 
 
 def percentile(values: list[float], q: float) -> float | None:
@@ -94,6 +96,22 @@ PROMPT_CORPUS = (
 )
 
 
+def parse_slot_ids(value: str | None, concurrency: int) -> list[int] | None:
+    if value is None:
+        return None
+    try:
+        slot_ids = [int(item.strip()) for item in value.split(",") if item.strip()]
+    except ValueError as exc:
+        raise ValueError("slot IDs must be comma-separated integers") from exc
+    if len(slot_ids) != concurrency:
+        raise ValueError(f"expected {concurrency} slot IDs, got {len(slot_ids)}")
+    if any(slot_id < 0 for slot_id in slot_ids):
+        raise ValueError("slot IDs must be non-negative")
+    if len(set(slot_ids)) != len(slot_ids):
+        raise ValueError("slot IDs must be unique")
+    return slot_ids
+
+
 def load_prompt_ids(tokenizer, n: int, seed: int) -> list[int]:
     """Return exactly n ordinary-text tokens without synthesizing vocabulary IDs.
 
@@ -114,9 +132,47 @@ def load_prompt_ids(tokenizer, n: int, seed: int) -> list[int]:
     return (rotated * repeats)[:n]
 
 
-def cached_tokens_from_usage(usage: dict) -> int:
+def make_payload(
+    *,
+    request_model: str,
+    prompt_ids: list[int],
+    max_tokens: int,
+    temperature: float,
+    top_p: float,
+    sampler_seed: int,
+    cache_prompt: bool,
+    workload_kind: str,
+    special_token_ids: list[int],
+    slot_id: int | None = None,
+) -> dict:
+    """Build one request without conflating fixed-output and service EOS modes."""
+    if workload_kind not in {"controlled_fixed_output", "service_eos_enabled"}:
+        raise ValueError(f"unknown workload kind: {workload_kind}")
+    controlled = workload_kind == "controlled_fixed_output"
+    payload = {
+        "model": request_model,
+        "prompt": prompt_ids,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "top_p": top_p,
+        "stream": True,
+        "stream_options": {"include_usage": True},
+        "ignore_eos": controlled,
+        "cache_prompt": cache_prompt,
+        "seed": sampler_seed,
+    }
+    if controlled:
+        payload["logit_bias"] = [[token_id, False] for token_id in special_token_ids]
+    if slot_id is not None:
+        payload["id_slot"] = slot_id
+    return payload
+
+
+def cached_tokens_from_usage(usage: dict) -> int | None:
     details = usage.get("prompt_tokens_details") or usage.get("input_tokens_details") or {}
-    return int(details.get("cached_tokens") or 0)
+    if "cached_tokens" not in details or details["cached_tokens"] is None:
+        return None
+    return int(details["cached_tokens"])
 
 
 def post_stream(
@@ -135,16 +191,28 @@ def post_stream(
     usage: dict = {}
     timings: dict = {}
     finish_reason = None
+    done_received = False
+    protocol_error = None
     try:
         with urlopen(req, timeout=timeout) as resp:
             for line in resp:
                 if not line.startswith(b"data:"):
                     continue
                 data = line[5:].strip()
-                if not data or data == b"[DONE]":
+                if not data:
+                    continue
+                if data == b"[DONE]":
+                    done_received = True
                     continue
                 now = time.perf_counter()
                 obj = json.loads(data)
+                if obj.get("error") is not None:
+                    error_obj = obj["error"]
+                    if isinstance(error_obj, dict):
+                        protocol_error = str(error_obj.get("message") or error_obj)
+                    else:
+                        protocol_error = str(error_obj)
+                    continue
                 if obj.get("usage"):
                     usage = obj["usage"]
                 if obj.get("timings"):
@@ -175,8 +243,19 @@ def post_stream(
         if output_tokens <= 0:
             output_source = "missing"
         prompt_tokens = int(usage.get("prompt_tokens") or timings.get("prompt_n") or len(payload.get("prompt", [])))
+        completion_ok = output_tokens > 0 and protocol_error is None and done_received and finish_reason is not None
+        if protocol_error is not None:
+            error = f"HTTP 200 stream contained error: {protocol_error}"
+        elif not done_received:
+            error = "stream ended before [DONE]"
+        elif finish_reason is None:
+            error = "stream ended without finish_reason"
+        elif output_tokens <= 0:
+            error = "response contained no countable output tokens"
+        else:
+            error = None
         return RequestResult(
-            ok=output_tokens > 0,
+            ok=completion_ok,
             prompt_tokens=prompt_tokens,
             cached_prompt_tokens=cached_tokens_from_usage(usage),
             output_tokens=output_tokens,
@@ -186,19 +265,21 @@ def post_stream(
             inter_chunk_ms=[1000.0 * (b - a) for a, b in zip(events, events[1:])],
             stream_chunks_with_content=len(events),
             finish_reason=finish_reason,
-            error=None if output_tokens > 0 else "response contained no countable output tokens",
+            error=error,
             text_chars=len(text),
             text_sha256=hashlib.sha256(text.encode()).hexdigest(),
             text=text if record_text else None,
             request_started_s=started,
             response_ended_s=ended,
             timings=timings,
+            stream_done_received=done_received,
+            protocol_error=protocol_error,
         )
     except (HTTPError, URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
         ended = time.perf_counter()
         return RequestResult(
-            False, 0, 0, 0, "missing", None, None, [], 0, None, repr(exc), 0,
-            hashlib.sha256(b"").hexdigest(), None, started, ended, {},
+            False, 0, None, 0, "missing", None, None, [], 0, None, repr(exc), 0,
+            hashlib.sha256(b"").hexdigest(), None, started, ended, {}, False, repr(exc),
         )
 
 
@@ -217,14 +298,18 @@ def summarize(results: list[RequestResult]) -> dict:
     per_request = [r.output_tokens / (r.e2e_ms / 1000.0) for r in ok if r.e2e_ms and r.e2e_ms > 0]
     total_out = sum(r.output_tokens for r in ok)
     total_in = sum(r.prompt_tokens for r in ok)
-    total_cached = sum(r.cached_prompt_tokens for r in ok)
+    cache_observations = [r.cached_prompt_tokens for r in ok if r.cached_prompt_tokens is not None]
+    cache_telemetry_complete = len(cache_observations) == len(ok)
+    total_cached = sum(cache_observations) if cache_telemetry_complete else None
     return {
         "requests": len(results),
         "successful": len(ok),
         "failed": len(results) - len(ok),
         "prompt_tokens_total": total_in,
         "cached_prompt_tokens_total": total_cached,
-        "computed_prompt_tokens_total": total_in - total_cached,
+        "cached_prompt_tokens_observations": len(cache_observations),
+        "cache_telemetry_complete": cache_telemetry_complete,
+        "computed_prompt_tokens_total": total_in - total_cached if total_cached is not None else None,
         "output_tokens_total": total_out,
         "wall_seconds_first_send_to_last_completion": wall_s,
         "aggregate_output_tok_s": total_out / wall_s if wall_s > 0 else None,
@@ -250,6 +335,39 @@ def serializable_request(result: RequestResult, batch_start: float) -> dict:
     return data
 
 
+def evaluate_validity(
+    results: list[RequestResult],
+    *,
+    expected_prompt_tokens: int,
+    max_tokens: int,
+    workload_kind: str,
+    cache_prompt: str,
+) -> dict:
+    fixed = workload_kind == "controlled_fixed_output"
+    checks = {
+        "all_requests_succeeded": bool(results) and all(r.ok for r in results),
+        "all_streams_complete": bool(results) and all(r.stream_done_received and r.finish_reason is not None for r in results),
+        "all_effective_prompts_match_target": bool(results) and all(r.prompt_tokens == expected_prompt_tokens for r in results),
+        "all_outputs_match_budget": (bool(results) and all(r.output_tokens == max_tokens for r in results)) if fixed else None,
+        "usage_token_counts_present": bool(results) and all(r.output_token_source == "usage.completion_tokens" for r in results),
+        "cache_telemetry_available": bool(results) and all(r.cached_prompt_tokens is not None for r in results),
+    }
+    if cache_prompt == "off":
+        checks["cache_policy_satisfied"] = checks["cache_telemetry_available"] and all(
+            r.cached_prompt_tokens == 0 for r in results
+        )
+    else:
+        checks["cache_policy_satisfied"] = checks["cache_telemetry_available"]
+
+    required = [value for value in checks.values() if value is not None]
+    valid = all(required)
+    return {
+        "status": "VALID" if valid else "INVALID",
+        **checks,
+        "invalid_reasons": [name for name, value in checks.items() if value is False],
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--base-url", default="http://127.0.0.1:8000")
@@ -267,9 +385,14 @@ def main() -> int:
     ap.add_argument("--top-p", type=float, default=1.0)
     ap.add_argument("--sampler-seed", type=int, default=0)
     ap.add_argument("--prompt-mode", choices=("varied", "identical"), default="varied")
-    ap.add_argument("--slot-policy", choices=("auto", "compact"), default="auto")
+    ap.add_argument("--slot-policy", choices=("auto", "compact", "forced"), default="auto")
+    ap.add_argument("--slot-ids", help="Comma-separated logical slot IDs; required with --slot-policy forced")
     ap.add_argument("--cache-prompt", choices=("on", "off"), default="off")
-    ap.add_argument("--ignore-eos", action=argparse.BooleanOptionalAction, default=True)
+    ap.add_argument(
+        "--workload-kind",
+        choices=("controlled_fixed_output", "service_eos_enabled"),
+        default="controlled_fixed_output",
+    )
     ap.add_argument("--arrival-stagger-ms", type=float, default=0.0)
     ap.add_argument("--record-text", action="store_true")
     ap.add_argument("--label", default="run")
@@ -279,6 +402,14 @@ def main() -> int:
         ap.error("concurrency/repetitions must be positive and warmup non-negative")
     if args.arrival_stagger_ms < 0:
         ap.error("arrival stagger must be non-negative")
+    try:
+        forced_slot_ids = parse_slot_ids(args.slot_ids, args.concurrency)
+    except ValueError as exc:
+        ap.error(str(exc))
+    if args.slot_policy == "forced" and forced_slot_ids is None:
+        ap.error("--slot-ids is required with --slot-policy forced")
+    if args.slot_policy != "forced" and forced_slot_ids is not None:
+        ap.error("--slot-ids requires --slot-policy forced")
 
     endpoint = args.base_url.rstrip("/") + "/v1/completions"
     tokenizer = load_tokenizer(args.tokenizer or args.model)
@@ -299,35 +430,32 @@ def main() -> int:
         "seed": args.seed,
         "prompt_mode": args.prompt_mode,
         "slot_policy": args.slot_policy,
+        "slot_ids": forced_slot_ids,
         "cache_prompt": args.cache_prompt,
-        "ignore_eos": args.ignore_eos,
+        "workload_kind": args.workload_kind,
         "arrival_stagger_ms": args.arrival_stagger_ms,
     }
     print(json.dumps(config, ensure_ascii=False), flush=True)
 
-    def make_payload(i: int, slot_id: int | None = None) -> dict:
+    def payload_for(i: int, slot_id: int | None = None) -> dict:
         prompt_seed = args.seed if args.prompt_mode == "identical" else args.seed + i * 7919
         ids = load_prompt_ids(tokenizer, args.prompt_tokens, prompt_seed)
-        payload = {
-            "model": request_model,
-            "prompt": ids,
-            "max_tokens": args.max_tokens,
-            "temperature": args.temperature,
-            "top_p": args.top_p,
-            "stream": True,
-            "stream_options": {"include_usage": True},
-            "ignore_eos": args.ignore_eos,
-            "logit_bias": [[token_id, False] for token_id in special_token_ids],
-            "cache_prompt": args.cache_prompt == "on",
-            "seed": args.sampler_seed,
-        }
-        if slot_id is not None:
-            payload["id_slot"] = slot_id
-        return payload
+        return make_payload(
+            request_model=request_model,
+            prompt_ids=ids,
+            max_tokens=args.max_tokens,
+            temperature=args.temperature,
+            top_p=args.top_p,
+            sampler_seed=args.sampler_seed,
+            cache_prompt=args.cache_prompt == "on",
+            workload_kind=args.workload_kind,
+            special_token_ids=special_token_ids,
+            slot_id=slot_id,
+        )
 
     for i in range(args.warmup):
-        warm_slot = 0 if args.slot_policy == "compact" else None
-        warm = post_stream(endpoint, make_payload(i, warm_slot), args.timeout, count_text_tokens, False)
+        warm_slot = (forced_slot_ids or [0])[0] if args.slot_policy in {"compact", "forced"} else None
+        warm = post_stream(endpoint, payload_for(i, warm_slot), args.timeout, count_text_tokens, False)
         if not warm.ok:
             print(f"warmup failed: {warm.error}", file=sys.stderr, flush=True)
 
@@ -338,9 +466,10 @@ def main() -> int:
         for rep in range(args.repetitions):
             barrier = Barrier(args.concurrency + 1)
             payloads = [
-                make_payload(
+                payload_for(
                     args.warmup + rep * args.concurrency + i,
-                    i if args.slot_policy == "compact" else None,
+                    (forced_slot_ids[i] if args.slot_policy == "forced" else i)
+                    if args.slot_policy in {"compact", "forced"} else None,
                 )
                 for i in range(args.concurrency)
             ]
@@ -367,7 +496,7 @@ def main() -> int:
         "schema_version": 2,
         "metric_definition": "sum(successful completion_tokens) / (last response end - first request start)",
         "metric_scope": "HTTP service throughput including prefill, queueing, decode, streaming and transport",
-        "workload_kind": "controlled_fixed_output" if args.ignore_eos else "service_eos_enabled",
+        "workload_kind": args.workload_kind,
         "label": args.label,
         "base_url": args.base_url,
         "model": args.model,
@@ -383,29 +512,33 @@ def main() -> int:
             "name": "safe_corpus_cycle_v1",
             "corpus_sha256": hashlib.sha256(PROMPT_CORPUS.encode()).hexdigest(),
             "special_token_ids_excluded": True,
-            "output_special_token_ids_biased_out": special_token_ids,
+            "output_special_token_ids_biased_out": (
+                special_token_ids if args.workload_kind == "controlled_fixed_output" else []
+            ),
         },
         "sampling": {"temperature": args.temperature, "top_p": args.top_p, "seed": args.sampler_seed},
         "prompt_mode": args.prompt_mode,
         "slot_policy": args.slot_policy,
+        "slot_ids": forced_slot_ids,
         "cache_prompt": args.cache_prompt,
-        "ignore_eos": args.ignore_eos,
+        "ignore_eos": args.workload_kind == "controlled_fixed_output",
         "arrival_stagger_ms": args.arrival_stagger_ms,
-        "validity": {
-            "all_requests_succeeded": aggregate["failed"] == 0,
-            "no_cache_reuse_observed": aggregate["cached_prompt_tokens_total"] == 0,
-            "all_effective_prompts_match_target": all(r.prompt_tokens == args.prompt_tokens for r in all_results if r.ok),
-            "all_outputs_match_budget": all(r.output_tokens == args.max_tokens for r in all_results if r.ok) if args.ignore_eos else None,
-            "usage_token_counts_present": all(r.output_token_source == "usage.completion_tokens" for r in all_results if r.ok),
-        },
+        "validity": evaluate_validity(
+            all_results,
+            expected_prompt_tokens=args.prompt_tokens,
+            max_tokens=args.max_tokens,
+            workload_kind=args.workload_kind,
+            cache_prompt=args.cache_prompt,
+        ),
         "repetitions_detail": rep_summaries,
         "aggregate": aggregate,
         "raw": raw_results,
     }
+    record["status"] = record["validity"]["status"]
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n")
     print(f"wrote {args.output}")
-    return 0 if record["validity"]["all_requests_succeeded"] else 1
+    return 0 if record["validity"]["status"] == "VALID" else 3
 
 
 if __name__ == "__main__":

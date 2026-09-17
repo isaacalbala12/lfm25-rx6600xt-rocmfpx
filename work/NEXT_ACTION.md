@@ -1,59 +1,36 @@
 # Próxima acción
 
-## Checkpoint actual
+## Checkpoint V3
 
-El ganador contemporáneo para 128/64 y 512/128 es ROCmFPX
-`ROCmFPXVulkan0` con FP4_FAST, KV q8, `b512/ub128`, `-np 4 -cb` y
-`LLAMA_SERVER_COMPACT_SLOTS=1`. En 200 peticiones 128/64 C4 da 233,99 tok/s
-frente a 226,65 upstream, sin fallos, y usa ~153 MiB menos de VRAM. El IC95%
-emparejado del delta es +2,77 a +3,84%.
+El HEAD principal sigue en `6e99b2148030a08458e672bcc5eccdedfb63225e`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. No se creó commit ni se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.
 
-Para 2048/256 y 7680/512 gana llama.cpp upstream Q4_0. Con b4096/u128,
-2048/256 C4 da 101,66 frente a 99,98 tok/s; la pantalla 7680/512 da 92,40
-frente a 88,58. No declarar un único ganador sin especificar la forma de carga.
+El arnés V3 está corregido y sus ocho tests pasan. El mapa de ejecución prueba que `ROCmFPXVulkan0` usa el backend Vulkan propio del plugin, no `ggml/src/ggml-vulkan`. El perfil 2048/u128 y el censo actual están en `work/PROFILE_V3.md` y `work/SHAPE_CENSUS_V3.csv`.
 
-## Siguiente experimento de mayor valor
+La baseline exacta del modelo coherente es aproximadamente 103,7 tok/s C1 y 228,0 C4. No sustituirla por 303,3 ni por los 230,5 históricos.
 
-La criba contemporánea de formatos ya está cerrada: FP4_FAST conserva el mejor
-C4; Q2 gana C1 bruto pero queda rechazado por calidad. El siguiente paso es una
-evaluación formal de calidad/perplexity de FP4_FAST frente al checkpoint BF16 y
-Q4_0/Q4_K_M, con un corpus reservado y hashes de cada artefacto.
+## Candidato en STAGE
 
-Después, perfilar trace-only el prefill largo 2048/256 de ambos finalistas para
-localizar el cruce (matmul/dequant/attention/SSM) y decidir si algún kernel del
-plugin puede corregirse o portarse. Los perfiles 512/128, 2048/256 y la
-pantalla 7680/512 ya están ejecutados. No usar contadores PMC.
+`LLAMA_SERVER_COMPACT_SLOTS=1` activa IDs físicos densos sin cambiar los IDs lógicos de la API. Corrige el split recurrente demostrado y pasa el reproductor dinámico con finalizaciones distintas, desconexión y reciclaje. No está promovido a producción: falta una serie C4 emparejada estable, comparación de logits y evaluación formal de calidad.
 
-## Bloqueos y límites
+Siguiente ejecución: A/B/B/A del runtime anterior frente al candidato en carga dinámica C4, con muestreo de clocks de mayor frecuencia. Resamplear por tanda, no por solicitudes hermanas. Si la ganancia sobrevive, ejecutar comparación de logits y después un microbenchmark del selector real para FP4_FAST GEMV N=1/2/4 con buffers calientes y rotación de matrices.
 
-- No cambiar perfiles de energía, drivers, firmware ni servicios sin permiso.
-- El perfil COMPUTE podría aclarar el cliff u512, pero no está autorizado y no
-  es necesario para la configuración ganadora.
-- La calidad FP4_FAST solo tiene smoke funcional; falta una evaluación formal
-  contra BF16/perplexity antes de un despliegue que exija equivalencia de calidad.
-- No publicar ni hacer push. El árbol ROCmFPX contiene cambios locales que deben
-  revisarse y separarse antes de un commit.
-
-## Comando de producción actual
+## Reproducción
 
 ```bash
+work/tests/run_harness_tests.sh
+
 source /home/isaac/vllm-challenge/env.sh
 unset HSA_OVERRIDE_GFX_VERSION
 export LD_PRELOAD=/home/isaac/vllm-challenge/toolchain/lib/libstdc++.so.6:/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1
-export ROCMFPX_PLUGIN_PATH=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-cm1/bin/rocmfpx-vulkan-plugin.so
+export ROCMFPX_PLUGIN_PATH="$PWD/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so"
 export LLAMA_SERVER_COMPACT_SLOTS=1
-/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-cm1/bin/llama-server \
-  -m /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf \
-  -dev ROCmFPXVulkan0 -ngl 99 -fa on -np 4 -cb -c 4096 -b 512 -ub 128 \
-  -ctk q8_0 -ctv q8_0 --no-cache-prompt --cache-reuse 0
+GPU_RESERVATION_CONFIRMED=1 PROMPT_TOKENS=128 MAX_TOKENS=64 \
+  CONCURRENCIES="1 2 3 4" REPETITIONS=3 WARMUP=1 \
+  work/scripts/benchmark_llama_backend.sh \
+  --server work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/llama-server \
+  --model work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf \
+  --output work/results/reproduction-v3 -- \
+  -b 4096 -ub 128 -ctk q8_0 -ctv q8_0
 ```
 
-Commit: no creado. El cambio de scheduler se aisló correctamente, pero Git
-rechazó el commit porque el repositorio no tiene `user.name`/`user.email`.
-No se inventó ni cambió la identidad del usuario; tampoco quedó nada staged.
-Cuando exista identidad, el commit aislado se obtiene con:
-
-```bash
-git -C work/sources/ROCmFPX add -- tools/server/server-context.cpp
-git -C work/sources/ROCmFPX commit -m "server: add opt-in compact slot scheduling"
-```
+No cambiar perfiles de energía, clocks, drivers ni firmware. Mantener una sola carga GPU y no hacer push hasta revisar el patch regenerado.

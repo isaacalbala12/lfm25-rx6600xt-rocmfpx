@@ -33,9 +33,11 @@ upstream llama.cpp Vulkan wins 2048/256 and the exploratory 7680/512 screen.
 - `ubatch=512` triggers a server-only performance cliff correlated with the
   RX 6600 XT memory clock alternating between 541 and 1000 MHz. `ubatch=128`
   avoids it without changing system power settings.
-- Sparse active slot IDs such as `{0, 1, 3}` can reduce Vulkan C=3 throughput
-  from roughly 208 to 117 tok/s. The opt-in compact scheduler in the included
-  ROCmFPX patch selects the lowest available slots and removes this cliff.
+- Sparse active slot IDs such as `{0, 1, 3}` reduce the contemporary coherent
+  model from about 200–202 to 131–132 tok/s. V3 proves that the recurrent
+  allocator splits the sparse set every step. The staged opt-in runtime now
+  uses dense internal sequence IDs while preserving logical API slot IDs; it
+  passes dynamic completion/cancellation/reuse, but awaits paired C4 data.
 - ROCmFPX Q2 is fast and memory-efficient but failed basic output-quality
   checks, so it is not a production candidate.
 - ROCmFPX HIP kernels beat equivalent upstream HIP kernels in trace-only
@@ -47,7 +49,11 @@ upstream llama.cpp Vulkan wins 2048/256 and the exploratory 7680/512 screen.
 - `work/BASELINES.json`: machine-readable current baselines.
 - `work/EXPERIMENTS.md`: hypotheses, evidence and KEEP/STAGE/REJECT decisions.
 - `work/HARDWARE_MANIFEST.json`: hardware, source revisions and artifact hashes.
-- `work/SHAPE_CENSUS.csv`: profiled Vulkan operation shapes.
+- `work/SHAPE_CENSUS.csv`: earlier upstream-oriented shape census.
+- `work/SHAPE_CENSUS_V3.csv`: measured plugin pipelines and current shapes.
+- `work/PLUGIN_EXECUTION_MAP.md`: proven plugin/backend dispatch map.
+- `work/PROFILE_V3.md`: current profile and sparse-slot runtime decision.
+- `work/CAMPAIGN_V3_RESULT.md`: first-campaign result in the requested handoff format.
 - `work/scripts/`: reproducible HTTP benchmark and analysis scripts.
 - `work/results/`: lightweight raw benchmark evidence.
 - `patches/ROCmFPX-gfx1032.patch`: local ROCmFPX changes against revision
@@ -69,4 +75,3 @@ the FP4_FAST model with the recorded SHA-256. Then run the command recorded in
 
 No system driver, firmware, GPU power profile or clock setting was modified by
 this campaign. Hardware profiling after the earlier reset was trace-only.
-
