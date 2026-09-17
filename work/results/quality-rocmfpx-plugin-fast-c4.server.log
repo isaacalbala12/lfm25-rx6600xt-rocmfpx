@@ -1,0 +1,36 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-cm1/bin/rocmfpx-vulkan-plugin.so
+0.00.071.385 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.071.532 W srv  llama_server: -----------------
+0.00.071.535 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.071.535 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.071.536 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.071.536 W srv  llama_server: -----------------
+0.00.072.769 I srv    load_model: loading model '/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf'
+0.01.855.676 I cmn          init: llama threadpool init, n_threads = 4
+0.01.895.402 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 1024, kv_unified = 'false'
+0.01.901.553 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.01.901.597 I srv  llama_server: model loaded
+0.01.901.603 I srv  llama_server: listening on http://127.0.0.1:18026
+0.02.123.520 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.02.123.636 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.02.719.253 I slot print_timing: id  3 | task 0 | prompt eval time =      71.25 ms /    24 tokens (    2.97 ms per token,   336.83 tokens per second)
+0.02.719.257 I slot print_timing: id  3 | task 0 |        eval time =     524.32 ms /    64 tokens (    8.32 ms per token,   120.16 tokens per second)
+0.02.719.259 I slot print_timing: id  3 | task 0 |       total time =     595.57 ms /    88 tokens
+0.02.719.263 I slot print_timing: id  3 | task 0 |    graphs reused =         63
+0.02.719.298 I slot      release: id  3 | task 0 | stop processing: n_tokens = 87, truncated = 0
+0.02.722.094 I slot get_availabl: id  3 | task -1 | selected slot by LCP similarity, f_sim_best = 0.211 (> 0.100 thold), f_keep = 0.046
+0.02.725.502 I slot launch_slot_: id  3 | task 66 | processing task, is_child = 0
+0.03.119.984 I slot print_timing: id  3 | task 66 | prompt eval time =      47.62 ms /    19 tokens (    2.51 ms per token,   398.98 tokens per second)
+0.03.119.989 I slot print_timing: id  3 | task 66 |        eval time =     346.83 ms /    43 tokens (    8.26 ms per token,   121.10 tokens per second)
+0.03.119.990 I slot print_timing: id  3 | task 66 |       total time =     394.45 ms /    62 tokens
+0.03.119.991 I slot print_timing: id  3 | task 66 |    graphs reused =        104
+0.03.120.012 I slot      release: id  3 | task 66 | stop processing: n_tokens = 61, truncated = 0
+0.03.122.847 I slot get_availabl: id  3 | task -1 | selected slot by LCP similarity, f_sim_best = 0.167 (> 0.100 thold), f_keep = 0.066
+0.03.126.054 I slot launch_slot_: id  3 | task 111 | processing task, is_child = 0
+0.03.634.215 I slot print_timing: id  3 | task 111 | prompt eval time =      48.16 ms /    24 tokens (    2.01 ms per token,   498.38 tokens per second)
+0.03.634.220 I slot print_timing: id  3 | task 111 |        eval time =     459.98 ms /    56 tokens (    8.36 ms per token,   119.57 tokens per second)
+0.03.634.221 I slot print_timing: id  3 | task 111 |       total time =     508.13 ms /    80 tokens
+0.03.634.223 I slot print_timing: id  3 | task 111 |    graphs reused =        158
+0.03.634.243 I slot      release: id  3 | task 111 | stop processing: n_tokens = 79, truncated = 0
+0.03.659.857 I srv    operator(): operator(): cleaning up before exit...

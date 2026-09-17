@@ -1,0 +1,17 @@
+backend,phase,op,weight_type,m,n,k,count,mean_us,total_us,ubatch,active_sequence_ids,source,status
+upstream-vulkan,prefill,"MUL_MAT fused pair",q4_0,10752,124,2048,29,861.299,24977.7,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,MUL_MAT,q4_0,2048,124,10752,29,592.946,17195.5,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,MUL_MAT,q4_0,6144,124,2048,21,239.205,5023.32,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,ADD,fused,0,124,0,57,14.881,848.24,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,GLU,fused,0,124,0,17,75.745,1287.68,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,"GLU SCALE",fused,0,124,0,12,57.036,684.44,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,RMS_NORM_MUL,fused,2048,124,0,45,18.745,843.56,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,"graph total",mixed,0,124,0,1,65012.3,65012.3,128,3,work/results/profiling/upstream-vulkan-server-u128-20260917/server.log,good
+upstream-vulkan,prefill,"MUL_MAT fused pair",q4_0,10752,124,2048,29,2169.21,62907.1,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed
+upstream-vulkan,prefill,MUL_MAT,q4_0,2048,124,10752,29,1453.58,42153.7,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed
+upstream-vulkan,prefill,MUL_MAT,q4_0,6144,124,2048,21,778.226,16342.8,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed
+upstream-vulkan,prefill,ADD,fused,0,124,0,57,395.366,22535.9,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed
+upstream-vulkan,prefill,GLU,fused,0,124,0,17,1707.63,29029.7,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed
+upstream-vulkan,prefill,"GLU SCALE",fused,0,124,0,12,1675.1,20101.2,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed
+upstream-vulkan,prefill,RMS_NORM_MUL,fused,2048,124,0,45,331.794,14930.8,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed
+upstream-vulkan,prefill,"graph total",mixed,0,124,0,1,271910,271910,512,3,work/results/profiling/upstream-vulkan-server-u512-20260917/server.log,regressed

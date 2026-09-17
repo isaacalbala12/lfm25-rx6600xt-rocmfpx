@@ -1,0 +1,155 @@
+{
+  "schema_version": 2,
+  "status": "contemporary_checkpoint",
+  "primary_metric": "sum successful completion tokens / (last response completion - first request send)",
+  "protocol": {
+    "prompt_tokens": 128,
+    "output_tokens": 64,
+    "cache_prompt": false,
+    "ignore_eos": true,
+    "output_special_tokens_biased_out": true,
+    "prompt_generator": "safe_corpus_cycle_v1",
+    "continuous_batching": true,
+    "parallel_slots": 4,
+    "batch": 512,
+    "ubatch": 128,
+    "kv_k": "q8_0",
+    "kv_v": "q8_0",
+    "flash_attention": true
+  },
+  "current": [
+    {
+      "id": "REF-UPSTREAM-COMPACT-R10",
+      "engine": "llama.cpp",
+      "backend": "Vulkan0",
+      "quant": "Q4_0",
+      "model_sha256": "a71d1b80e0f5914e899d366a0ef82c8f1ccecd40f1f4dc1329e1c8eeb7357fd7",
+      "slot_policy": "client-forced compact, equivalent IDs 0..C-1",
+      "result_dir": "work/results/final-v2-upstream-q40-client-compact-r10",
+      "repetitions_per_concurrency": 10,
+      "results": {
+        "c1": {"aggregate_output_tok_s": 100.8403, "median_run_tok_s": 101.2765, "ttft_p50_ms": 86.3300, "ttft_p95_ms": 98.1363},
+        "c2": {"aggregate_output_tok_s": 162.9723, "median_run_tok_s": 163.7381, "ttft_p50_ms": 164.9393, "ttft_p95_ms": 188.1534},
+        "c3": {"aggregate_output_tok_s": 205.4242, "median_run_tok_s": 206.7248, "ttft_p50_ms": 234.8922, "ttft_p95_ms": 250.6661},
+        "c4": {"aggregate_output_tok_s": 227.8259, "median_run_tok_s": 227.5076, "per_user_p50_tok_s": 56.9224, "ttft_p50_ms": 300.7420, "ttft_p95_ms": 307.9251, "e2e_p95_ms": 1139.5987, "vram_peak_bytes": 2150961152}
+      },
+      "validity": {"requests": 100, "failures": 0, "cache_reuse_tokens": 0}
+    },
+    {
+      "id": "CANDIDATE-ROCMFPX-PLUGIN-COMPACT-R10",
+      "engine": "ROCmFPX llama-server",
+      "backend": "ROCmFPXVulkan0 plugin",
+      "quant": "ROCmFP4_FAST",
+      "model_sha256": "d56f602eb9bcad2cafbe2a52cef2fa14ba09e6290679a2aee164db22815f0933",
+      "slot_policy": "LLAMA_SERVER_COMPACT_SLOTS=1",
+      "result_dir": "work/results/final-v2-rocmfpx-plugin-fast-compact-r10",
+      "repetitions_per_concurrency": 10,
+      "results": {
+        "c1": {"aggregate_output_tok_s": 108.0100, "median_run_tok_s": 108.2944, "ttft_p50_ms": 74.5375, "ttft_p95_ms": 76.2399},
+        "c2": {"aggregate_output_tok_s": 169.1177, "median_run_tok_s": 170.0886, "ttft_p50_ms": 153.1520, "ttft_p95_ms": 178.6655},
+        "c3": {"aggregate_output_tok_s": 207.7066, "median_run_tok_s": 208.4198, "ttft_p50_ms": 253.8164, "ttft_p95_ms": 263.7274},
+        "c4": {"aggregate_output_tok_s": 234.1609, "median_run_tok_s": 235.3449, "per_user_p50_tok_s": 58.9427, "ttft_p50_ms": 330.8554, "ttft_p95_ms": 338.4814, "e2e_p95_ms": 1101.6016, "vram_peak_bytes": 1990815744}
+      },
+      "paired_delta_percent_vs_upstream": {"c1": 7.1856, "c2": 3.7666, "c3": 1.2569, "c4": 2.8927},
+      "validity": {"requests": 100, "failures": 0, "cache_reuse_tokens": 0}
+    },
+    {
+      "id": "P95-UPSTREAM-C4-R50",
+      "result_dir": "work/results/p95-v2-upstream-q40-client-compact-c4-r50",
+      "requests": 200,
+      "failures": 0,
+      "aggregate_output_tok_s": 226.6547,
+      "ttft_p95_ms": 308.9552,
+      "e2e_p95_ms": 1140.0709
+    },
+    {
+      "id": "P95-ROCMFPX-C4-R50",
+      "result_dir": "work/results/p95-v2-rocmfpx-plugin-fast-compact-c4-r50",
+      "requests": 200,
+      "failures": 0,
+      "aggregate_output_tok_s": 233.9857,
+      "ttft_p95_ms": 351.0424,
+      "e2e_p95_ms": 1112.6094,
+      "paired_delta_percent_vs_upstream": 3.2993,
+      "paired_bootstrap_95ci_percent": [2.7726, 3.8436]
+    },
+    {
+      "id": "STAGGER100-C4",
+      "arrival_stagger_ms": 100,
+      "repetitions": 10,
+      "upstream": {"aggregate_output_tok_s": 209.9063, "ttft_p95_ms": 192.5277, "e2e_p95_ms": 1156.5523, "failures": 0},
+      "rocmfpx": {"aggregate_output_tok_s": 223.6922, "ttft_p95_ms": 115.8276, "e2e_p95_ms": 1066.7179, "failures": 0}
+    }
+  ],
+  "quant_screens_v2": [
+    {"quant": "ROCmFP4_FAST", "engine": "ROCmFPX plugin", "c1_tok_s": 108.0100, "c4_tok_s": 234.1609, "c4_vram_peak_bytes": 1990815744, "status": "KEEP finalist", "result_dir": "work/results/final-v2-rocmfpx-plugin-fast-compact-r10"},
+    {"quant": "ROCmFP4_FAST_COHERENT", "engine": "ROCmFPX plugin", "c1_tok_s": 103.739, "c4_tok_s": 227.973, "c4_vram_peak_bytes": 2056019968, "status": "REJECT performance", "result_dir": "work/results/quant-screen-v2-rocmfpx-plugin-fp4-fast-coherent-compact"},
+    {"quant": "ROCmFPX Q2", "engine": "ROCmFPX plugin", "c1_tok_s": 122.898, "c4_tok_s": 220.622, "c4_vram_peak_bytes": 1523359744, "status": "REJECT quality", "quality_result": "work/results/quality-q2.json", "result_dir": "work/results/quant-screen-v2-rocmfpx-plugin-q2-compact"},
+    {"quant": "ROCmFP4", "engine": "ROCmFPX plugin", "c1_tok_s": 92.687, "c4_tok_s": 184.521, "c4_vram_peak_bytes": 2327834624, "status": "REJECT performance and high variance", "result_dir": "work/results/quant-screen-v2-rocmfpx-plugin-fp4-compact"},
+    {"quant": "ROCmFPX Q3", "engine": "ROCmFPX plugin", "c1_tok_s": 86.270, "c4_tok_s": 163.244, "c4_vram_peak_bytes": 2070319104, "status": "REJECT performance", "result_dir": "work/results/quant-screen-v2-rocmfpx-plugin-q3-compact"},
+    {"quant": "Q4_0", "engine": "llama.cpp Vulkan", "c1_tok_s": 100.8403, "c4_tok_s": 227.8259, "c4_vram_peak_bytes": 2150961152, "status": "KEEP baseline", "result_dir": "work/results/final-v2-upstream-q40-client-compact-r10"},
+    {"quant": "Q4_K_M", "engine": "llama.cpp Vulkan", "c1_tok_s": 94.5196, "c4_tok_s": 213.0338, "c4_vram_peak_bytes": 2231816192, "status": "KEEP quality-oriented baseline", "result_dir": "work/results/quant-screen-v2-upstream-q4km-compact"}
+  ],
+  "workload_profiles_v2": [
+    {
+      "shape": "128/64",
+      "evidence": "10 paired runs plus 200-request C4 p95 run",
+      "upstream_c1_tok_s": 100.8403,
+      "rocmfpx_c1_tok_s": 108.0100,
+      "upstream_c4_tok_s": 226.6547,
+      "rocmfpx_c4_tok_s": 233.9857,
+      "winner_c1": "ROCmFPX plugin",
+      "winner_c4": "ROCmFPX plugin"
+    },
+    {
+      "shape": "512/128",
+      "evidence": "3 runs per C1/C4 cell",
+      "upstream_c1_tok_s": 93.9217,
+      "rocmfpx_c1_tok_s": 98.1378,
+      "upstream_c4_tok_s": 182.5552,
+      "rocmfpx_c4_tok_s": 186.2736,
+      "winner_c1": "ROCmFPX plugin",
+      "winner_c4": "ROCmFPX plugin"
+    },
+    {
+      "shape": "2048/256",
+      "batch": 4096,
+      "ubatch": 128,
+      "evidence": "3 C4 runs; C1 screen used batch 512",
+      "upstream_c1_tok_s_b512": 65.7469,
+      "rocmfpx_c1_tok_s_b512": 65.9450,
+      "upstream_c4_tok_s": 101.6589,
+      "rocmfpx_c4_tok_s": 99.9760,
+      "winner_c1": "tie",
+      "winner_c4": "llama.cpp upstream"
+    },
+    {
+      "shape": "7680/512",
+      "batch": 4096,
+      "ubatch": 128,
+      "evidence": "single exploratory C4 run without warmup",
+      "upstream_c4_tok_s": 92.3985,
+      "rocmfpx_c4_tok_s": 88.5796,
+      "upstream_vram_peak_bytes": 2452705280,
+      "rocmfpx_vram_peak_bytes": 2269405184,
+      "winner_c4": "llama.cpp upstream",
+      "status": "exploratory"
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "UBATCH512-SERVER-CLIFF",
+      "result_dir": "work/results/contemporary-ref-upstream-q40-b4096-u512",
+      "c1_tok_s": 68.0263,
+      "c4_tok_s": 110.1369,
+      "observation": "Server-only regression correlated with busy-memory clock alternating between 541 and 1000 MHz; direct llama-bench remained normal. Production workaround is ubatch=128."
+    },
+    {
+      "id": "SPARSE-SLOT-CLIFF",
+      "auto_result_dir": "work/results/validation-v2-safe-prompt-upstream-c3",
+      "compact_result_dir": "work/results/validation-v2-compact-slots-upstream-c3",
+      "observation": "C=3 sparse active IDs including slot 3 produced 117-126 tok/s; compact IDs 0/1/2 produced 197-211 tok/s."
+    }
+  ],
+  "historical_warning": "Rows in RESULTS.md produced before 2026-09-17 02:29 lack the exact model hash because the GGUF path was overwritten. They are retained as historical screens, not contemporary baselines."
+}

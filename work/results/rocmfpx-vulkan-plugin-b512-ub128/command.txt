@@ -1,0 +1,14 @@
+date_utc=2026-09-17T14:01:05Z
+label=rocmfpx-vulkan-plugin-b512-ub128
+server=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-cm1/bin/llama-server
+model=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf
+tokenizer=/home/isaac/vllm-challenge/models/LFM2.5-2.6B
+host=127.0.0.1
+port=18025
+prompt_tokens=128
+max_tokens=64
+repetitions=3
+warmup=1
+seed=260916
+server_args=-dev ROCmFPXVulkan0 -c 4096 -b 512 -ub 128 -ctk q8_0 -ctv q8_0 
+server_pid=30098

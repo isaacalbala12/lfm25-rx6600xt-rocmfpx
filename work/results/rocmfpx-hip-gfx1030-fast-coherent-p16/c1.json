@@ -1,0 +1,153 @@
+{
+  "label": "rocmfpx-hip-gfx1030-fast-coherent-p16-c1",
+  "base_url": "http://127.0.0.1:18002",
+  "model": "/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf",
+  "prompt_tokens_target": 16,
+  "max_tokens": 8,
+  "concurrency": 1,
+  "repetitions": 2,
+  "warmup": 1,
+  "seed": 261927,
+  "repetitions_detail": [
+    {
+      "repetition": 0,
+      "requests": 1,
+      "successful": 1,
+      "failed": 0,
+      "prompt_tokens_total": 16,
+      "output_tokens_total": 8,
+      "wall_seconds": 11.196832751003967,
+      "aggregate_output_tok_s": 0.7144877643441336,
+      "aggregate_input_tok_s": 1.4289755286882673,
+      "ttft_ms": {
+        "p50": 6408.202304002771,
+        "p95": 6408.202304002771,
+        "p99": 6408.202304002771,
+        "mean": 6408.202304002771
+      },
+      "e2e_ms": {
+        "p50": 11196.058191999327,
+        "p95": 11196.058191999327,
+        "p99": 11196.058191999327,
+        "mean": 11196.058191999327
+      },
+      "itl_ms": {
+        "p50": 683.8360670008115,
+        "p95": 684.4789153983584,
+        "p99": 684.5397942786803,
+        "mean": 683.9474249999122,
+        "samples": 7
+      },
+      "per_request_output_tok_s": [
+        0.7145371936095132
+      ],
+      "errors": []
+    },
+    {
+      "repetition": 1,
+      "requests": 1,
+      "successful": 1,
+      "failed": 0,
+      "prompt_tokens_total": 16,
+      "output_tokens_total": 8,
+      "wall_seconds": 11.203654268996615,
+      "aggregate_output_tok_s": 0.7140527374303268,
+      "aggregate_input_tok_s": 1.4281054748606536,
+      "ttft_ms": {
+        "p50": 6408.383194997441,
+        "p95": 6408.383194997441,
+        "p99": 6408.383194997441,
+        "mean": 6408.383194997441
+      },
+      "e2e_ms": {
+        "p50": 11200.788775997353,
+        "p95": 11200.788775997353,
+        "p99": 11200.788775997353,
+        "mean": 11200.788775997353
+      },
+      "itl_ms": {
+        "p50": 684.3815929969423,
+        "p95": 685.3331265010638,
+        "p99": 685.4355741030304,
+        "mean": 684.5184559996206,
+        "samples": 7
+      },
+      "per_request_output_tok_s": [
+        0.7142354132365696
+      ],
+      "errors": []
+    }
+  ],
+  "aggregate": {
+    "requests": 2,
+    "successful": 2,
+    "failed": 0,
+    "prompt_tokens_total": 32,
+    "output_tokens_total": 16,
+    "wall_seconds": 22.400487020000583,
+    "aggregate_output_tok_s": 0.7142701846488507,
+    "aggregate_input_tok_s": 1.4285403692977015,
+    "ttft_ms": {
+      "p50": 6408.292749500106,
+      "p95": 6408.3741504477075,
+      "p99": 6408.381386087494,
+      "mean": 6408.292749500106
+    },
+    "e2e_ms": {
+      "p50": 11198.42348399834,
+      "p95": 11200.552246797452,
+      "p99": 11200.741470157373,
+      "mean": 11198.42348399834
+    },
+    "itl_ms": {
+      "p50": 684.2377909997595,
+      "p95": 685.1837237481959,
+      "p99": 685.4056935524568,
+      "mean": 684.2329404997664,
+      "samples": 14
+    },
+    "per_request_output_tok_s": [
+      0.7145371936095132,
+      0.7142354132365696
+    ],
+    "errors": []
+  },
+  "raw": [
+    {
+      "ok": true,
+      "prompt_tokens": 16,
+      "output_tokens": 8,
+      "ttft_ms": 6408.202304002771,
+      "e2e_ms": 11196.058191999327,
+      "itl_ms": [
+        684.5550139987608,
+        683.571984001901,
+        684.3013519974193,
+        683.6327639975934,
+        683.8360670008115,
+        683.5498330037808,
+        684.1849609991186
+      ],
+      "error": null,
+      "text": "oucentricitycentricitycent"
+    },
+    {
+      "ok": true,
+      "prompt_tokens": 16,
+      "output_tokens": 8,
+      "ttft_ms": 6408.383194997441,
+      "e2e_ms": 11200.788775997353,
+      "itl_ms": [
+        685.461186003522,
+        684.2906210004003,
+        684.0337089961395,
+        684.3815929969423,
+        684.7155270006624,
+        683.7122350043501,
+        685.034320995328
+      ],
+      "error": null,
+      "text": "\n    *   *   *  "
+    }
+  ]
+}

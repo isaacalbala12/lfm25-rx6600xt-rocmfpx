@@ -1,0 +1,153 @@
+{
+  "label": "rocmfpx-hip-gfx1032-fast-p16-c1",
+  "base_url": "http://127.0.0.1:18002",
+  "model": "/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf",
+  "prompt_tokens_target": 16,
+  "max_tokens": 8,
+  "concurrency": 1,
+  "repetitions": 2,
+  "warmup": 1,
+  "seed": 261930,
+  "repetitions_detail": [
+    {
+      "repetition": 0,
+      "requests": 1,
+      "successful": 1,
+      "failed": 0,
+      "prompt_tokens_total": 16,
+      "output_tokens_total": 8,
+      "wall_seconds": 10.443360138000571,
+      "aggregate_output_tok_s": 0.7660369741430402,
+      "aggregate_input_tok_s": 1.5320739482860803,
+      "ttft_ms": {
+        "p50": 6322.932523005875,
+        "p95": 6322.932523005875,
+        "p99": 6322.932523005875,
+        "mean": 6322.932523005875
+      },
+      "e2e_ms": {
+        "p50": 10442.50229800673,
+        "p95": 10442.50229800673,
+        "p99": 10442.50229800673,
+        "mean": 10442.50229800673
+      },
+      "itl_ms": {
+        "p50": 588.4971440027584,
+        "p95": 589.1664591974404,
+        "p99": 589.2946542370191,
+        "mean": 588.4550715709338,
+        "samples": 7
+      },
+      "per_request_output_tok_s": [
+        0.766099903231723
+      ],
+      "errors": []
+    },
+    {
+      "repetition": 1,
+      "requests": 1,
+      "successful": 1,
+      "failed": 0,
+      "prompt_tokens_total": 16,
+      "output_tokens_total": 8,
+      "wall_seconds": 10.469983408002008,
+      "aggregate_output_tok_s": 0.7640890809708211,
+      "aggregate_input_tok_s": 1.5281781619416421,
+      "ttft_ms": {
+        "p50": 6357.337970999652,
+        "p95": 6357.337970999652,
+        "p99": 6357.337970999652,
+        "mean": 6357.337970999652
+      },
+      "e2e_ms": {
+        "p50": 10469.338991002587,
+        "p95": 10469.338991002587,
+        "p99": 10469.338991002587,
+        "mean": 10469.338991002587
+      },
+      "itl_ms": {
+        "p50": 587.4826519939234,
+        "p95": 588.0252834038401,
+        "p99": 588.0717838853889,
+        "mean": 587.3843267150472,
+        "samples": 7
+      },
+      "per_request_output_tok_s": [
+        0.7641361127837438
+      ],
+      "errors": []
+    }
+  ],
+  "aggregate": {
+    "requests": 2,
+    "successful": 2,
+    "failed": 0,
+    "prompt_tokens_total": 32,
+    "output_tokens_total": 16,
+    "wall_seconds": 20.91334354600258,
+    "aggregate_output_tok_s": 0.7650617876957448,
+    "aggregate_input_tok_s": 1.5301235753914897,
+    "ttft_ms": {
+      "p50": 6340.135247002763,
+      "p95": 6355.617698599963,
+      "p99": 6356.993916519714,
+      "mean": 6340.135247002763
+    },
+    "e2e_ms": {
+      "p50": 10455.920644504658,
+      "p95": 10467.997156352794,
+      "p99": 10469.070624072629,
+      "mean": 10455.920644504658
+    },
+    "itl_ms": {
+      "p50": 587.9108219996851,
+      "p95": 588.9795080980548,
+      "p99": 589.257264017142,
+      "mean": 587.9196991429906,
+      "samples": 14
+    },
+    "per_request_output_tok_s": [
+      0.766099903231723,
+      0.7641361127837438
+    ],
+    "errors": []
+  },
+  "raw": [
+    {
+      "ok": true,
+      "prompt_tokens": 16,
+      "output_tokens": 8,
+      "ttft_ms": 6322.932523005875,
+      "e2e_ms": 10442.50229800673,
+      "itl_ms": [
+        588.7925569986692,
+        587.6190229973872,
+        588.2900110009359,
+        588.7280759998248,
+        587.9319870000472,
+        588.4971440027584,
+        589.3267029969138
+      ],
+      "error": null,
+      "text": " inaccurate inaccurate inaccurate inaccurate inaccurate inaccurate inaccurate inaccurate"
+    },
+    {
+      "ok": true,
+      "prompt_tokens": 16,
+      "output_tokens": 8,
+      "ttft_ms": 6357.337970999652,
+      "e2e_ms": 10469.338991002587,
+      "itl_ms": [
+        586.5601020050235,
+        586.9257459999062,
+        587.7599550003652,
+        586.9887660010136,
+        587.4826519939234,
+        588.083409005776,
+        587.889656999323
+      ],
+      "error": null,
+      "text": "l? \n\nWait, I need to"
+    }
+  ]
+}

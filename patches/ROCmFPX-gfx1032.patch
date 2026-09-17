@@ -1,0 +1,209 @@
+diff --git a/ggml/src/ggml-cuda/mmq-config-rdna2.cuh b/ggml/src/ggml-cuda/mmq-config-rdna2.cuh
+index 8324d9e..88f96ac 100644
+--- a/ggml/src/ggml-cuda/mmq-config-rdna2.cuh
++++ b/ggml/src/ggml-cuda/mmq-config-rdna2.cuh
+@@ -1,3 +1,5 @@
++#include "../../rocmfpx/rocmfpx_mmq_rdna2.cuh"
++
+ static constexpr __host__ __device__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config_rdna2(ggml_type type, int J, bool fallback) {
+     CASE(GGML_TYPE_Q1_0, 256, 2, 128,   8, GGML_CUDA_MMQ_SRAM_LAYOUT_Q8_0, MMQ_ITER_K, false, true);
+     CASE(GGML_TYPE_Q1_0, 256, 2, 128,  16, GGML_CUDA_MMQ_SRAM_LAYOUT_Q8_0, MMQ_ITER_K, false, true);
+@@ -269,5 +271,5 @@ static constexpr __host__ __device__ ggml_cuda_mmq_config ggml_cuda_mmq_get_conf
+     CASE(GGML_TYPE_NVFP4, 256, 2, 128,  48, GGML_CUDA_MMQ_SRAM_LAYOUT_NVFP4, MMQ_ITER_K, false, false);
+     CASE(GGML_TYPE_NVFP4, 256, 2, 128,  64, GGML_CUDA_MMQ_SRAM_LAYOUT_NVFP4, MMQ_ITER_K, false, false);
+ 
+-    return ggml_cuda_mmq_config(GGML_TYPE_COUNT, 256, 2, 128, 64, GGML_CUDA_MMQ_SRAM_LAYOUT_Q8_0, 256, false, true);
++    return ggml_rocmfpx_mmq_get_config_rdna2(type, J, fallback);
+ }
+diff --git a/ggml/src/ggml-vulkan/ggml-vulkan.cpp b/ggml/src/ggml-vulkan/ggml-vulkan.cpp
+index bcb8701..8326a61 100644
+--- a/ggml/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/ggml/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -4111,6 +4111,8 @@ static bool ggml_vk_matmul_int_shmem_support(const vk_device& device, const std:
+         case GGML_TYPE_Q5_1:    block_a_size = std430_size({{16, 4}, {4, 4}, {fp2_size, fp2_align}});         break; // qs[16/4] + qh + dm(vec2)
+         case GGML_TYPE_Q8_0:    block_a_size = std430_size({{32, 4}, {fp_size,  fp_align}});                  break; // qs[8] + dm
+         case GGML_TYPE_MXFP4:   block_a_size = std430_size({{32, 4}, {fp_size,  fp_align}});                  break; // qs[8] + d
++        case GGML_TYPE_Q4_0_ROCMFP4:
++        case GGML_TYPE_Q4_0_ROCMFP4_FAST: block_a_size = std430_size({{32, 4}, {fp_size, fp_align}});          break; // qs[8] + d
+         case GGML_TYPE_Q2_K:    block_a_size = std430_size({{ 8, 4}, {2, 2}, {fp2_size, fp2_align}});         break; // qs[2] + scales(u8vec2) + dm(vec2)
+         case GGML_TYPE_Q3_K:    block_a_size = std430_size({{16, 4}, {fp2_size, fp2_align}});                 break; // qs[4] + d_scales(vec2)
+         case GGML_TYPE_Q4_K:    block_a_size = std430_size({{16, 4}, {fp2_size, fp2_align}});                 break; // qs[4] + dm(vec2)
+@@ -5033,6 +5035,8 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+             CREATE_MMQ(GGML_TYPE_Q5_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_0], matmul_q5_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q5_1, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_1], matmul_q5_1_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q8_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q8_0], matmul_q8_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4], matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST], matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+ 
+             CREATE_MMQ(GGML_TYPE_MXFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_MXFP4], matmul_mxfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+ 
+@@ -5210,6 +5214,8 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+             CREATE_MMQ(GGML_TYPE_Q5_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_0].f32acc, matmul_q5_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
+             CREATE_MMQ(GGML_TYPE_Q5_1, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q5_1].f32acc, matmul_q5_1_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
+             CREATE_MMQ(GGML_TYPE_Q8_0, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q8_0].f32acc, matmul_q8_0_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4].f32acc, matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST].f32acc, matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, );
+ 
+             CREATE_MMQ(GGML_TYPE_Q2_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q2_K].f32acc, matmul_q2_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, );
+             CREATE_MMQ(GGML_TYPE_Q3_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q3_K].f32acc, matmul_q3_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, );
+@@ -7962,6 +7968,29 @@ static bool ggml_vk_is_rocmfpx_weight_type(ggml_type type) {
+     }
+ }
+ 
++// On gfx1032, the integer-dot ROCmFPX path is faster for the actual server
++// schedule even when its isolated N=124 microbenchmark is slower: it avoids a
++// severe four-slot batching regression in the scalar path. Keep it enabled by
++// default; GGML_VK_ROCMFPX_INTDOT=off remains available for an A/B control.
++static bool ggml_vk_rocmfpx_use_intdot(ggml_type type, uint64_t n) {
++    if (!ggml_vk_is_rocmfpx_weight_type(type)) {
++        return true;
++    }
++
++    const char * mode = getenv("GGML_VK_ROCMFPX_INTDOT");
++    if (mode != nullptr) {
++        if (strcmp(mode, "off") == 0) {
++            return false;
++        }
++        if (strcmp(mode, "on") == 0) {
++            return true;
++        }
++    }
++
++    GGML_UNUSED(n);
++    return true;
++}
++
+ static vk_matmul_pipeline ggml_vk_get_mul_mat_mat_pipeline(ggml_backend_vk_context * ctx, ggml_type src0_type, ggml_type src1_type, ggml_prec prec) {
+     VK_LOG_DEBUG("ggml_vk_get_mul_mat_mat_pipeline(" << ggml_type_name(src0_type) << ", " << ggml_type_name(src1_type) << ", " << prec << ")");
+     if (src0_type == GGML_TYPE_F32 && src1_type == GGML_TYPE_F32) {
+@@ -9558,7 +9587,7 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+ 
+     const bool y_f32_kernel = src1->type == GGML_TYPE_F32 && !y_non_contig;
+ 
+-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0;
++    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne11);
+ 
+     // Check for mmq first
+     vk_matmul_pipeline mmp = quantize_y ? ggml_vk_get_mul_mat_mat_pipeline(ctx, src0->type, GGML_TYPE_Q8_1, (ggml_prec)dst->op_params[0]) : nullptr;
+@@ -9891,7 +9920,7 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
+     const bool y_non_contig = !ggml_vk_dim01_contiguous(src1);
+ 
+     const bool f16_f32_kernel = src1->type == GGML_TYPE_F32;
+-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_should_use_mmvq(ctx->device, ne01, ne11, ne10, src0->type);
++    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne11) && ggml_vk_should_use_mmvq(ctx->device, ne01, ne11, ne10, src0->type);
+ 
+     vk_pipeline to_fp16_vk_0 = nullptr;
+     vk_pipeline to_fp16_vk_1 = nullptr;
+@@ -10498,7 +10527,7 @@ static void ggml_vk_mul_mat_id_q_f16(ggml_backend_vk_context * ctx, vk_context&
+ 
+     const bool y_f32_kernel = src1->type == GGML_TYPE_F32 && !y_non_contig;
+ 
+-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0;
++    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne11);
+ 
+     // Check for mmq first
+     vk_matmul_pipeline mmp = quantize_y ? ggml_vk_get_mul_mat_mat_id_pipeline(ctx, src0->type, GGML_TYPE_Q8_1, (ggml_prec)dst->op_params[0]) : nullptr;
+@@ -10808,7 +10837,7 @@ static void ggml_vk_mul_mat_vec_id_q_f16(ggml_backend_vk_context * ctx, vk_conte
+     const bool y_non_contig = !ggml_vk_dim01_contiguous(src1);
+ 
+     const bool f16_f32_kernel = src1->type == GGML_TYPE_F32;
+-    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_should_use_mmvq(ctx->device, ne01, ne12, ne10, src0->type);
++    bool quantize_y = ctx->device->integer_dot_product && src1->type == GGML_TYPE_F32 && ggml_is_contiguous(src1) && !y_non_contig && (ne11 * ne10) % 4 == 0 && ggml_vk_rocmfpx_use_intdot(src0->type, ne12) && ggml_vk_should_use_mmvq(ctx->device, ne01, ne12, ne10, src0->type);
+ 
+     vk_pipeline to_fp16_vk_0 = nullptr;
+     vk_pipeline to_fp16_vk_1 = nullptr;
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index 1277255..08a64f1 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -910,6 +910,7 @@ private:
+     int trace = 0;        // env: LLAMA_TRACE
+     int slots_debug = 0;  // env: LLAMA_SERVER_SLOTS_DEBUG
+     int slots_n_diff = 0; // env: LLAMA_SERVER_SLOTS_N_DIFF
++    bool compact_slots = false; // env: LLAMA_SERVER_COMPACT_SLOTS
+ 
+     int n_empty_consecutive = 0;
+ 
+@@ -1385,6 +1386,15 @@ private:
+             }
+         }
+ 
++        {
++            const char * LLAMA_SERVER_COMPACT_SLOTS = getenv("LLAMA_SERVER_COMPACT_SLOTS");
++            compact_slots = LLAMA_SERVER_COMPACT_SLOTS && atoi(LLAMA_SERVER_COMPACT_SLOTS) != 0;
++
++            if (compact_slots) {
++                SRV_WRN("%s", "LLAMA_SERVER_COMPACT_SLOTS = 1\n");
++            }
++        }
++
+         // the update_slots() logic will always submit a maximum of n_batch or n_parallel tokens
+         // note that n_batch can be > n_ctx (e.g. for non-causal attention models such as BERT where the KV cache is not used)
+         {
+@@ -1654,6 +1664,22 @@ private:
+             }
+         }
+ 
++        // With prompt reuse disabled by the caller, keeping active sequence IDs compact
++        // avoids a severe Vulkan performance cliff for sparse sets such as {0, 1, 3} on
++        // RDNA2. This policy is opt-in because LRU remains preferable for cache reuse.
++        if (ret == nullptr && compact_slots && task.id_slot == -1) {
++            for (server_slot & slot : slots) {
++                if (!slot.is_processing()) {
++                    ret = &slot;
++                    break;
++                }
++            }
++
++            if (ret != nullptr) {
++                SLT_INF(*ret, "%s", "selected lowest available slot (compact policy)\n");
++            }
++        }
++
+         // find the slot that has been least recently used
+         if (ret == nullptr) {
+             int64_t t_last = -1;
+diff --git a/ggml/rocmfpx/rocmfpx_mmq_rdna2.cuh b/ggml/rocmfpx/rocmfpx_mmq_rdna2.cuh
+new file mode 100644
+index 0000000..ae0cf8f
+--- /dev/null
++++ b/ggml/rocmfpx/rocmfpx_mmq_rdna2.cuh
+@@ -0,0 +1,38 @@
++#pragma once
++
++// RDNA2/gfx103x has no MFMA/WMMA path, so ROCmFPX uses the existing DP4A
++// loaders.  Keep the tile geometry aligned with the native RDNA2 table and
++// reuse the ROCmFPX scale-layout choices used by the RDNA3 fallback path.
++//
++// This is intentionally a small, conservative table.  It makes the custom
++// types executable on RDNA2 without claiming that RDNA3/4 launch shapes are
++// optimal for gfx1032; performance tuning belongs in a separate A/B pass.
++static constexpr __host__ __device__ ggml_cuda_mmq_config ggml_rocmfpx_mmq_get_config_rdna2(
++        ggml_type type, int J, bool fallback) {
++    auto layout = GGML_CUDA_MMQ_SRAM_LAYOUT_Q8_0;
++    bool supported = true;
++
++    switch (type) {
++        case GGML_TYPE_Q4_0_ROCMFP4_FAST:
++        case GGML_TYPE_Q4_0_ROCMI4:
++        case GGML_TYPE_Q8_0_ROCMFPX:
++            break;
++        case GGML_TYPE_Q4_0_ROCMFP4:
++        case GGML_TYPE_Q2_0_ROCMFPX:
++        case GGML_TYPE_Q3_0_ROCMFPX:
++        case GGML_TYPE_Q6_0_ROCMFPX:
++            layout = GGML_CUDA_MMQ_SRAM_LAYOUT_Q3_K;
++            break;
++        default:
++            supported = false;
++            break;
++    }
++
++    // RDNA2's DP4A table uses 256 threads and I=128 for J=8..64.
++    if (supported && J >= 8 && J <= 64 && J % 8 == 0) {
++        return ggml_cuda_mmq_config(type, 256, 2, 128, J, layout, MMQ_ITER_K, false, fallback);
++    }
++
++    return ggml_cuda_mmq_config(GGML_TYPE_COUNT, 256, 2, 128, 64,
++        GGML_CUDA_MMQ_SRAM_LAYOUT_Q8_0, 256, false, true);
++}

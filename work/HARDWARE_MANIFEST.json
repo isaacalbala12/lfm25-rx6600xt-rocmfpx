@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-17T17:17:24+02:00",
+  "host": {
+    "hostname": "isaac-MS-7C51",
+    "kernel": "Linux 7.0.0-31-generic #31-Ubuntu SMP PREEMPT_DYNAMIC Sat Aug 1 04:26:38 UTC 2026",
+    "cpu": "AMD Ryzen 5 1500X Quad-Core Processor",
+    "physical_cores": 4,
+    "logical_cpus": 8,
+    "cpu_frequency_mhz": {"minimum": 1550, "maximum": 3500},
+    "power_profile": "balanced"
+  },
+  "gpu": {
+    "name": "AMD Radeon RX 6600 XT (RADV NAVI23)",
+    "pci_id": "1002:73ff",
+    "architecture": "gfx1032",
+    "family": "RDNA2",
+    "vram_bytes": 8573157376,
+    "compute_units": 32,
+    "wave_size": 32,
+    "lds_bytes": 65536,
+    "integer_dot_product": true,
+    "cooperative_matrix_cores_reported": false
+  },
+  "graphics_stack": {
+    "vulkan_instance": "1.4.341",
+    "device_api": "1.4.335",
+    "driver": "Mesa RADV 26.0.8-1ubuntu0.3",
+    "rocm_toolchain": "local ROCm 7.14 toolchain",
+    "cmake": "4.4.3",
+    "ninja": "1.13.2"
+  },
+  "power_state": {
+    "dpm_force_performance_level": "auto",
+    "active_power_profile": "0 BOOTUP_DEFAULT",
+    "changed_by_campaign": false,
+    "note": "No system power, driver, service or firmware setting was changed."
+  },
+  "sources": {
+    "rocmfpx": {
+      "path": "work/sources/ROCmFPX",
+      "revision": "aed0d5fd9620ee96a10cb4e6b16c18514ea370e1",
+      "dirty": true
+    },
+    "llama_cpp": {
+      "path": "work/sources/llama.cpp",
+      "revision": "930e2fa5995789efbf249a8bf61325bb626e417b",
+      "tag": "b10991",
+      "dirty": false
+    }
+  },
+  "artifacts": {
+    "rocmfpx_server_launcher_sha256": "56983fe0b4de6571773335a29deb3e8f045ff4929abb63b310f0f78b84387e2a",
+    "rocmfpx_server_impl_sha256": "3590583c1db78af467b440005d796056b4581b077304b4f05e73393a3d56680e",
+    "rocmfpx_vulkan_plugin_sha256": "4acfc88be9aafeebea530ff2aa651e04fdffc5fc2e3996b17529f624fa6a16e5",
+    "upstream_server_sha256": "7905b89af5dc3cd8e45db4817e48a40133a16b955d36e4b69b55b6eba46cd731",
+    "upstream_server_impl_sha256": "0db0a8d3dd15951e5597937012a6ca836abcfaf59fd851c0658c8788dd75fb52",
+    "benchmark_client_sha256": "c9a49a8268f0d89bc55054191ba09d1fd42cf42318fb31278deac9644c0844b1",
+    "benchmark_runner_sha256": "891a50c493b1fe9d8f607091c3b94d05dbd17e29676766f4bb2989b2e5f867a4"
+  },
+  "models": {
+    "q4_0": {
+      "path": "work/results/models/LFM2.5-2.6B-Q4_0.gguf",
+      "bytes": 1593894912,
+      "sha256": "a71d1b80e0f5914e899d366a0ef82c8f1ccecd40f1f4dc1329e1c8eeb7357fd7"
+    },
+    "rocmfp4_fast": {
+      "path": "work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf",
+      "bytes": 1442031616,
+      "sha256": "d56f602eb9bcad2cafbe2a52cef2fa14ba09e6290679a2aee164db22815f0933"
+    },
+    "q4_k_m": {
+      "path": "/home/isaac/Escritorio/BenchmarkLLM/models/LFM2.5-2.6B-Q4_K_M/LFM2.5-2.6B-Q4_K_M.gguf",
+      "bytes": 1674455040,
+      "sha256": "02a8b7e17487d326e46d68ce0ba24211e1b80a14c4cd0597fa73c1cd697f52ed"
+    },
+    "rocmfp4": {
+      "path": "work/results/models/LFM2.5-2.6B-ROCmFP4.gguf",
+      "sha256": "e632c792165ca22147a976ac463aba0842a6df37776a6d26f4682c8f439339d5"
+    },
+    "rocmfp4_fast_coherent": {
+      "path": "work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf",
+      "sha256": "6221ae208de5102fe33fc2b246f6a34db32d0a2f20e371d2184838073f182198"
+    },
+    "rocmfpx_q3": {
+      "path": "work/results/models/LFM2.5-2.6B-ROCmFPX-Q3.gguf",
+      "sha256": "c25a2b739a647c542ad2da1a499f2119d413e976e170930213b49d932bc9f63d"
+    },
+    "rocmfpx_q2": {
+      "path": "work/results/models/LFM2.5-2.6B-ROCmFPX-Q2.gguf",
+      "sha256": "e5965401284196b4cf5148c5d3b1ba938295f5836d0b6a54ec09be368b6d0bb8"
+    }
+  },
+  "runtime": {
+    "sunshine_running": false,
+    "inference_processes_at_checkpoint": 0,
+    "root_filesystem_free_gib": 15,
+    "hsa_override_for_native_gfx1032": null,
+    "plugin_ld_preload": [
+      "/home/isaac/vllm-challenge/toolchain/lib/libstdc++.so.6",
+      "/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1"
+    ]
+  }
+}
