@@ -1,0 +1,38 @@
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index e074165..58c5ea2 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -922,6 +922,7 @@ private:
+     bool lowest_slot_first = false; // env: LLAMA_SERVER_LOWEST_SLOT
+     bool dense_sequences = false;   // env: LLAMA_SERVER_DENSE_SEQUENCES
+     bool remap_trace = false;       // env: LLAMA_SERVER_REMAP_TRACE
++    int32_t prefill_chunk_tokens = 0; // env: LLAMA_SERVER_PREFILL_CHUNK_TOKENS; 0 = n_batch
+     bool compact_sequences_pending = false;
+     bool batch_trace = false; // env: LLAMA_SERVER_BATCH_TRACE
+ 
+@@ -1413,6 +1414,14 @@ private:
+             dense_sequences   = env_flag("LLAMA_SERVER_DENSE_SEQUENCES", legacy_compact);
+             remap_trace       = env_flag("LLAMA_SERVER_REMAP_TRACE", false);
+ 
++            const char * LLAMA_SERVER_PREFILL_CHUNK_TOKENS = getenv("LLAMA_SERVER_PREFILL_CHUNK_TOKENS");
++            prefill_chunk_tokens = LLAMA_SERVER_PREFILL_CHUNK_TOKENS ?
++                std::max(0, atoi(LLAMA_SERVER_PREFILL_CHUNK_TOKENS)) : 0;
++
++            if (prefill_chunk_tokens > 0) {
++                SRV_WRN("LLAMA_SERVER_PREFILL_CHUNK_TOKENS = %d\n", prefill_chunk_tokens);
++            }
++
+             SRV_INF("sequence policy: lowest_slot_first=%d dense_sequences=%d remap_trace=%d\n",
+                     lowest_slot_first ? 1 : 0, dense_sequences ? 1 : 0, remap_trace ? 1 : 0);
+         }
+@@ -3788,7 +3797,9 @@ private:
+                     const auto last_user_pos = spans.last_user_message_pos();
+ 
+                     // add prompt tokens for processing in the current batch
+-                    while (slot.prompt.n_tokens() < slot.task->n_tokens() && batch.size() < n_batch) {
++                    while (slot.prompt.n_tokens() < slot.task->n_tokens() &&
++                           batch.size() < n_batch &&
++                           (prefill_chunk_tokens == 0 || batch.size() - n_tokens_prev < prefill_chunk_tokens)) {
+                         // get next token to process
+                         llama_token cur_tok = input_tokens[slot.prompt.n_tokens()];
+                         if (cur_tok == LLAMA_TOKEN_NULL) {

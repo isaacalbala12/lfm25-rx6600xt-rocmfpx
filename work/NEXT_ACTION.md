@@ -22,6 +22,11 @@ candidate does not regress Profile A C4 or Profile B beyond the measured TTFT
 tradeoff. Separately profile FPX C1 versus C4 with timestamps for
 `quantize_q8_1_x4` and `mul_mat_vec_rocmfp4_fast_q8_1_f32`.
 
+Implementation checkpoint: ROCmFPX `e9e88220302846f82e0fb86320c728f73f2a72e6`
+adds opt-in `LLAMA_SERVER_PREFILL_CHUNK_TOKENS`; default zero preserves R0.
+The Release server builds successfully. Benchmark evidence is deliberately not
+claimed until the Profile C A/B completes.
+
 ## Checkpoint V3
 
 El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva tanto en un commit local de `campaign-v3` como en el checkpoint local ROCmFPX `2678844a0af778c7c41b2d552667e9a05d98248c`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.
