@@ -31,3 +31,17 @@
 **Siguiente experimento:** A/B/B/A dinámico C4, control contemporáneo en cada pareja, clocks a mayor frecuencia y bootstrap por pareja/tanda; después logits y GEMV FP4_FAST N=1/2/4.
 
 **Comando de reproducción:** `work/NEXT_ACTION.md`.
+# Continuation checkpoint
+
+The follow-on campaign separates R0/R1 runtime policy and K0/K1 kernel policy.
+R1 passed active cancellation/recycle for forced initial, middle and final
+holes with host sampling, but only 9/12 outputs were token-identical to R0
+under non-identical concurrent ordering. Backend sampling exposed a reproducible
+double-initialization abort and is now rejected explicitly. R1 remains STAGE.
+
+An exact plugin microbenchmark was added for the observed FP4_FAST/Q8_1 decode
+pipeline. A shape-specific four-subgroup reduction passed operation correctness
+and won selected micro shapes, but regressed the full C4 server from 173.37 to
+164.20 aggregate tok/s in the observed low/variable-clock run. K1 is REJECT.
+
+See `work/SEQUENCE_REMAP_VALIDATION.md` and `work/KERNEL_MICROBENCH_V3.md`.

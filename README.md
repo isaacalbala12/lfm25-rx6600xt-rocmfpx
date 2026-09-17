@@ -37,7 +37,15 @@ upstream llama.cpp Vulkan wins 2048/256 and the exploratory 7680/512 screen.
   model from about 200–202 to 131–132 tok/s. V3 proves that the recurrent
   allocator splits the sparse set every step. The staged opt-in runtime now
   uses dense internal sequence IDs while preserving logical API slot IDs; it
-  passes dynamic completion/cancellation/reuse, but awaits paired C4 data.
+  passes active completion/cancellation/reuse with host sampling, but awaits
+  deterministic logit equivalence and paired dynamic-service statistics.
+- Backend sampling cannot currently be rebound safely during sequence
+  migration. Dense remapping now rejects that combination explicitly instead
+  of aborting or silently changing the sampling policy.
+- A shape-specific four-subgroup FP4_FAST decode selector improved selected
+  exact-pipeline microbenchmarks, but reduced full-server C4 throughput by
+  5.29% in the observed run. It is retained only as an experimental switch;
+  the production default remains unchanged.
 - ROCmFPX Q2 is fast and memory-efficient but failed basic output-quality
   checks, so it is not a production candidate.
 - ROCmFPX HIP kernels beat equivalent upstream HIP kernels in trace-only
@@ -54,10 +62,18 @@ upstream llama.cpp Vulkan wins 2048/256 and the exploratory 7680/512 screen.
 - `work/PLUGIN_EXECUTION_MAP.md`: proven plugin/backend dispatch map.
 - `work/PROFILE_V3.md`: current profile and sparse-slot runtime decision.
 - `work/CAMPAIGN_V3_RESULT.md`: first-campaign result in the requested handoff format.
+- `work/SEQUENCE_REMAP_VALIDATION.md`: runtime migration invariants, active
+  cancellation evidence and backend-sampling limitation.
+- `work/KERNEL_MICROBENCH_V3.md`: exact plugin pipeline benchmark and rejected
+  server-level kernel candidate.
 - `work/scripts/`: reproducible HTTP benchmark and analysis scripts.
 - `work/results/`: lightweight raw benchmark evidence.
 - `patches/ROCmFPX-gfx1032.patch`: local ROCmFPX changes against revision
   `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`.
+- `patches/campaign-v3-runtime-kernel.patch`: cumulative continuation patch for
+  versioned source files, including runtime controls, tests and the
+  experimental kernel selector. The RDNA2 header is restored separately from
+  the original patch as described in `work/NEXT_ACTION.md`.
 
 ## Excluded artifacts
 

@@ -143,3 +143,33 @@ transporte desde el primer envío hasta la última respuesta.
 - Decode FP4_FAST usa RHS Q8_1 y `mul_mat_vec_rocmfp4_fast_q8_1_f32` para N pequeño.
 - Prefill 2048/u128 está dominado por matmuls FP4_FAST gate/up y down; véanse `work/PLUGIN_EXECUTION_MAP.md`, `work/SHAPE_CENSUS_V3.csv` y `work/PROFILE_V3.md`.
 - Decisión: **KEEP** como evidencia; siguiente familia: GEMV FP4_FAST N=1/2/4, aún sin variante promocionable.
+# V3 continuation: runtime remap and exact plugin microbenchmark
+
+## V3-RUNTIME-02 — deferred remap under active cancellation
+
+- Hypothesis: physical-ID densification can remove the sparse recurrent
+  allocator split without mixing request state.
+- Change: separate lowest-slot allocation from physical remapping; preserve
+  host/backend sampling policy; assert physical identity and recurrent
+  positions; move only after pending results are consumed.
+- Evidence: forced holes 0/1/3 with three live survivors and immediate reuse.
+  All 12 completed requests met their output budgets. R1 reduces the sparse
+  middle-hole cycle from 4526 ms to 2546 ms. Nine of twelve outputs are exactly
+  equal to R0; three differ under non-identical concurrent batch ordering.
+- Backend sampling: reproduced a double-initialization abort; R1 now rejects
+  that combination with HTTP 400.
+- Historical range error: not reproduced, not declared solved.
+- Decision: **STAGE** (host sampling only).
+
+## V3-KERNEL-01 — hybrid DMMV reduction by shape
+
+- Hypothesis: the four-subgroup hybrid reduction can improve FP4_FAST MMVQ at
+  N=2/4.
+- Pipeline: `quantize_q8_1_x4 -> mul_mat_vec_rocmfp4_fast_q8_1_f32` in the
+  actual plugin backend.
+- Microbenchmark: large wins 1.0–12.6% on selected M=2048/N=2 and N=4 shapes,
+  but loses 39–49% on M=6144/10752 at N=2. CPU-reference checks pass.
+- Server: K0 173.37 versus K1 164.20 aggregate tok/s at C4; C1 80.45 versus
+  80.04. All slow batches retained; clocks were variable.
+- Decision: **REJECT** for production. Preserve only as an experimental switch
+  and evidence for a timestamped shader-level follow-up.
