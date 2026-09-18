@@ -623,9 +623,6 @@ void matmul_shaders(bool fp16, MatMulIdType matmul_id_type, bool coopmat, bool c
         // Integer dot mmq performs better with f32 accumulators (different shader, skip for dot2)
         if (!f16acc && !coopmat && !coopmat2 && !dot2 && (is_legacy_quant(tname) || is_k_quant(tname) || tname == "mxfp4" || tname == "rocmfp4" || tname == "rocmfp4_fast")) {
             string_to_spv(shader_name + "_" + tname + "_q8_1", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"},}), fp16, coopmat, coopmat2, f16acc);
-            if (tname == "rocmfp4_fast" && matmul_id_type == MatMulIdType::NONE) {
-                string_to_spv(shader_name + "_" + tname + "_q8_1_bk2", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_2", "1"}}), fp16, coopmat, coopmat2, f16acc);
-            }
         }
 #endif
     }

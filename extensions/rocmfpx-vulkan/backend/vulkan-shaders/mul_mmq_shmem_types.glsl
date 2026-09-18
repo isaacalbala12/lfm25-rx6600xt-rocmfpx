@@ -61,9 +61,6 @@ struct block_a_cache {
 };
 #elif defined(DATA_A_ROCMFP4_FAST)
 #define QUANT_R_MMQ 2
-#if defined(ROCMFP4_FAST_BK_STEP_2) && !defined(MUL_MAT_ID)
-#define BK_STEP 2
-#endif
 struct block_a_cache {
     int32_t qs[8];
     FLOAT_TYPE d;
