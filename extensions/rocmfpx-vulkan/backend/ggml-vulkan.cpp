@@ -1827,8 +1827,11 @@ static bool vk_enable_sync_logger = false;
 static bool vk_selection_logger_enabled = false;
 static bool vk_dmmv_phase_logger_enabled = false;
 // -1 keeps the upstream selector, 0 forces one subgroup, 1 selects the
-// four-subgroup hybrid reduction for N=2/4, and 2 forces it for all N.
+// four-subgroup hybrid reduction for N=2/4, 2 forces it for all N, and 3
+// selects it only for the gate/up M=10752, K=2048, N=4 shape.
 static int vk_rocmfp4_fast_dmmv_wg = -1;
+static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
+static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4 = 3;
 // number of calls between perf logger prints
 static uint32_t vk_perf_logger_frequency = 1;
 static std::string vk_pipeline_stats_filter;
@@ -6788,9 +6791,11 @@ static void ggml_vk_instance_init() {
         } else if (strcmp(value, "large") == 0 || strcmp(value, "1") == 0) {
             vk_rocmfp4_fast_dmmv_wg = DMMV_WG_SIZE_LARGE;
         } else if (strcmp(value, "large-all") == 0 || strcmp(value, "2") == 0) {
-            vk_rocmfp4_fast_dmmv_wg = 2;
+            vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_LARGE_ALL;
+        } else if (strcmp(value, "gateup-n4") == 0 || strcmp(value, "3") == 0) {
+            vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_GATEUP_N4;
         } else if (strcmp(value, "auto") != 0 && value[0] != '\0') {
-            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, or large-all");
+            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, or gateup-n4");
         }
     }
     if (vk_selection_logger_enabled) {
@@ -7235,9 +7240,12 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context * 
             // N=4 shape and for the M=2048 N=2 projections, but regresses the
             // M=6144/10752 N=2 projections by 39-49%.
             const bool target_n = num_cols == 4 || (num_cols == 2 && m == 2048);
+            const bool target_gateup_n4 = m == 10752 && k == 2048 && num_cols == 4;
             if (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_SUBGROUP) {
                 dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
-            } else if (target_n || vk_rocmfp4_fast_dmmv_wg == 2) {
+            } else if ((vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_GATEUP_N4 && target_gateup_n4) ||
+                       (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_LARGE && target_n) ||
+                       vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_LARGE_ALL) {
                 dmmv_wg = DMMV_WG_SIZE_LARGE;
             }
         }
