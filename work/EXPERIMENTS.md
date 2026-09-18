@@ -407,3 +407,16 @@ Follow-up output identity:
   0.75% threshold, so the extra shader/pipeline/selector is unjustified.
   ROCmFPX `7838dd2` removes it and rebuilds to the exact saved-control hash.
   Candidate and revert patches plus raw paired results are retained.
+
+## EXP-V5-FA-RDNA2-NO-OCCUPANCY-LIMIT — REJECT
+
+- Selection trace proves the executed path is the plugin scalar integer-dot
+  `flash_attn_f32_f16_aligned` shader with Q8_0/Q8_0 KV, HSK=HSV=64, wave32,
+  128 threads, Br=8/Bc=32/D_split=8 and aligned accesses.
+- Candidate removes the synthetic 26-KiB occupancy allocation only for RDNA2
+  large-N 64-wide prefill; all decode and other shapes stay on control.
+- Three logger-free 8K C4 runs: 1855.28 -> 1852.67 input tok/s median
+  (-0.141%). Timestamp-only common long tiles improve roughly 0.7–1.6% local,
+  giving at most ~0.35% predicted global leverage at the measured 23.11% share.
+- Decision: **REJECT**. Correct but below the 0.75% global threshold and no
+  server win. ROCmFPX `e7ec6c2` restores production.

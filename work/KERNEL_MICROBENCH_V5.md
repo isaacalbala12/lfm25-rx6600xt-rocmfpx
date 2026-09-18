@@ -11,6 +11,10 @@ The fenced 8K profile selects gate/up first: 23.500 ms per full N=128 tile,
 FP4 unpack/load path, not subgroup count. It must use the plugin backend and
 preserve FP4_FAST values.
 
+Flash Attention is now mapped separately in `work/FLASH_ATTN_PROFILE_V5.md`.
+Removing its RDNA2 occupancy limiter improves long-tile FA locally by only
+about 0.7–1.6%, yields no logger-free service gain, and is **REJECT**.
+
 ## EXP-V5-KERNEL-GATEUP-N128-PACKED32 — REJECT
 
 - Exact path: the plugin's medium integer MMQ pipeline for FP4_FAST x Q8_1,

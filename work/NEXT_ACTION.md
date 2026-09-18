@@ -18,10 +18,11 @@ simples de gate/up. El siguiente experimento debe:
 
 1. mapear el shader/pipeline exacto por capas y confirmar forma, strides,
    máscara, KV q8/q8, tamaño de subgroup y workgroup;
-2. separar atención 1K/2K/4K/8K para confirmar el crecimiento y estimar el
-   techo global antes de editar código;
-3. inspeccionar ISA y recursos disponibles sin PMC inestable;
-4. escoger una sola variante justificada de tile, vectorización o acceso KV;
+2. usar el mapa ya probado: scalar integer-dot, Q8_0/Q8_0, HSK=HSV=64,
+   wave32, 128 hilos, Br=8/Bc=32/D_split=8 y acceso alineado;
+3. comprobar viabilidad de una sola variante `Bc=64` para N grande, incluyendo
+   memoria compartida, número de workgroups y coste de máscara;
+4. inspeccionar ISA y recursos disponibles sin PMC inestable;
 5. validar correctitud, microbenchmark exacto hot/rotating y ABBA;
 6. ejecutar Profile B y 3D+1P solamente si el microbenchmark gana al menos 3%
    local, equivalente a ~0.7% global máximo sobre la participación medida.
@@ -39,12 +40,18 @@ runtime estable y no mezclarlo con R1.
 - carga FP4 alineada de 32 bits;
 - tile MMQ `BM=32,BN=128`;
 - `BK_STEP=2` global o selectivo para gate/up.
+- eliminación del limitador de ocupación FA de RDNA2.
 
 El selectivo gate-only fue una mejora real pero insuficiente: diez pares AB/BA
 dieron +0.486% de throughput (95% CI [+0.371%, +0.705%]) y outputs exactos
 10/10. Es **REJECT** porque no alcanza el umbral V5 de 0.75% y añade una ruta
 de shader completa. La implementación y su reversión permanecen en patches y
 resultados para reproducibilidad.
+
+La primera variante FA también está cerrada: quitar el limitador sintético de
+26 KiB gana solo ~1.5% local en el tile largo, no mejora el servidor (-0.141%
+exploratorio) y tiene un techo global de ~0.35%. Es **REJECT**. No volver a
+tocar ocupación sin una modificación algorítmica que cambie ese techo.
 
 ## Control experimental
 

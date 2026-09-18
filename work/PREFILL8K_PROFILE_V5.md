@@ -43,3 +43,8 @@ sub-0.75% service benefit does not pay for a second embedded shader and runtime
 selector. ROCmFPX `7838dd2` restores the production pipeline byte-for-byte.
 Flash Attention, at 23.11% of the 8K grouped GPU time, is the next unclosed
 high-leverage path.
+
+The first FA experiment is closed in `work/FLASH_ATTN_PROFILE_V5.md`.
+Eliminating the RDNA2 occupancy limiter gives only ~1.5% local improvement at
+the longest common tile (about 0.35% theoretical global leverage), while three
+logger-free service repetitions move -0.141%. Decision: **REJECT**.
