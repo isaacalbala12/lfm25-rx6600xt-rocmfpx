@@ -1,5 +1,18 @@
 # Próxima acción
 
+## Campaign V5 checkpoint (current)
+
+Chunk128 passed the reserved service-EOS gate and is **KEEP production**.
+Chunk96 is **REJECT**. The light timeline proves each 128-token mixed batch
+costs ~80 ms median; CPU scheduling gaps are not the main limiter. The apparent
+6144x2048 N=1 path already batches four users in `ne[2]`, so close rebatching.
+
+Next: run one fenced 8192-token prefill operation profile with chunking disabled,
+aggregate gate/up and down including preparation, then implement exactly one
+in-wave/tile change in the larger measured family. Require exact plugin
+microbench correctness and ABBA before 3D+1P. Do not revisit chunk96, Q8 reuse,
+subgroup-count gate/up variants, rows4 short-conv, or N-only selectors.
+
 ## Campaign V4 immediate checkpoint
 
 Context capacity is proven with four 8704-token slots. Run the resident-decode

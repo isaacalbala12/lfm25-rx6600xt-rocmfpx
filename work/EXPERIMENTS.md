@@ -324,3 +324,27 @@ Follow-up output identity:
   80.04. All slow batches retained; clocks were variable.
 - Decision: **REJECT** for production. Preserve only as an experimental switch
   and evidence for a timestamped shader-level follow-up.
+# V5 concurrency service checkpoint
+
+## EXP-V5-QUALITY-CHUNK128 — KEEP production
+
+- Service EOS: 7/7 valid in both arms; 7/7 exact outputs, finish reasons and
+  token counts, including 8886-token retrieval and long generation.
+- Evidence: `work/results/v5-quality-service-eos-r3`.
+
+## EXP-V5-SCHED-CHUNK96 — REJECT
+
+- ITL 89.190 -> 82.677 ms and retention 15.659% -> 16.627%, but TTFT
+  5270.945 -> 6646.088 ms (+26.09%). Remaining pairs cancelled by the declared
+  early-rejection rule.
+
+## EXP-V5-TIMELINE-CHUNK128 — KEEP diagnostic
+
+- 63 mixed 128-prompt/3-decode batches: 79.961 ms median, 87.554 ms p95.
+  Decode-only C3: 11.561 ms median. Mixed GPU work, not scheduler idle time,
+  dominates the 89-ms ITL.
+
+## EXP-V5-SHORTCONV-REBATCH — REJECT hypothesis
+
+- `6144x2048 N=1` is `[6144,n_seq_tokens=1,n_seqs=4]`. Twenty-two calls per
+  graph prove all four batch planes already share each recurrent-layer call.

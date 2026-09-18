@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "corpus": "service_eos_v5_reserved",
+  "request_policy": {
+    "ignore_eos": false,
+    "logit_bias_present": false,
+    "stream": false
+  },
+  "all_requests_succeeded": true,
+  "all_validators_passed": false,
+  "records": [
+    {
+      "id": "arithmetic",
+      "category": "mathematics",
+      "prompt_chars": 54,
+      "elapsed_ms": 836.1980120007502,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 96,
+        "prompt_tokens": 23,
+        "total_tokens": 119,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "",
+      "reasoning_content": "The user wants the result of 37 multiplied by 24.\nCalculation: 37 * 24\n37 * 20 = 740\n37 * 4 = 148\n740 + 148 = 888\nAlternatively:\n  37\nx 24\n----\n 148  (37*4)\n740   (37*20)\n----\n 888\nThe result is 888.\nThe user requested \"only the integer result\".\nSo I should return \"",
+      "visible_text": "The user wants the result of 37 multiplied by 24.\nCalculation: 37 * 24\n37 * 20 = 740\n37 * 4 = 148\n740 + 148 = 888\nAlternatively:\n  37\nx 24\n----\n 148  (37*4)\n740   (37*20)\n----\n 888\nThe result is 888.\nThe user requested \"only the integer result\".\nSo I should return \"",
+      "visible_sha256": "c09fbbb1a6efbb36b0be8adf9f21700f7ca5535389912576e1f06f9bcddd937c",
+      "validator": "normalized_exact",
+      "validation_passed": false,
+      "error": null
+    },
+    {
+      "id": "json",
+      "category": "json",
+      "prompt_chars": 87,
+      "elapsed_ms": 1017.6654810002219,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 30,
+        "total_tokens": 150,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "```json\n{\"answer\": \"ok\", \"count\": 3}\n```",
+      "reasoning_content": "The user wants a JSON response with two keys: \"answer\" and \"count\".\nThe value for \"answer\" must be \"ok\".\nThe value for \"count\" must be 3.\nThe output must be compact JSON.\n\nPlan:\n1. Create a JSON object.\n2. Set \"answer\" to \"ok\".\n3. Set \"count\" to 3.\n4. Ensure the JSON is compact (no extra whitespace).\n\nResult: `{\"answer\": \"ok\", \"count\": 3}`",
+      "visible_text": "```json\n{\"answer\": \"ok\", \"count\": 3}\n```",
+      "visible_sha256": "f90dd63956de06c2e60eba676427ae46e7ae26693a107d546db228cb76dda35a",
+      "validator": "json_fields",
+      "validation_passed": false,
+      "error": null
+    },
+    {
+      "id": "tool_like",
+      "category": "tool-like structured output",
+      "prompt_chars": 107,
+      "elapsed_ms": 850.6820849997894,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 97,
+        "prompt_tokens": 34,
+        "total_tokens": 131,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "{\"tool\":\"weather\",\"arguments\":{\"city\":\"Madrid\"}}",
+      "reasoning_content": "The user wants me to return a JSON object with specific structure: {\"tool\":\"weather\",\"arguments\":{\"city\":\"Madrid\"}}. They want only this tool-style JSON object, with no Markdown formatting. So I should output exactly that JSON string, nothing else. Ensure it's valid JSON. The tool name is \"weather\" and arguments city is \"Madrid\". No extra whitespace or comments. Just the JSON.",
+      "visible_text": "{\"tool\":\"weather\",\"arguments\":{\"city\":\"Madrid\"}}",
+      "visible_sha256": "768980204f5913aaa2dc4a88090ba89f1851220ae4671e2a691b48c304d2e0e1",
+      "validator": "json_fields",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "instruction",
+      "category": "instructions",
+      "prompt_chars": 77,
+      "elapsed_ms": 846.569143999659,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 96,
+        "prompt_tokens": 23,
+        "total_tokens": 119,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "",
+      "reasoning_content": "\nThe user asks: \"Return exactly these three lowercase words and nothing else: alpha beta gamma\". So they want the output to be exactly \"alpha beta gamma\". No extra punctuation, no extra spaces beyond the three words separated by spaces. Must be exactly those three lowercase words, nothing else. So answer should be:\n\nalpha beta gamma\n\nMake sure no extra newline? Usually it's okay to have a newline at end, but the content should be exactly those three words. I",
+      "visible_text": "\nThe user asks: \"Return exactly these three lowercase words and nothing else: alpha beta gamma\". So they want the output to be exactly \"alpha beta gamma\". No extra punctuation, no extra spaces beyond the three words separated by spaces. Must be exactly those three lowercase words, nothing else. So answer should be:\n\nalpha beta gamma\n\nMake sure no extra newline? Usually it's okay to have a newline at end, but the content should be exactly those three words. I",
+      "visible_sha256": "8da0f78b8a92500174ad13c6fbfc92bd650d9382644c9dc48305324c9db0f0fd",
+      "validator": "normalized_exact",
+      "validation_passed": false,
+      "error": null
+    },
+    {
+      "id": "spanish",
+      "category": "Spanish",
+      "prompt_chars": 103,
+      "elapsed_ms": 674.0005729989207,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 74,
+        "prompt_tokens": 36,
+        "total_tokens": 110,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "Madrid es la capital de España.",
+      "reasoning_content": "The user wants a short sentence in Spanish, including literally the words 'Madrid' and 'España'. Must be only one brief sentence. So something like \"Madrid es la capital de España.\" That's short, includes both words. It's a single sentence. Ensure it's in Spanish. That satisfies.",
+      "visible_text": "Madrid es la capital de España.",
+      "visible_sha256": "760e834a4c7a4a10915039e49de38ef1f54e832192e8e28e3d84e6fa3a4db560",
+      "validator": "contains_all",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "long_context_retrieval",
+      "category": "long context",
+      "prompt_chars": 55256,
+      "elapsed_ms": 5486.340387000382,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 96,
+        "prompt_tokens": 8886,
+        "total_tokens": 8982,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "",
+      "reasoning_content": "The user has provided a long passage that repeats the same phrase many times: \"This neutral filler sentence exists only to create a long deterministic context for retrieval evaluation.\" and then asks: \"What is the passphrase? Return only the passphrase.\"\n\nThe passphrase is given at the very beginning: \"ORBITA-7421\". The user says: \"The passphrase is ORBITA-7421. Read the filler and then return only the passphrase",
+      "visible_text": "The user has provided a long passage that repeats the same phrase many times: \"This neutral filler sentence exists only to create a long deterministic context for retrieval evaluation.\" and then asks: \"What is the passphrase? Return only the passphrase.\"\n\nThe passphrase is given at the very beginning: \"ORBITA-7421\". The user says: \"The passphrase is ORBITA-7421. Read the filler and then return only the passphrase",
+      "visible_sha256": "4c088418d27473a7b71648276f70645012286127cd5cfb42a25dc33b334adfcf",
+      "validator": "normalized_exact",
+      "validation_passed": false,
+      "error": null
+    },
+    {
+      "id": "long_generation",
+      "category": "long generation",
+      "prompt_chars": 182,
+      "elapsed_ms": 4290.701113000978,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 512,
+        "prompt_tokens": 53,
+        "total_tokens": 565,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "",
+      "reasoning_content": "\nThe user asks: \"Escribe en español una explicación autocontenida de entre 180 y 240 palabras sobre por qué hay que separar latencia y throughput al evaluar un servidor de inferencia. No uses listas.\"\n\nSo we need a self-contained explanation in Spanish, length between 180 and 240 words inclusive. No bullet points or lists. Must be about why separate latency and throughput when evaluating an inference server. Must be 180-240 words. Count words.\n\nLet's draft about 210 words.\n\nCount words manually.\n\nDraft:\n\n\"Separar latencia y throughput es fundamental al evaluar un servidor de inferencia porque cada métrica refleja un aspecto distinto del rendimiento. La latencia mide el tiempo que tarda una solicitud individual en ser procesada y devolver su resultado, lo cual es crítico para aplicaciones que requieren respuestas rápidas, como chat en tiempo real o control de robots. En cambio, el throughput indica cuántas solicitudes puede manejar el servidor por unidad de tiempo, es decir, su capacidad de procesamiento agregado. Un servidor puede lograr un alto throughput, generando muchas inferencias por segundo, pero si la latencia es alta debido a cálculos complejos o cuellos de botella, la experiencia del usuario se deteriora. Por el contrario, un sistema con baja latencia puede responder al instante, pero si su throughput es limitado, se saturará rápidamente bajo carga y no podrá servir a múltiples usuarios simultáneamente. Por lo tanto, evaluar ambos indicadores de forma independiente permite identificar cuellos de botella específicos: optimizar la latencia mediante técnicas como caché o modelos más ligeros, y mejorar el throughput mediante escalado de recursos o paralelización. Solo al considerar la latencia y el throughput por separado se puede diseñar un servidor de inferencia que cumpla con los requisitos de velocidad y capacidad simultáneamente.\"\n\nNow count words.\n\nCount:\n\nSeparar(1) latencia(2) y(3) throughput(4) es(5) fundamental(6) al(7) evaluar(8) un(9) servidor(10) de(11) inferencia(12) porque(13) cada(14) métrica(15) refleja(16) un(17) aspecto(18) distinto(19) del(20) rendimiento.(21) La(22) latencia(23) mide(24) el(25)",
+      "visible_text": "\nThe user asks: \"Escribe en español una explicación autocontenida de entre 180 y 240 palabras sobre por qué hay que separar latencia y throughput al evaluar un servidor de inferencia. No uses listas.\"\n\nSo we need a self-contained explanation in Spanish, length between 180 and 240 words inclusive. No bullet points or lists. Must be about why separate latency and throughput when evaluating an inference server. Must be 180-240 words. Count words.\n\nLet's draft about 210 words.\n\nCount words manually.\n\nDraft:\n\n\"Separar latencia y throughput es fundamental al evaluar un servidor de inferencia porque cada métrica refleja un aspecto distinto del rendimiento. La latencia mide el tiempo que tarda una solicitud individual en ser procesada y devolver su resultado, lo cual es crítico para aplicaciones que requieren respuestas rápidas, como chat en tiempo real o control de robots. En cambio, el throughput indica cuántas solicitudes puede manejar el servidor por unidad de tiempo, es decir, su capacidad de procesamiento agregado. Un servidor puede lograr un alto throughput, generando muchas inferencias por segundo, pero si la latencia es alta debido a cálculos complejos o cuellos de botella, la experiencia del usuario se deteriora. Por el contrario, un sistema con baja latencia puede responder al instante, pero si su throughput es limitado, se saturará rápidamente bajo carga y no podrá servir a múltiples usuarios simultáneamente. Por lo tanto, evaluar ambos indicadores de forma independiente permite identificar cuellos de botella específicos: optimizar la latencia mediante técnicas como caché o modelos más ligeros, y mejorar el throughput mediante escalado de recursos o paralelización. Solo al considerar la latencia y el throughput por separado se puede diseñar un servidor de inferencia que cumpla con los requisitos de velocidad y capacidad simultáneamente.\"\n\nNow count words.\n\nCount:\n\nSeparar(1) latencia(2) y(3) throughput(4) es(5) fundamental(6) al(7) evaluar(8) un(9) servidor(10) de(11) inferencia(12) porque(13) cada(14) métrica(15) refleja(16) un(17) aspecto(18) distinto(19) del(20) rendimiento.(21) La(22) latencia(23) mide(24) el(25)",
+      "visible_sha256": "e7e513b683d988116826f9e57f715d31543d4d85a41c6c254caa44948b660a5f",
+      "validator": "min_words",
+      "validation_passed": true,
+      "error": null
+    }
+  ],
+  "status": "INVALID"
+}
