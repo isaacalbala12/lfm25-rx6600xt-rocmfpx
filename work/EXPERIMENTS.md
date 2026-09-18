@@ -575,3 +575,23 @@ Follow-up output identity:
 - Search-bank source checkpoint: ROCmFPX `063446d`; same-binary default remains
   production BK3 plus control down. Backend SHA-256:
   `ec4f79bc5545bbecded47b05a2b9bde6fd690c005ca3ef5b7181b0e0a5ff8540`.
+
+## EXP-V8-GATEUP-BK3-EXACT-SHAPE — ARCHIVE COMPOSABLE
+
+- Evaluated five opt-in exact-shape/address-control candidates against
+  production selective BK3 at `10752x2048x128`; all passed CPU-reference
+  correctness, exact route proof and five-pair logger-free ABBA.
+- No-split crossed zero (-0.324%). Compile-time K=2048 also crossed zero
+  (-0.143%). No-output-bounds was -0.734% with favorable CI.
+- Best: exact M/N/K specialization, 412.820 -> 407.885 us median,
+  **-1.3163%**, bootstrap 95% CI **[-1.4474%, -0.4203%]**. SPIR-V instruction
+  count fell 3.64%, principally address chains, integer arithmetic, loads and
+  output-control branches.
+- At the 32.79% gate/up share the estimated global ceiling is only ~0.43%, below
+  the 0.75% server gate. No service benchmark was run. Decision: **ARCHIVE
+  COMPOSABLE; exact-shape gate control simplification is converged for V8**.
+- Search-bank checkpoint: ROCmFPX `91655b2`; backend SHA-256
+  `3fd66d51fba2d2f1e4ae0e2957d119a05df96ec7022db5364bb6907652bd68dd`.
+  All candidate selectors default off; production remains selective BK3.
+- Final default-route check selected `matmul_rocmfp4_fast_q8_1_bk3_m` and passed
+  exact CPU-reference correctness. The repository harness finished 26/26 tests.

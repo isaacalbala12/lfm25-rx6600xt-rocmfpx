@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 406.882,
+    "median_us": 406.75,
+    "p5_us": 404.82300000000004,
+    "p95_us": 409.16700000000003,
+    "samples_us": [
+      407.82,
+      405.01,
+      405.24,
+      408.61,
+      409.41,
+      405.91,
+      405.69,
+      407.59,
+      408.87,
+      404.67
+    ],
+    "stdev_us": 1.7691542235392228
+  },
+  "candidate_id": "gateup-bk3-exact",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_exact_m",
+  "control": {
+    "mean_us": 411.579,
+    "median_us": 411.88,
+    "p5_us": 409.14000000000004,
+    "p95_us": 414.135,
+    "samples_us": [
+      412.84,
+      409.47,
+      412.67,
+      408.87,
+      411.09,
+      410.11,
+      414.72,
+      409.9,
+      412.7,
+      413.42
+    ],
+    "stdev_us": 1.9520613036821728
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "decision": "REVIEW_LEVERAGE",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789763983.1440465,
+  "gate": "PASS",
+  "mutation": "combine single-partition and exact-output-grid simplifications in gate/up BK3",
+  "paired_bootstrap_95ci_percent": [
+    -1.522781194015399,
+    -0.7160253287871399
+  ],
+  "paired_delta_median_percent": -1.152849898456787,
+  "paired_delta_percent": [
+    -1.152849898456787,
+    -0.9360469362416857,
+    -0.7160253287871399,
+    -1.3751788702675238,
+    -1.522781194015399
+  ],
+  "pairs": 5,
+  "parent": "gateup-selective-bkstep3",
+  "provenance": {
+    "candidate_backend_sha256": "11dcfffc8db821cba7cd8f262639a082065b6b406a1e7738de354d5c8c7700b1",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "11dcfffc8db821cba7cd8f262639a082065b6b406a1e7738de354d5c8c7700b1",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048",
+    "manifest_sha256": "74c6599f03a752b175204e2992a094d70eff87d7fbe0d050ccc822400eb184fb",
+    "problem": {
+      "family": "gateup",
+      "k": 2048,
+      "m": 10752,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "2aa481b40f70c17920dcf4ea235a18b6ad7dddfb0064052d634def0acca4583b",
+    "source_head": "b1710bfa4e1688192bd84f960dc9680831ef9fa3",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789763932.805538
+}

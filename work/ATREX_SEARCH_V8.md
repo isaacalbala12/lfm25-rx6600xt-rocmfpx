@@ -1,4 +1,4 @@
-# V8 automatic search: down N128
+# V8 automatic search: down N128 and gate/up BK3
 
 ## Objective
 
@@ -63,3 +63,23 @@ family is therefore converged under the predeclared stop rule.
 No result reaches the server gate: `down-exact` has only ~0.50% predicted global
 leverage. It is **ARCHIVE COMPOSABLE**, not production. Full results are in
 `work/KERNEL_MICROBENCH_V8.md` and `work/results/v8-down-search/`.
+
+## Gate/up BK3 follow-up
+
+After down met its convergence rule, five orthogonal exact-shape candidates
+were evaluated against production BK3 in one opt-in library. All passed exact
+CPU-reference correctness and route proof. The strongest candidate specializes
+the complete `10752x2048x128` grid: -1.3163%, 95% CI
+[-1.4474%, -0.4203%]. Its SPIR-V is 3.64% smaller by instruction count.
+
+The ablations show that output-bound removal supplies most of the signal:
+no-bounds was -0.7341% with a favorable CI, while no-split crossed zero and a
+compile-time K=2048 specialization also crossed zero. The combined shape
+candidate is real but its estimated global ceiling is only about 0.43% at the
+32.79% gate/up share. It is **ARCHIVE COMPOSABLE**, not a server candidate.
+
+The gate bank stopped after five formal candidates because the tested exact
+shape/address-control mechanism was below the predeclared server leverage gate;
+more variants of the same mechanism would not move the product target. Raw
+evidence is in `work/results/v8-gate-search/` and static comparisons in
+`work/results/v8-gate-static/`.

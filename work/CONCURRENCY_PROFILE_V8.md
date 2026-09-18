@@ -12,3 +12,9 @@ target. No timeline, fairness, TTFT, VRAM or quality numbers changed.
 
 The next concurrency measurement is gated on a gate/up candidate with useful
 global leverage or a new profile showing that shares have shifted.
+
+Five additional gate/up candidates also stayed below that gate. The best exact
+shape specialization has ~0.43% predicted whole-profile leverage, so no mixed
+batch or 3D+1P numbers are inferred from it. The correct next measurement is a
+fresh lightweight mixed-batch profile of the unchanged production defaults,
+not a server promotion of either archived microcandidate.
