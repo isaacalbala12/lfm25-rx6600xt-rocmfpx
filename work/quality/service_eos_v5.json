@@ -6,14 +6,14 @@
       "id": "arithmetic",
       "category": "mathematics",
       "prompt": "Return only the integer result of 37 multiplied by 24.",
-      "max_tokens": 96,
+      "max_tokens": 256,
       "validator": {"kind": "normalized_exact", "value": "888"}
     },
     {
       "id": "json",
       "category": "json",
       "prompt": "Return only compact JSON with keys answer and count, where answer is ok and count is 3.",
-      "max_tokens": 128,
+      "max_tokens": 256,
       "validator": {"kind": "json_fields", "fields": {"answer": "ok", "count": 3}}
     },
     {
@@ -27,7 +27,7 @@
       "id": "instruction",
       "category": "instructions",
       "prompt": "Return exactly these three lowercase words and nothing else: alpha beta gamma",
-      "max_tokens": 96,
+      "max_tokens": 256,
       "validator": {"kind": "normalized_exact", "value": "alpha beta gamma"}
     },
     {
@@ -44,14 +44,14 @@
       "repeat_text": "This neutral filler sentence exists only to create a long deterministic context for retrieval evaluation. ",
       "repeat_count": 520,
       "suffix": "\nWhat is the passphrase? Return only the passphrase.",
-      "max_tokens": 96,
+      "max_tokens": 256,
       "validator": {"kind": "normalized_exact", "value": "ORBITA-7421"}
     },
     {
       "id": "long_generation",
       "category": "long generation",
       "prompt": "Escribe en español una explicación autocontenida de entre 180 y 240 palabras sobre por qué hay que separar latencia y throughput al evaluar un servidor de inferencia. No uses listas.",
-      "max_tokens": 512,
+      "max_tokens": 1024,
       "validator": {"kind": "min_words", "value": 160}
     }
   ]

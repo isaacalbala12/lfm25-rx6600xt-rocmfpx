@@ -25,6 +25,9 @@ def test_validators_cover_exact_json_contains_and_length():
     assert MODULE.validate('{"answer":"ok","count":3}', {
         "kind": "json_fields", "fields": {"answer": "ok", "count": 3}
     })[0]
+    assert MODULE.validate('```json\n{"answer":"ok","count":3}\n```', {
+        "kind": "json_fields", "fields": {"answer": "ok", "count": 3}
+    })[0]
     assert MODULE.validate("Madrid está en España.", {
         "kind": "contains_all", "values": ["Madrid", "España"]
     })[0]

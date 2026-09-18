@@ -15,6 +15,14 @@ def norm(text: str) -> str:
     return " ".join(text.strip().split())
 
 
+def json_text(text: str) -> str:
+    stripped = text.strip()
+    if stripped.startswith("```") and stripped.endswith("```"):
+        lines = stripped.splitlines()
+        return "\n".join(lines[1:-1]).strip()
+    return stripped
+
+
 def validate(text: str, spec: dict) -> tuple[bool, str]:
     kind = spec["kind"]
     if kind == "normalized_exact":
@@ -25,7 +33,7 @@ def validate(text: str, spec: dict) -> tuple[bool, str]:
         ok = len(text.split()) >= int(spec["value"])
     elif kind == "json_fields":
         try:
-            obj = json.loads(text.strip())
+            obj = json.loads(json_text(text))
             ok = all(obj.get(key) == value for key, value in spec["fields"].items())
         except (ValueError, AttributeError):
             ok = False
