@@ -471,6 +471,7 @@ enum dmmv_wg_sizes {
     DMMV_WG_SIZE_SUBGROUP,
     DMMV_WG_SIZE_LARGE,
     DMMV_WG_SIZE_DOUBLE,
+    DMMV_WG_SIZE_ROWS4,
     DMMV_WG_SIZE_COUNT,
 };
 
@@ -1835,6 +1836,7 @@ static int vk_rocmfp4_fast_dmmv_wg = -1;
 static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
 static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4 = 3;
 static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE = 4;
+static constexpr int ROCMFP4_FAST_DMMV_WG_CONV_N1_ROWS4 = 5;
 // number of calls between perf logger prints
 static uint32_t vk_perf_logger_frequency = 1;
 static std::string vk_pipeline_stats_filter;
@@ -4803,15 +4805,16 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
     static constexpr uint32_t mul_mat_vec_id_num_bindings = 6;
 
     for (uint32_t w = 0; w < DMMV_WG_SIZE_COUNT; ++w) {
-        const uint32_t subgroup_count = w == DMMV_WG_SIZE_SUBGROUP ? 1 : (w == DMMV_WG_SIZE_DOUBLE ? 2 : 4);
+        const bool single_subgroup = w == DMMV_WG_SIZE_SUBGROUP || w == DMMV_WG_SIZE_ROWS4;
+        const uint32_t subgroup_count = single_subgroup ? 1 : (w == DMMV_WG_SIZE_DOUBLE ? 2 : 4);
         const uint32_t wg_size_subgroup   = subgroup_size * subgroup_count;
         const uint32_t wg_size_subgroup16 = subgroup_size16 * subgroup_count;
 
-        const shader_reduction_mode reduc = (use_subgroups && w == DMMV_WG_SIZE_SUBGROUP) ? SHADER_REDUCTION_MODE_SUBGROUP :
+        const shader_reduction_mode reduc = (use_subgroups && single_subgroup) ? SHADER_REDUCTION_MODE_SUBGROUP :
                                             use_subgroups ? SHADER_REDUCTION_MODE_HYBRID :
                                             SHADER_REDUCTION_MODE_SHMEM;
 
-        const shader_reduction_mode reduc16 = (use_subgroups16 && w == DMMV_WG_SIZE_SUBGROUP) ? SHADER_REDUCTION_MODE_SUBGROUP :
+        const shader_reduction_mode reduc16 = (use_subgroups16 && single_subgroup) ? SHADER_REDUCTION_MODE_SUBGROUP :
                                               use_subgroups16 ? SHADER_REDUCTION_MODE_HYBRID :
                                               SHADER_REDUCTION_MODE_SHMEM;
 
@@ -4893,7 +4896,8 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
 
                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_MXFP4][i], "mul_mat_vec_mxfp4_q8_1_f32", arr_dmmv_mxfp4_q8_1_f32_len[reduc], arr_dmmv_mxfp4_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {2*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 2*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q4_0_ROCMFP4][i], "mul_mat_vec_rocmfp4_q8_1_f32", arr_dmmv_rocmfp4_q8_1_f32_len[reduc], arr_dmmv_rocmfp4_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {2*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 2*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
-                ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q4_0_ROCMFP4_FAST][i], "mul_mat_vec_rocmfp4_fast_q8_1_f32", arr_dmmv_rocmfp4_fast_q8_1_f32_len[reduc], arr_dmmv_rocmfp4_fast_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {2*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 2*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
+                const uint32_t rocmfp4_fast_rows = w == DMMV_WG_SIZE_ROWS4 ? rm_stdq_int : 2*rm_stdq_int;
+                ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q4_0_ROCMFP4_FAST][i], "mul_mat_vec_rocmfp4_fast_q8_1_f32", arr_dmmv_rocmfp4_fast_q8_1_f32_len[reduc], arr_dmmv_rocmfp4_fast_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {rocmfp4_fast_rows, 1, 1}, {wg_size_subgroup_int, rocmfp4_fast_rows, i+1}, 1, true, use_subgroups, subgroup_size_int);
                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q2_0_ROCMFPX][i], "mul_mat_vec_rocmfpx_fp2_q8_1_f32", arr_dmmv_rocmfpx_fp2_q8_1_f32_len[reduc], arr_dmmv_rocmfpx_fp2_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {2*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 2*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q3_0_ROCMFPX][i], "mul_mat_vec_rocmfpx_fp3_q8_1_f32", arr_dmmv_rocmfpx_fp3_q8_1_f32_len[reduc], arr_dmmv_rocmfpx_fp3_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {2*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 2*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q6_0_ROCMFPX][i], "mul_mat_vec_rocmfpx_fp6_q8_1_f32", arr_dmmv_rocmfpx_fp6_q8_1_f32_len[reduc], arr_dmmv_rocmfpx_fp6_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {2*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 2*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
@@ -6800,8 +6804,10 @@ static void ggml_vk_instance_init() {
             vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_GATEUP_N4;
         } else if (strcmp(value, "gateup-n4-2sg") == 0 || strcmp(value, "4") == 0) {
             vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE;
+        } else if (strcmp(value, "conv-n1-rows4") == 0 || strcmp(value, "5") == 0) {
+            vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_CONV_N1_ROWS4;
         } else if (strcmp(value, "auto") != 0 && value[0] != '\0') {
-            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, gateup-n4, or gateup-n4-2sg");
+            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, gateup-n4, gateup-n4-2sg, or conv-n1-rows4");
         }
     }
     if (vk_selection_logger_enabled) {
@@ -7247,8 +7253,11 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context * 
             // M=6144/10752 N=2 projections by 39-49%.
             const bool target_n = num_cols == 4 || (num_cols == 2 && m == 2048);
             const bool target_gateup_n4 = m == 10752 && k == 2048 && num_cols == 4;
+            const bool target_conv_n1 = m == 6144 && k == 2048 && num_cols == 1;
             if (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_SUBGROUP) {
                 dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
+            } else if (vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_CONV_N1_ROWS4 && target_conv_n1) {
+                dmmv_wg = DMMV_WG_SIZE_ROWS4;
             } else if (vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE && target_gateup_n4) {
                 dmmv_wg = DMMV_WG_SIZE_DOUBLE;
             } else if ((vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_GATEUP_N4 && target_gateup_n4) ||
@@ -7259,7 +7268,8 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context * 
         }
         if (vk_selection_logger_enabled && a_type == GGML_TYPE_Q4_0_ROCMFP4_FAST) {
             const char * reduction = dmmv_wg == DMMV_WG_SIZE_LARGE ? "large_hybrid" :
-                                     dmmv_wg == DMMV_WG_SIZE_DOUBLE ? "double_hybrid" : "subgroup";
+                                     dmmv_wg == DMMV_WG_SIZE_DOUBLE ? "double_hybrid" :
+                                     dmmv_wg == DMMV_WG_SIZE_ROWS4 ? "subgroup_rows4" : "subgroup";
             std::cerr << "VKSEL event=dmmv_selector m=" << m << " n=" << num_cols << " k=" << k
                       << " reduction=" << reduction
                       << std::endl;
