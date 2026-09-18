@@ -8,6 +8,9 @@
 - Kernel: el backend de producción vuelve al control FP4_FAST. SHA-256 de
   `libggml-rocmfpx-vulkan.so`:
   `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
+- Checkpoint ROCmFPX local: `cce47ba`; scheduler experimental y selectores
+  negativos están revertidos. El `libllama-server-impl.so` reconstruido es
+  `a056472b0980a05ea81ee78063d561126660aa119b9ff263245549cd4acab33d`.
 - Remapeo denso R1 sigue **STAGE** y no debe componerse todavía con producción.
 
 ## Siguiente experimento: trabajo dentro de una wave FP4_FAST
