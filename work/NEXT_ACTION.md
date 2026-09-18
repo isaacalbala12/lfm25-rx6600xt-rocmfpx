@@ -16,12 +16,23 @@ subgroup-count gate/up variants, rows4 short-conv, or N-only selectors.
 The first packed-load candidate is now closed: exact aligned uint extraction
 regresses gate/up N128 by +1.880% (95% CI [+1.692%, +2.071%]) and is
 **REJECT**. Production is restored byte-for-byte. The selector evidence shows
-this shape uses the plugin's medium integer MMQ tile on RADV. Next isolate one
-medium-tile geometry change—prefer `BM=128` versus the current AMD-GCN
-`BM=256`, with all other parameters fixed—and test both gate/up and down N128.
+this shape uses the plugin's medium integer MMQ tile on RADV. The specialization
+vector is `BLOCK_SIZE=256, BM=64, BN=64`—the leading 256 is not BM. Next test
+one aspect-ratio change, `BM=32, BN=128`, retaining 256 threads and the other
+parameters. At N=128 this keeps the total workgroup count while loading each
+weight row for one N tile instead of two. Test gate/up and down independently.
 Reject immediately on >5% regression in either dominant family; require ABBA
 and exact CPU-reference correctness before any server run. Do not combine it
 with the rejected packed-load code.
+
+The 32x128 tile has now also been measured and is **REJECT**: gate/up is
+-0.125% paired with confidence crossing zero, while down is +0.367% and also
+inconclusive. The 64x64 production tile is restored exactly. The next isolated
+high-leverage experiment is FP4_FAST `BK_STEP=2` versus the current 4 on the
+same two N128 shapes. This halves staged K data/LDS per workgroup but doubles K
+loop/barrier frequency, so reject it immediately if either dominant family
+regresses by more than 5%. Keep the tile at 64x64 and the byte-load control;
+require exact correctness and ABBA before considering a server run.
 
 ## Campaign V4 immediate checkpoint
 

@@ -1,0 +1,39 @@
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index abb7e78..e4aa31d 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -3856,7 +3856,9 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+ 
+         // chip specific tuning
+         if ((device->architecture == AMD_GCN) && (device->driver_id != vk::DriverId::eAmdProprietary)) {
+-            m_warptile_mmq = m_warptile_mmq_int = { 256, 64, 64, 32, 16, 16, 2, 2, 2, 1, 16 };
++            // N-wide prefill tile: keep the 16-warps/workgroup topology while
++            // loading each weight row once for an N=128 tile instead of twice.
++            m_warptile_mmq = m_warptile_mmq_int = { 256, 32, 128, 32, 16, 16, 2, 2, 2, 1, 16 };
+             m_warptile_mmqid = m_warptile_mmqid_int = { 256, 64, 64, 32, 16, 16, 2, 2, 2, 1, 16 };
+         } else if (device->vendor_id == VK_VENDOR_ID_AMD && device->coopmat_support && device->driver_id != vk::DriverId::eAmdProprietary) {
+             // This is intentionally using tx_m values, slight performance increase
+@@ -3872,6 +3874,9 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+         l_mmq_wg_denoms = l_wg_denoms = {128, 128, 1 };
+         m_mmq_wg_denoms = m_wg_denoms = { 64,  64, 1 };
+         s_mmq_wg_denoms = s_wg_denoms = { 32,  32, 1 };
++        if ((device->architecture == AMD_GCN) && (device->driver_id != vk::DriverId::eAmdProprietary)) {
++            m_mmq_wg_denoms = { 32, 128, 1 };
++        }
+         l_align = 128;
+         m_align =  64;
+         s_align =  32;
+diff --git a/tests/test-backend-ops.cpp b/tests/test-backend-ops.cpp
+index a168ba0..e01e4c3 100644
+--- a/tests/test-backend-ops.cpp
++++ b/tests/test-backend-ops.cpp
+@@ -10508,6 +10508,9 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
+     test_cases.emplace_back(new test_mul_mat(
+         GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,
+         10752, 128, 2048, {1, 1}, {1, 1}));
++    test_cases.emplace_back(new test_mul_mat(
++        GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,
++        2048, 128, 10752, {1, 1}, {1, 1}));
+ 
+     return test_cases;
+ }

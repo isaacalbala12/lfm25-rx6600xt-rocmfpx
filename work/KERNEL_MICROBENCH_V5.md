@@ -36,3 +36,26 @@ preserve FP4_FAST values.
 This result closes the naive unaligned-to-aligned load substitution. The next
 gate/up experiment must change tile geometry or reduce actual unpack/address
 work; it must not reintroduce this extraction sequence.
+
+## EXP-V5-KERNEL-PREFILL-WIDE-N128 — REJECT
+
+- Selector audit corrected the specialization interpretation: the RDNA2 medium
+  MMQ tuple is `BLOCK_SIZE=256, BM=64, BN=64`; 256 is not BM.
+- Hypothesis: use `BM=32, BN=128` with the same 256 threads and remaining
+  geometry. At N=128 this preserves the total number of workgroups while each
+  weight row is loaded for one column tile instead of two.
+- Exact CPU-reference correctness passes for both gate/up
+  `10752x2048x128` and down `2048x10752x128`.
+- Ten logger-free ABBA pairs, twenty samples per arm:
+  - gate/up: 428.010 us control, 427.820 us candidate; paired median -0.125%,
+    bootstrap 95% interval [-0.257%, +0.194%];
+  - down: 507.215 us control, 508.920 us candidate; paired median +0.367%,
+    interval [-0.068%, +0.541%].
+- Decision: **REJECT** before server testing. Gate/up is indistinguishable from
+  control and down trends slower; both effects are below the 0.75% retention
+  threshold. ROCmFPX `a6dd6ad` restores the 64x64 tile, and the rebuilt backend
+  hash matches the saved control exactly (`40f6b9c...b25b40`).
+
+The reusable test coverage for both exact N128 shapes remains at ROCmFPX
+`f65b3dc`. Raw samples and paired bootstrap output are in
+`work/results/v5-kernel-prefill-wide-n128/`.

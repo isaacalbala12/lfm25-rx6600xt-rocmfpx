@@ -366,3 +366,13 @@ Follow-up output identity:
 - Decision: **REJECT**, no server run. ROCmFPX `d92f6a4` reverts the candidate
   and reproduces the control library hash exactly. Preserve the evidence, but
   do not retry this packed-read implementation.
+
+## EXP-V5-KERNEL-PREFILL-WIDE-N128 — REJECT
+
+- Changed the real plugin medium MMQ tile from 64x64 to 32x128, retaining 256
+  threads and all FP4_FAST values. Exact gate/up and down correctness pass.
+- Ten ABBA pairs: gate/up paired -0.125% with 95% CI
+  [-0.257%, +0.194%]; down +0.367% with CI [-0.068%, +0.541%].
+- Decision: **REJECT**, no server run. Neither shape reaches the 0.75% stage
+  threshold, and down trends in the wrong direction. ROCmFPX `a6dd6ad`
+  restores the production tile and exact control library hash.
