@@ -147,19 +147,10 @@ ACC_TYPE mmq_dot_product(const uint ib_a) {
 #if defined(DATA_A_MXFP4) || defined(DATA_A_ROCMFP4) || defined(DATA_A_ROCMFP4_FAST)
 // 1-byte quant loads for microscaled FP4 blocks. ROCmFP4 uses two compact half-block scales.
 void block_a_to_shmem(const uint buf_ib, const uint ib, const uint iqs) {
-#if defined(DATA_A_ROCMFP4_FAST)
-    const uint byte_offset = ib * 17u + iqs * 4u;
-    const uint word_index  = byte_offset >> 2;
-    const uint bit_shift   = (byte_offset & 3u) * 8u;
-    const uint word_lo     = data_a_raw32[word_index];
-    const uint qs          = bit_shift == 0u ? word_lo :
-        (word_lo >> bit_shift) | (data_a_raw32[word_index + 1u] << (32u - bit_shift));
-#else
     const uint32_t qs = pack32(u8vec4(data_a[ib].qs[iqs * 4    ],
                                       data_a[ib].qs[iqs * 4 + 1],
                                       data_a[ib].qs[iqs * 4 + 2],
                                       data_a[ib].qs[iqs * 4 + 3]));
-#endif
 
     const u8vec4 i_a0 = unpack8( qs       & 0x0F0F0F0F);
     const u8vec4 i_a1 = unpack8((qs >> 4) & 0x0F0F0F0F);
