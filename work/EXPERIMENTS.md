@@ -257,6 +257,18 @@ Profile B guardrail completed:
   for two subgroups: **+36.23% latency**.
 - Decision: **REJECT** without a server run. One wave is decisively better than
   two and four waves for this shape. Close subgroup-count tuning here.
+
+## EXP-V4-KERNEL-CONV-N1-ROWS4 — REJECT
+
+- Halved rows accumulated per wave from eight to four only for FP4_FAST
+  M=6144, K=2048, N=1. Selector isolation passes.
+- Ten logger-free ABBA pairs: raw medians 367.390 us control versus 363.740 us
+  candidate (-0.99%). Pair median is -0.40%, bootstrap 95% interval
+  [-1.43%, +0.19%].
+- The stock CPU-reference corpus has no exact case (0/0), so correctness is
+  explicitly unproven rather than inferred.
+- Decision: **REJECT**. Statistical signal and global ceiling are too small to
+  justify the extra pipeline or a server campaign.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation

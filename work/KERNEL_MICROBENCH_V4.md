@@ -71,3 +71,33 @@ Evidence:
 - `work/results/v4-kernel-gateup-2sg-micro-abba10/`
 - `work/results/v4-kernel-gateup-2sg-correctness/`
 - `work/results/v4-kernel-gateup-2sg-selector-proof/`
+
+## K4: 6144x2048,N=1 rows4 — REJECT
+
+- Source checkpoint: `fee88e32dd01b22e594206397e1356d953a918c4`.
+- Hypothesis: reduce FP4_FAST accumulators from eight to four rows per wave,
+  improving register pressure and exposing twice as many workgroups while
+  retaining BLOCK_SIZE=32.
+- Selector: `conv-n1-rows4` changes only M=6144, K=2048, N=1; all neighboring
+  shapes stay on the existing subgroup pipeline.
+- Protocol: ten ABBA pairs, 20 samples per arm, loggers absent.
+
+| Arm | Median us | Range us |
+| --- | ---: | ---: |
+| rows8 control | 367.390 | 358.60--379.67 |
+| rows4 candidate | 363.740 | 353.48--375.27 |
+
+The raw median delta is -0.99%, but the median pair delta is only -0.40% and
+the deterministic pair-bootstrap 95% interval is [-1.43%, +0.19%]. The
+standard correctness corpus has no exact 6144x2048,N=1 case (0/0 tests), so no
+correctness claim is made from that invocation.
+
+Decision: **REJECT**. The signal is inconclusive and its optimistic global
+ceiling is roughly 0.2% because the shape is 20.72% of profiled C4 MMV. That
+does not justify another pipeline plus unresolved exact-shape validation.
+
+Evidence:
+
+- `work/results/v4-kernel-conv-n1-rows4-micro-abba10/`
+- `work/results/v4-kernel-conv-n1-rows4-selector-proof/`
+- `work/results/v4-kernel-conv-n1-rows4-correctness/` (documents 0/0)

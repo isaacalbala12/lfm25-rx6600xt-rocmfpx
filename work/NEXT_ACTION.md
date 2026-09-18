@@ -134,3 +134,9 @@ four waves. The next kernel investigation should target the unbatched
 6144x2048,N=1 path (20.72% of measured C4 MMV) or alter gate/up's per-wave
 algorithm; do not add more cooperative-wave variants without new ISA/resource
 evidence.
+
+Rows4 result: M=6144,K=2048,N=1 has a -0.40% paired median with a 95%
+bootstrap interval crossing zero; its optimistic whole-MMV effect is about
+0.2%. Mark REJECT and do not spend a server run on it. Return to the high-value
+chunk128 scheduler candidate and run contemporary paired interference controls,
+keeping all kernel experiment variables unset.
