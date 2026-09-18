@@ -6,6 +6,7 @@ SOURCE=${SOURCE:-$ROOT/work/sources/ROCmFPX}
 BUILD=${BUILD:-$ROOT/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented}
 SERVER=${SERVER:-$BUILD/bin/llama-server}
 BACKEND=${BACKEND:-$BUILD/bin/libggml-rocmfpx-vulkan.so}
+PLUGIN=${PLUGIN:-$BUILD/bin/rocmfpx-vulkan-plugin.so}
 MODEL=${MODEL:-$ROOT/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf}
 CMAKE=${CMAKE:-/home/isaac/vllm-challenge/toolchain/bin/cmake}
 PATCH=$ROOT/patches/v6-auto/gateup-selective-bkstep3.patch
@@ -16,6 +17,7 @@ PORT=${PORT:-18230}
 PATCH_APPLIED=0
 export LD_PRELOAD=/home/isaac/vllm-challenge/toolchain/lib/libstdc++.so.6:/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1
 export ROCMFPX_BACKEND_PATH=$BACKEND
+export ROCMFPX_PLUGIN_PATH=$PLUGIN
 
 if [[ -e "$OUTPUT" ]]; then
   echo "output already exists: $OUTPUT" >&2
@@ -32,6 +34,8 @@ fi
 mkdir -p "$OUTPUT"
 sha256sum "$BACKEND" >"$OUTPUT/control-backend.sha256"
 CONTROL_HASH=$(cut -d' ' -f1 "$OUTPUT/control-backend.sha256")
+"$SERVER" --list-devices >"$OUTPUT/control-devices.stdout" 2>"$OUTPUT/control-devices.stderr"
+grep -q 'ROCmFPXVulkan0' "$OUTPUT/control-devices.stdout"
 
 cleanup() {
   local status=$?
@@ -59,11 +63,13 @@ git -C "$SOURCE" apply "$PATCH"
 PATCH_APPLIED=1
 "$CMAKE" --build "$BUILD" --target ggml-rocmfpx-vulkan -j 2 \
   >"$OUTPUT/build.stdout" 2>"$OUTPUT/build.stderr"
-sha256sum "$SERVER" "$BACKEND" "$MODEL" >"$OUTPUT/candidate-hashes.txt"
+sha256sum "$SERVER" "$PLUGIN" "$BACKEND" "$MODEL" >"$OUTPUT/candidate-hashes.txt"
 if [[ "$CONTROL_HASH" == "$(sha256sum "$BACKEND" | cut -d' ' -f1)" ]]; then
   echo "candidate backend was not rebuilt" >&2
   exit 2
 fi
+"$SERVER" --list-devices >"$OUTPUT/candidate-devices.stdout" 2>"$OUTPUT/candidate-devices.stderr"
+grep -q 'ROCmFPXVulkan0' "$OUTPUT/candidate-devices.stdout"
 
 run_arm() {
   local pair=$1 arm=$2 enabled=$3
