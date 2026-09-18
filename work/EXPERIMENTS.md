@@ -495,3 +495,27 @@ Follow-up output identity:
   SHA-256 is `567bead1147b1215f7f0c968fabef1a0ca91e92596d7a68684e6dfac6ef641d0`.
   An exact gate/up N=4 CPU-reference smoke test passes with all experimental
   selector variables unset.
+
+## EXP-V6-ATREX-ADAPTER — KEEP tooling
+
+- Audited official Atrex at `d83b01a`; its supervisor/ABBA/memory concepts are
+  reusable, while its evaluator is coupled to `kernel.py`/Triton/FlyDSL.
+- Added a bounded exact-plugin adapter with reversible allowlisted patches,
+  taboo memory, hard correctness, route proof, artifact hashes, ABBA and
+  restoration checks.
+- A dry run exposed a stale-plugin flaw. The records are retained INVALID; the
+  fixed evaluator builds `ggml-rocmfpx-vulkan` and rejects identical patched
+  hashes. Decision: **KEEP tooling**.
+
+## EXP-V6-GATEUP-BK-SEARCH — selective BK3 STAGE
+
+- Automated focal search: BK1 +4.900%, BK3 -3.891%, BK5 +18.052%, BK8
+  +84.237% on `10752x2048x128`.
+- BK3 wins 3.85--4.29% at gate/up N=120/128/129 but regresses down N128 by
+  2.122%. Global BK3 is **REJECT**.
+- A gate/up-only BK3 pipeline improves 428.975 -> 412.940 us over five ABBA
+  pairs: -3.859%, 95% [-3.993%, -3.521%], with correctness and route proof.
+- Three valid Profile-B pairs all favor it: input/output +1.367% median, TTFT
+  p95 -1.240%, E2E p95 -1.347%, identical outputs 3/3.
+- Decision: **STAGE** pending ten pairs plus 3D+1P/resident/quality guardrails.
+  Production was restored to backend `40f6b9c...b25b40`.
