@@ -8,28 +8,28 @@
 - Kernel: el backend de producción vuelve al control FP4_FAST. SHA-256 de
   `libggml-rocmfpx-vulkan.so`:
   `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
-- Checkpoint ROCmFPX local: `cce47ba`; scheduler experimental y selectores
+- Checkpoint ROCmFPX local: `7c4b5c0`; scheduler experimental y selectores
   negativos están revertidos. El `libllama-server-impl.so` reconstruido es
   `a056472b0980a05ea81ee78063d561126660aa119b9ff263245549cd4acab33d`.
 - Remapeo denso R1 sigue **STAGE** y no debe componerse todavía con producción.
 
-## Siguiente experimento: trabajo dentro de una wave FP4_FAST
+## Siguiente experimento: scheduler temporal decode-aware
 
 Flash Attention y los cambios de geometría cooperativa quedan cerrados. La
 variante hybrid exacta de down `M=2048,K=10752,N=4` regresa +17.744%, así que
-una wave32 subgroup sigue siendo el control. El siguiente candidato de leverage
-alto debe cambiar trabajo **dentro de esa wave**, no añadir subgroups.
+una wave32 subgroup sigue siendo el control. Dos cambios internos adicionales
+también han fallado: arithmetic unpack (+44.672%) y dual accumulator (+9.872%).
+Sin una señal ISA nueva, el leverage inmediato vuelve al scheduler interactivo.
 
-Usar runtime estable y chunk128. Inspeccionar el shader/ISA de
-`mul_mat_vec_rocmfp4_fast_q8_1_f32` en gate/up N=4 (39.60% del MMV) y down N=4
-(21.08%). Elegir una sola transformación respaldada por instrucciones:
+Usar runtime estable y chunk128 como control:
 
-1. contar unpack, shifts/masks, conversiones y cargas de escala por bloque;
-2. buscar una conversión redundante o una cadena de dependencias que pueda
-   dividirse entre dos acumuladores sin aumentar spills;
-3. crear un pipeline opt-in exacto para una sola forma;
-4. correctitud y ABBA logger-free antes del servidor;
-5. exigir >2% local para continuar, y estimar leverage con la participación
+1. conservar LUT y acumulación simple: arithmetic unpack y dual-accumulator
+   regresan +44.672% y +9.872%;
+2. detener la microtuning especulativa de decode gate/up sin ISA nueva;
+3. volver al leverage de servicio: medir una política temporal adaptativa
+   chunk128/96 basada en duración EWMA, con máximo tres candidatos focalizados;
+4. exigir una mejora del frente ITL/TTFT en 3D+1P y mantener C4 residente;
+5. solo entonces componer el BK2 gate-only archivado si la mejora es
    contemporánea; no hacer otro sweep de rows/waves.
 
 ## Hipótesis cerradas que no deben reabrirse sin evidencia nueva
@@ -45,6 +45,8 @@ Usar runtime estable y chunk128. Inspeccionar el shader/ISA de
 - eliminación del limitador de ocupación FA de RDNA2.
 - `Bc=64` FA sobre la forma exacta 8Kx4.
 - hybrid/large para down `2048x10752,N=4` (+17.744% latencia).
+- desempaquetado FP4_FAST aritmético para gate/up N=4 (+44.672% latencia).
+- doble banco de acumuladores gate/up N=4 (+9.872% latencia).
 - prefill idle ilimitado (rompe equidad del batch).
 
 El selectivo gate-only fue una mejora real pero insuficiente: diez pares AB/BA

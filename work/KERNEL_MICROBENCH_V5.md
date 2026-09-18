@@ -152,3 +152,31 @@ prefill shapes, with step 4 retained for down and decode.
   68.315 us hybrid, **+17.744% latency**.
 - Decision: **REJECT**, no server run. The current one-subgroup kernel is
   decisively better for down N=4; do not revive the old broad selector.
+
+## EXP-V5-KERNEL-GATE-N4-ARITH-UNPACK — REJECT
+
+- Exact path: FP4_FAST x Q8_1 DMMV, `M=10752,K=2048,N=4`, one wave32.
+- Hypothesis: replace eight shared codebook lookups per FP4 block with an exact
+  arithmetic decode of magnitude `{0,1,2,3,4,6,8,10}` and sign bit 3.
+- Same-library selector proof reports `reduction=subgroup` and `unpack=arith`;
+  all other shapes retain the LUT pipeline.
+- CPU-reference correctness passes for control and candidate.
+- Ten logger-free ABBA pairs / twenty samples per arm: 65.075 us LUT versus
+  94.145 us arithmetic, **+44.672% latency**.
+- Decision: **REJECT immediately**, no server run. Avoiding LDS here costs far
+  more ALU/register work than it saves. Candidate commit `66a426a`; production
+  is restored by ROCmFPX `055241b`.
+
+## EXP-V5-KERNEL-GATE-N4-DUALACC — REJECT
+
+- Hypothesis: alternate K iterations between two independent accumulator banks
+  to break the FP4_FAST dot-product dependency chain inside the existing
+  one-wave gate/up N=4 kernel.
+- Selector proof reports `reduction=subgroup` and `accum=dual`; unpack,
+  geometry, FP4 codes and scales remain unchanged.
+- Both arms pass exact CPU-reference correctness.
+- Ten logger-free ABBA pairs / twenty samples per arm: 64.680 us single-bank
+  versus 71.065 us dual-bank, **+9.872% latency**.
+- Decision: **REJECT**, no server run. Added VGPR pressure/final reduction
+  outweighs any dependency-level parallelism. Candidate commit `150396a`;
+  production is restored by ROCmFPX `7c4b5c0`.

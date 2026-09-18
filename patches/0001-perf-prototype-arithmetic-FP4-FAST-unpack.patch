@@ -1,0 +1,96 @@
+From 66a426a126a2b3b999fe2cee070af03019797fe4 Mon Sep 17 00:00:00 2001
+From: isaacalbala12 <isaacalbala12@users.noreply.github.com>
+Date: Fri, 18 Sep 2026 15:51:41 +0200
+Subject: [PATCH] perf: prototype arithmetic FP4 FAST unpack
+
+The complete reproducible candidate is commit
+66a426a126a2b3b999fe2cee070af03019797fe4 in the pinned ROCmFPX source.
+
+It adds an opt-in gate/up N=4 pipeline selected with:
+
+  GGML_VK_ROCMFP4_FAST_UNPACK=arith-gateup-n4
+
+The shader replaces the eight shared codebook lookups in each FP4 repack with
+an exact register-arithmetic mapping of magnitude {0,1,2,3,4,6,8,10} and sign
+bit 3. It also adds the embedded SPIR-V variant, dedicated pipeline storage,
+exact M=10752/K=2048/N=4 selection, and selector logging.
+
+Apply with:
+
+  git cherry-pick 66a426a126a2b3b999fe2cee070af03019797fe4
+
+Result: REJECT. CPU-reference correctness passed, but the ten-pair ABBA
+median regressed from 65.075 us to 94.145 us (+44.6715%).
+
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index abb7e78..7b6b5ee 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -785,6 +785,7 @@ struct vk_device_struct {
+     vk_pipeline pipeline_dequant_mul_mat_vec_q8_1_f32[DMMV_WG_SIZE_COUNT][GGML_TYPE_COUNT][mul_mat_vec_max_cols];
++    vk_pipeline pipeline_rocmfp4_fast_arith_q8_1_f32[mul_mat_vec_max_cols];
+     vk_pipeline pipeline_dequant_mul_mat_vec_id_q8_1_f32[DMMV_WG_SIZE_COUNT][GGML_TYPE_COUNT];
+@@ -1833,6 +1834,7 @@ static bool vk_dmmv_phase_logger_enabled = false;
+ static int vk_rocmfp4_fast_dmmv_wg = -1;
++static bool vk_rocmfp4_fast_arith_gateup_n4 = false;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
+@@ -4898,6 +4900,9 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+                 const uint32_t rocmfp4_fast_rows = w == DMMV_WG_SIZE_ROWS4 ? rm_stdq_int : 2*rm_stdq_int;
+                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q4_0_ROCMFP4_FAST][i], "mul_mat_vec_rocmfp4_fast_q8_1_f32", arr_dmmv_rocmfp4_fast_q8_1_f32_len[reduc], arr_dmmv_rocmfp4_fast_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {rocmfp4_fast_rows, 1, 1}, {wg_size_subgroup_int, rocmfp4_fast_rows, i+1}, 1, true, use_subgroups, subgroup_size_int);
++                if (w == DMMV_WG_SIZE_SUBGROUP) {
++                    ggml_vk_create_pipeline(device, device->pipeline_rocmfp4_fast_arith_q8_1_f32[i], "mul_mat_vec_rocmfp4_fast_arith_q8_1_f32", mul_mat_vec_rocmfp4_fast_arith_q8_1_f32_subgroup_len, mul_mat_vec_rocmfp4_fast_arith_q8_1_f32_subgroup_data, "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {2*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 2*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
++                }
+@@ -6810,6 +6815,13 @@ static void ggml_vk_instance_init() {
+         }
+     }
++    if (const char * value = getenv("GGML_VK_ROCMFP4_FAST_UNPACK")) {
++        if (strcmp(value, "arith-gateup-n4") == 0) {
++            vk_rocmfp4_fast_arith_gateup_n4 = true;
++        } else if (strcmp(value, "lut") != 0 && strcmp(value, "auto") != 0 && value[0] != '\0') {
++            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_UNPACK must be auto, lut, or arith-gateup-n4");
++        }
++    }
+@@ -7274,6 +7286,14 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context *
+                       << std::endl;
+         }
++        if (a_type == GGML_TYPE_Q4_0_ROCMFP4_FAST && vk_rocmfp4_fast_arith_gateup_n4 &&
++            m == 10752 && k == 2048 && num_cols == 4) {
++            if (vk_selection_logger_enabled) {
++                std::cerr << "VKSEL event=dmmv_unpack m=" << m << " n=" << num_cols << " k=" << k
++                          << " unpack=arith" << std::endl;
++            }
++            return ctx->device->pipeline_rocmfp4_fast_arith_q8_1_f32[num_cols-1];
++        }
+         return ctx->device->pipeline_dequant_mul_mat_vec_q8_1_f32[dmmv_wg][a_type][num_cols-1];
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mat_vecq_funcs.glsl b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mat_vecq_funcs.glsl
+index 55923a6..dd75350 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mat_vecq_funcs.glsl
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mat_vecq_funcs.glsl
+@@ -137,8 +137,21 @@ i32vec2 repack(uint ib, uint iqs) {
+ #if defined(DATA_A_ROCMFP4) || defined(DATA_A_ROCMFP4_FAST)
++#if defined(ROCMFP4_FAST_ARITH_CODEBOOK)
++    ivec4 a0_mag = ivec4(i_a0 & u8vec4(7));
++    ivec4 a1_mag = ivec4(i_a1 & u8vec4(7));
++    ivec4 a0 = a0_mag + max(a0_mag - ivec4(4), ivec4(0));
++    ivec4 a1 = a1_mag + max(a1_mag - ivec4(4), ivec4(0));
++    a0 = mix(a0, -a0, notEqual(i_a0 & u8vec4(8), u8vec4(0)));
++    a1 = mix(a1, -a1, notEqual(i_a1 & u8vec4(8), u8vec4(0)));
++    return i32vec2(pack32(i8vec4(a0)), pack32(i8vec4(a1)));
++#else
+     return i32vec2(pack32(i8vec4(kvalues_rocmfp4[i_a0.x], kvalues_rocmfp4[i_a0.y], kvalues_rocmfp4[i_a0.z], kvalues_rocmfp4[i_a0.w])),
+                    pack32(i8vec4(kvalues_rocmfp4[i_a1.x], kvalues_rocmfp4[i_a1.y], kvalues_rocmfp4[i_a1.z], kvalues_rocmfp4[i_a1.w])));
++#endif
+ #else
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+index 176a350..e02d412 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -759,6 +759,13 @@ void process_shaders() {
+             string_to_spv("mul_mat_vec_id_" + tname + "_q8_1_f32_subgroup_no_shmem", "mul_mat_vecq.comp", merge_maps(base_dict, {{"MUL_MAT_ID", "1"}, {data_a_key, "1"}, {"D_TYPE", "float"}, {"FLOAT_TYPE", "float"}, {"FLOAT_TYPEV2", "vec2"}, {"ACC_TYPE", "float"}, {"USE_SUBGROUP_ADD_NO_SHMEM", "1"}}));
++            if (tname == "rocmfp4_fast") {
++                string_to_spv("mul_mat_vec_rocmfp4_fast_arith_q8_1_f32_subgroup", "mul_mat_vecq.comp",
++                    merge_maps(base_dict, {{data_a_key, "1"}, {"D_TYPE", "float"}, {"FLOAT_TYPE", "float"},
++                        {"FLOAT_TYPEV2", "vec2"}, {"ACC_TYPE", "float"}, {"USE_SUBGROUP_ADD", "1"},
++                        {"ROCMFP4_FAST_ARITH_CODEBOOK", "1"}}));
++            }
+         }

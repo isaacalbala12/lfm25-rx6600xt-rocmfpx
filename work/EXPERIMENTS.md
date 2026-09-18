@@ -464,3 +464,30 @@ Follow-up output identity:
 - Decision: **ARCHIVE COMPOSABLE / INCONCLUSIVE guardrail**. Preserve the
   low-cost patch and evidence, but keep fixed chunk128 in production. ROCmFPX
   `cce47ba` restores the production scheduler.
+
+## EXP-V5-KERNEL-GATE-N4-ARITH-UNPACK — REJECT
+
+- Added a separate opt-in DMMV pipeline for exact gate/up decode
+  `10752x2048x4`; selection logs prove the normal one-wave reduction plus the
+  arithmetic unpack pipeline executed.
+- The candidate preserves every FP4_FAST code and scale. Both arms pass the
+  exact CPU-reference operation test.
+- Ten ABBA pairs: LUT median 65.075 us; arithmetic median 94.145 us;
+  **+44.672% latency**.
+- Decision: **REJECT**, without server testing. The attempted LDS-to-ALU trade
+  is decisively unfavorable on gfx1032. Patch, selector proof, correctness and
+  all raw samples are retained under
+  `work/results/v5-kernel-gate-n4-arith-unpack/`.
+
+## EXP-V5-KERNEL-GATE-N4-DUALACC — REJECT
+
+- Added an exact opt-in gate/up N=4 shader with two alternating accumulator
+  banks. Selection logging proves it kept the one-wave subgroup reduction and
+  executed only the target pipeline.
+- Control and candidate pass CPU-reference correctness.
+- Ten ABBA pairs: 64.680 us single-bank versus 71.065 us dual-bank,
+  **+9.872% latency**.
+- Decision: **REJECT**, without server testing. The extra live accumulators and
+  final merge cost more than the removed dependency pressure. Patch and raw
+  evidence are retained in `patches/` and
+  `work/results/v5-kernel-gate-n4-dualacc/`.
