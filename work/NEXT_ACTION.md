@@ -10,25 +10,24 @@
   `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
 - Remapeo denso R1 sigue **STAGE** y no debe componerse todavía con producción.
 
-## Siguiente experimento: Flash Attention a 8K
+## Siguiente experimento: down projection N=4
 
-El perfil causal N=128/8K atribuye a Flash Attention 16.566 ms, el 23.11% del
-tiempo GPU agrupado. Es el mayor hot path abierto después de cerrar los cambios
-simples de gate/up. El siguiente experimento debe:
+Flash Attention queda cerrada en V5: quitar el límite de ocupación tenía un
+techo global de ~0.35%, y el único Bc64 permitido empeoró la latencia exacta
+8Kx4 un 14.58%. El siguiente candidato de leverage alto es la proyección down
+`M=2048,K=10752,N=4`, que representa 21.08% del MMV decode medido y 23.28% del
+prefill 8K agrupado.
 
-1. mapear el shader/pipeline exacto por capas y confirmar forma, strides,
-   máscara, KV q8/q8, tamaño de subgroup y workgroup;
-2. usar el mapa ya probado: scalar integer-dot, Q8_0/Q8_0, HSK=HSV=64,
-   wave32, 128 hilos, Br=8/Bc=32/D_split=8 y acceso alineado;
-3. comprobar viabilidad de una sola variante `Bc=64` para N grande, incluyendo
-   memoria compartida, número de workgroups y coste de máscara;
-4. inspeccionar ISA y recursos disponibles sin PMC inestable;
-5. validar correctitud, microbenchmark exacto hot/rotating y ABBA;
-6. ejecutar Profile B y 3D+1P solamente si el microbenchmark gana al menos 3%
-   local, equivalente a ~0.7% global máximo sobre la participación medida.
+Usar el runtime estable y chunk128. Aislar exclusivamente la forma down y
+comparar el pipeline subgroup actual con la variante hybrid/large ya compilada,
+sin repetir el selector N-only rechazado. Primero:
 
-Conservar chunk128 durante la validación de servicio. Medir el kernel con el
-runtime estable y no mezclarlo con R1.
+1. confirmar pipeline, tipos y strides exactos en el plugin;
+2. ejecutar correctitud de operación y ABBA logger-free para down N=4;
+3. exigir una mejora local clara y estimar leverage global antes del servidor;
+4. si pasa, validar C4 resident 8K y Profile B/3D+1P por separado;
+5. si la señal antigua no se reproduce, cerrar la variante y atacar K tiling o
+   unpack con una hipótesis nueva, no ampliar el selector.
 
 ## Hipótesis cerradas que no deben reabrirse sin evidencia nueva
 
@@ -39,19 +38,24 @@ runtime estable y no mezclarlo con R1.
 - rows4 para short-conv;
 - carga FP4 alineada de 32 bits;
 - tile MMQ `BM=32,BN=128`;
-- `BK_STEP=2` global o selectivo para gate/up.
+- `BK_STEP=2` global para todas las formas.
 - eliminación del limitador de ocupación FA de RDNA2.
+- `Bc=64` FA sobre la forma exacta 8Kx4.
 
 El selectivo gate-only fue una mejora real pero insuficiente: diez pares AB/BA
 dieron +0.486% de throughput (95% CI [+0.371%, +0.705%]) y outputs exactos
-10/10. Es **REJECT** porque no alcanza el umbral V5 de 0.75% y añade una ruta
-de shader completa. La implementación y su reversión permanecen en patches y
-resultados para reproducibilidad.
+10/10. Con la política de leverage vigente queda **ARCHIVE COMPOSABLE**: no se
+promociona sola ni recibe más tiempo ahora, pero su selector, patch y resultados
+se conservan para una futura composición de bajo coste.
 
-La primera variante FA también está cerrada: quitar el limitador sintético de
+La primera variante FA está cerrada: quitar el limitador sintético de
 26 KiB gana solo ~1.5% local en el tile largo, no mejora el servidor (-0.141%
 exploratorio) y tiene un techo global de ~0.35%. Es **REJECT**. No volver a
 tocar ocupación sin una modificación algorítmica que cambie ese techo.
+
+Bc64 también está cerrado: pasa correctitud, pero el microbenchmark exacto
+regresa +14.58%. No ejecutar una campaña de servidor ni probar más tiles FA en
+V5.
 
 ## Control experimental
 

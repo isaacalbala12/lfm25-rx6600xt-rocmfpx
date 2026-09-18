@@ -43,6 +43,29 @@ Decision: **REJECT**. The candidate is correct and narrowly faster inside FA,
 but it misses the 0.75% global retention threshold and does not improve the
 server. ROCmFPX `e7ec6c2` restores the production selector.
 
-The next FA experiment must change useful work or memory access, not merely
-occupancy. A single `Bc=64` large-N variant is the next bounded hypothesis,
-subject to shared-memory feasibility and exact microbenchmarking first.
+## EXP-V5-FA-RDNA2-BC64 — REJECT; close FA in V5
+
+The one permitted follow-up doubled the scalar shader's column tile from
+`Bc=32` to `Bc=64` only for RDNA2, Q8/Q8, HSK=HSV=64, N>=32 and KV>=1024.
+It used the plugin backend and an exact LFM2 C4 long-context test geometry:
+32 Q heads over 8 KV heads, four batch planes, N=32 and KV=8192. Both the
+control and candidate pass the CPU-reference operation test.
+
+A logger-free exploratory ABBA run measured synchronized operation wall time:
+
+| Order | Control Bc32 | Candidate Bc64 |
+|---|---:|---:|
+| A/B | 7614.54 us | 8773.06 us |
+| B/A | 7638.27 us | 8703.19 us |
+
+The medians are 7626.41 us and 8738.13 us: **+14.58% latency** for Bc64.
+This exceeds the predeclared 5% immediate-rejection boundary, so no server
+benchmark was run. The candidate patch is archived as
+`patches/0001-perf-prototype-RDNA2-FA-Bc64-tile.patch`; ROCmFPX `55dfdf0`
+restores the production selector. The rebuilt production backend hash is again
+`40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
+
+Decision: **REJECT** and close Flash Attention optimization for V5. The
+occupancy bypass offers only ~0.35% global ceiling and Bc64 is decisively
+slower. Reopen FA only with a new algorithmic or memory-access hypothesis whose
+measured global leverage can exceed 0.75%.

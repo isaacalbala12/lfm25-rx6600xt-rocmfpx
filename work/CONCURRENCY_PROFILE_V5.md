@@ -69,6 +69,8 @@ improves 0.693%, E2E p95 improves 0.485%, and outputs are exactly equal in all
 10/10 pairs. Every pair favors the candidate, so this is a real small effect,
 not evidence of a regression.
 
-Decision: **REJECT**. It does not reach the predeclared 0.75% threshold and has
-no structural value that offsets the added pipeline. The candidate has been
-removed and the rebuilt production backend matches the saved control hash.
+Decision under the current leverage policy: **ARCHIVE COMPOSABLE**. It is a
+real, correct +0.486% effect in the 0.2–0.75% band, but not a standalone
+production promotion. The candidate has been removed from the active build;
+its selector, patch and evidence remain available for later composition. The
+rebuilt production backend matches the saved control hash.

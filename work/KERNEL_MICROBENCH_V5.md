@@ -90,7 +90,7 @@ Do not enable BK_STEP=2 for all FP4_FAST matrices. The only justified follow-up
 is a second compiled pipeline selected for gate/up-like `M=10752,K=2048,N`
 prefill shapes, with step 4 retained for down and decode.
 
-## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — REJECT
+## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — ARCHIVE COMPOSABLE
 
 - Implementation: a second embedded SPIR-V,
   `matmul_rocmfp4_fast_q8_1_bk2`, selected only when FP4_FAST uses quantized
@@ -121,10 +121,21 @@ prefill shapes, with step 4 retained for down and decode.
   [+0.371%, +0.705%]. TTFT p95 improves 0.693% (CI 0.426–0.842%) and E2E p95
   improves 0.485% (CI 0.371–0.675%). Generated text, finish reason and output
   token count match exactly in 10/10 pairs.
-- Decision: **REJECT** for production. The effect is reproducible and correct,
-  but +0.486% is below the predeclared 0.75% retention threshold and does not
-  justify an extra embedded shader, pipeline and selector. ROCmFPX `7838dd2`
-  removes the candidate; the rebuilt production library exactly matches the
+- Decision: **ARCHIVE COMPOSABLE**, not a standalone promotion. The effect is
+  reproducible and correct; +0.486% lies in the current 0.2–0.75% composable
+  band. Do not spend more tuning time now, but retain its selector, patch and
+  evidence for later composition. ROCmFPX `7838dd2` removes the candidate from
+  production; the rebuilt production library exactly matches the
   saved control SHA-256 `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
   The implementation and revert remain reproducible as patches; raw service
   evidence is in `work/results/v5-prefill8k-c4-selective-bk2-paired10/`.
+
+## EXP-V5-FA-RDNA2-BC64 — REJECT
+
+- Exact plugin path and shape: scalar integer-dot FA, Q8/Q8, HSK=HSV=64,
+  nh=8, `nr23=[4,4]`, KV=8192, N=32.
+- Correctness: control Bc32 and opt-in Bc64 both pass CPU reference.
+- Logger-free ABBA operation times: control 7614.54/7638.27 us; candidate
+  8773.06/8703.19 us. Median delta: **+14.58% latency**.
+- Decision: **REJECT immediately**; no server run. The experiment exceeds the
+  5% micro-regression cutoff, so no further FA tile sweep is justified in V5.

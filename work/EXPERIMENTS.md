@@ -388,7 +388,7 @@ Follow-up output identity:
   ceiling. Follow up only with a distinct gate/up pipeline; never route down or
   decode through BK_STEP=2. Control is restored at ROCmFPX `f7a53ab`.
 
-## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — REJECT
+## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — ARCHIVE COMPOSABLE
 
 - Added a separate BK2 SPIR-V and exact shape selector, disabled by default.
   Logs prove gate/up uses BK2 while down remains on the control pipeline.
@@ -403,10 +403,11 @@ Follow-up output identity:
 - Final ten-pair AB/BA Profile B validation: all pairs valid and favorable;
   aggregate throughput +0.486% median, 95% CI [+0.371%, +0.705%]; TTFT p95
   -0.693%; E2E p95 -0.485%; exact corresponding outputs 10/10.
-- Decision: **REJECT**. The effect is reproducible but below the predeclared
-  0.75% threshold, so the extra shader/pipeline/selector is unjustified.
-  ROCmFPX `7838dd2` removes it and rebuilds to the exact saved-control hash.
-  Candidate and revert patches plus raw paired results are retained.
+- Decision under the current leverage policy: **ARCHIVE COMPOSABLE**. The
+  +0.486% effect is reproducible, correct and cheap enough to preserve, but it
+  is not promoted alone and receives no further tuning now. ROCmFPX `7838dd2`
+  removes it from the production build; candidate/revert patches, selector and
+  raw paired results are retained for later composition.
 
 ## EXP-V5-FA-RDNA2-NO-OCCUPANCY-LIMIT — REJECT
 
@@ -420,3 +421,16 @@ Follow-up output identity:
   giving at most ~0.35% predicted global leverage at the measured 23.11% share.
 - Decision: **REJECT**. Correct but below the 0.75% global threshold and no
   server win. ROCmFPX `e7ec6c2` restores production.
+
+## EXP-V5-FA-RDNA2-BC64 — REJECT / FA closed for V5
+
+- Added an opt-in `Bc=64` scalar FA tile only for RDNA2, Q8/Q8,
+  HSK=HSV=64, N>=32 and KV>=1024.
+- Added exact CPU-reference and performance coverage for LFM2 C4 8K:
+  nh=8, `nr23=[4,4]`, KV=8192 and N=32. Both control and candidate pass.
+- Logger-free ABBA synchronized operation medians: Bc32 7626.41 us, Bc64
+  8738.13 us, or **+14.58% latency**.
+- Decision: **REJECT immediately**, without a server run. This exceeds the 5%
+  micro-regression cutoff. Patch and raw evidence are archived; ROCmFPX
+  `55dfdf0` restores the exact production backend hash. Flash Attention is
+  closed for V5 absent a new >0.75%-global-leverage hypothesis.
