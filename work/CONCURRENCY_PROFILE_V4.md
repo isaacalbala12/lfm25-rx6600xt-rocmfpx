@@ -133,3 +133,23 @@ repetitions and the four-simultaneous-prefill guardrail before production.
 Non-invasive C1/C4 operation profiling, separated Q8_1 preparation versus MMV,
 the paired scheduler confirmation, four-simultaneous-prefill guardrail and
 operation-level C1/C4 profile are populated by the next checkpoint.
+
+## Internal phase timestamp instrumentation
+
+ROCmFPX checkpoint `8e65941` adds `GGML_VK_DMMV_PHASE_LOGGER=1`. It uses a
+dedicated Vulkan timestamp query pool so internal dispatch markers do not
+corrupt node-level profiler indexing. It records only
+`quantize_q8_1_x4` and `mul_mat_vec_rocmfp4_fast_q8_1_f32`; enabling it also
+selects the already-fenced concurrent perf path, so its service throughput is
+intentionally invalid for comparison.
+
+The first 128-token correctness smoke emitted 481 quantization and 501 MMV
+dispatch timestamps. Their aggregate GPU intervals were 3.581 ms and 59.098 ms
+respectively across prompt/recurrent/decode-boundary graphs. Selection order
+shows repeated pairs of gate/up MMV dispatches with one preceding quantization:
+the existing graph-local `prealloc_y` cache already reuses prepared Q8_1 when
+both consumers reference the same tensor object. The cache is reset at every
+graph boundary, so it does not reuse by address across tokens, users or steps.
+
+This smoke validates instrumentation and graph-local reuse; it is not yet the
+resident-8K C1/C4 profile and is not used as a bottleneck percentage.

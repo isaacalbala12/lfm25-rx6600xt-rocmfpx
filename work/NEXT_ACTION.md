@@ -35,6 +35,14 @@ the observed spread. Next run the four-simultaneous-prefill guardrail, then the
 separate invasive C1/C4 operation profile. Keep chunk128 at STAGE until paired
 confirmation; do not treat the two harness-rejected setup attempts as samples.
 
+Profiling checkpoint: ROCmFPX `8e65941b623397bad47c2ff53fe750c38dfa9b96`
+adds a dedicated, opt-in Vulkan timestamp pool for the internal
+`quantize_q8_1_x4` and FP4_FAST MMV dispatches. A correctness smoke completed
+and emitted 982 paired dispatch samples. The logger forces the existing fenced
+perf path and is therefore profiling-only; never use its wall throughput as a
+service result. Run the resident 8K C1/C4 traces and aggregate by graph, N and
+pipeline next.
+
 ## Checkpoint V3
 
 El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva tanto en un commit local de `campaign-v3` como en el checkpoint local ROCmFPX `2678844a0af778c7c41b2d552667e9a05d98248c`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.
