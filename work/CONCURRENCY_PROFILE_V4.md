@@ -136,12 +136,37 @@ prompt and output budgets. This bounded cost is materially smaller than the
 interactive gain, but the run order was not a ten-pair ABBA confirmation.
 
 Evidence: `work/results/v4-profile-b-fpx-q8-chunk128/`.
-Decision remains **STAGE** pending paired confirmation.
 
-## Pending measurements
+Paired confirmation is complete for the critical 3 resident decoders + one
+fresh 8K prefill case. Ten contemporary pairs alternated control/candidate
+order; all 20 runs are VALID and no run was excluded.
 
-The paired scheduler confirmation and the first shape-specific MMV kernel are
-populated by the next checkpoint.
+| Metric | Control median | chunk128 median | Paired delta median | Bootstrap 95% CI |
+|---|---:|---:|---:|---:|
+| Decode retention | 1.455% | 15.702% | +977.76% | +973.09 to +984.93% |
+| Resident ITL p95 | 2188.74 ms | 89.23 ms | -95.923% | -95.932 to -95.900% |
+| New-user TTFT | 4308.79 ms | 5268.14 ms | +22.44% | +21.99 to +23.15% |
+
+Every arm loaded the same server, model, plugin and
+`libggml-rocmfpx-vulkan.so`; command provenance records chunk 0 for controls
+and 128 for candidates. During every prefill all three resident users received
+the same event count, preserving fairness.
+
+Evidence: `work/results/v4-profile-c-chunk128-paired10-r2/`.
+
+Decision: **KEEP as an engineering/service improvement**. Production default
+promotion remains blocked on deterministic output/logit equivalence and the
+reserved quality battery. The measured trade-off is explicit: about 0.96 s
+more TTFT for the entering 8K request in exchange for eliminating a roughly
+2.2-second inter-token stall for existing users.
+
+## Kernel experiment outcome
+
+The first shape-specific experiments are complete. Logger-free exact-plugin
+measurements reject both four-subgroup (+81.88%) and two-subgroup (+36.23%)
+gate/up N=4 reductions. A rows4 variant for 6144x2048,N=1 was inconclusive
+(-0.40% paired median, interval crossing zero) and rejected for low global
+leverage. See `work/KERNEL_MICROBENCH_V4.md`.
 
 ## Internal phase timestamp instrumentation
 

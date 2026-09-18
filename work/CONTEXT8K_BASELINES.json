@@ -123,7 +123,26 @@
         "decoder_itl_p95_ms": 89.60389269977895,
         "prefill_ttft_ms": 5271.760454999821
       },
-      "decision": "STAGE"
+      "paired_confirmation": {
+        "result_dir": "work/results/v4-profile-c-chunk128-paired10-r2",
+        "valid_pairs": 10,
+        "excluded_pairs": 0,
+        "three_decode_plus_one_prefill": {
+          "control_retention_median": 0.014549313049816187,
+          "chunk128_retention_median": 0.1570166969180176,
+          "retention_paired_delta_percent_median": 977.758148970919,
+          "retention_paired_delta_percent_bootstrap_95ci": [973.0929935382026, 984.93049641781],
+          "control_itl_p95_ms_median": 2188.737029449976,
+          "chunk128_itl_p95_ms_median": 89.2261256501115,
+          "itl_p95_paired_delta_percent_median": -95.92280340974341,
+          "itl_p95_paired_delta_percent_bootstrap_95ci": [-95.93206408277655, -95.89995742492547],
+          "control_prefill_ttft_ms_median": 4308.793108999453,
+          "chunk128_prefill_ttft_ms_median": 5268.14332900085,
+          "prefill_ttft_paired_delta_percent_median": 22.44274281886642,
+          "prefill_ttft_paired_delta_percent_bootstrap_95ci": [21.991860509625617, 23.145593453311598]
+        }
+      },
+      "decision": "KEEP engineering; production default pending deterministic equivalence and reserved quality validation"
     },
     "chunk256": {
       "result_dir": "work/results/v4-profile-c-fpx-q8-chunk256",
@@ -171,7 +190,7 @@
       "work/results/v4-profile-a-fpx-q8-chunk128-invalid-cache-off",
       "work/results/v4-profile-a-fpx-q8-chunk128-invalid-slot-auto"
     ],
-    "decision": "unlimited scheduling rejected; chunk256 rejected versus chunk128; chunk128 STAGE pending paired confirmation"
+    "decision": "unlimited scheduling rejected; chunk256 rejected versus chunk128; chunk128 KEEP engineering after 10 valid pairs, production pending equivalence and quality"
   },
   "decode_phase_profile": {
     "protocol": "paired internal Vulkan timestamps; final seven resident decode graphs only; profiler wall throughput excluded",

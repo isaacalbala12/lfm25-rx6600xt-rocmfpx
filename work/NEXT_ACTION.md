@@ -140,3 +140,11 @@ bootstrap interval crossing zero; its optimistic whole-MMV effect is about
 0.2%. Mark REJECT and do not spend a server run on it. Return to the high-value
 chunk128 scheduler candidate and run contemporary paired interference controls,
 keeping all kernel experiment variables unset.
+
+Paired chunk128 confirmation is complete: 10/10 valid pairs yield +977.76%
+median retention and -95.923% resident ITL p95, with +22.44% new-user TTFT.
+Mark KEEP as an engineering/service improvement. Before production default,
+run deterministic fixed-order logits/output equivalence plus the reserved
+service-EOS quality corpus. Then compare chunk96/chunk128 only if the TTFT/ITL
+product requirement warrants another point; do not reopen a generic chunk
+sweep.

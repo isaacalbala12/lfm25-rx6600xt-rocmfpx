@@ -269,6 +269,22 @@ Profile B guardrail completed:
   explicitly unproven rather than inferred.
 - Decision: **REJECT**. Statistical signal and global ceiling are too small to
   justify the extra pipeline or a server campaign.
+
+## EXP-V4-SCHED-CHUNK128-PAIRED10 — KEEP engineering
+
+- Ten control/chunk128 pairs alternated A/B and B/A for three resident 8K
+  decoders plus one uncached 8K prefill. All 20 runs are VALID; no exclusions.
+- Median decode retention rises 1.455% -> 15.702%. Paired improvement is
+  +977.76%, bootstrap 95% interval [+973.09%, +984.93%].
+- Resident ITL p95 falls 2188.74 -> 89.23 ms: -95.923%, interval
+  [-95.932%, -95.900%]. New-user TTFT rises 4308.79 -> 5268.14 ms:
+  +22.44%, interval [+21.99%, +23.15%].
+- Same loaded artifacts and equal per-user event counts were verified in every
+  arm. Resident C4 and simultaneous-prefill guardrails remain -0.67% and
+  -1.42% respectively in their prior three-run checks.
+- Decision: **KEEP engineering/service value**. Do not make it the production
+  default until deterministic output/logit equivalence and reserved quality
+  validation are complete.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation
