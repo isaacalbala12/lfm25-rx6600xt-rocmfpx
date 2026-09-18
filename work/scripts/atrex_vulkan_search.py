@@ -78,18 +78,25 @@ def atomic_json(path: Path, value: Any) -> None:
     os.replace(temporary, path)
 
 
-def load_state(path: Path) -> dict[str, Any]:
+def load_state(path: Path, baseline_candidate: str) -> dict[str, Any]:
     if path.exists():
-        return recompute_state(json.loads(path.read_text()))
+        state = json.loads(path.read_text())
+        recorded = state.get("baseline_candidate")
+        if recorded is not None and recorded != baseline_candidate:
+            raise ValueError(
+                f"state baseline {recorded!r} does not match requested {baseline_candidate!r}"
+            )
+        state["baseline_candidate"] = baseline_candidate
+        return recompute_state(state)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "attempts": [],
         "valid_candidates": 0,
         "total_attempts": 0,
         "consecutive_without_improvement": 0,
-        "best_candidate": "gateup-selective-bkstep3",
+        "best_candidate": baseline_candidate,
         "best_delta_percent": 0.0,
-        "baseline_candidate": "gateup-selective-bkstep3",
+        "baseline_candidate": baseline_candidate,
     }
 
 
@@ -126,7 +133,7 @@ def recompute_state(state: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_search(args: argparse.Namespace) -> dict[str, Any]:
-    state = load_state(args.state)
+    state = load_state(args.state, args.baseline_candidate)
     manifests = candidate_queue(args.candidates, state, retry_invalid=args.retry_invalid)
 
     for manifest, candidate, fingerprint in manifests:
@@ -201,6 +208,7 @@ def main() -> int:
     parser.add_argument("--max-valid", type=int, default=30)
     parser.add_argument("--max-attempts", type=int, default=60)
     parser.add_argument("--max-stall", type=int, default=10)
+    parser.add_argument("--baseline-candidate", default="gateup-selective-bkstep3")
     parser.add_argument("--evaluator", type=Path, default=EVALUATOR)
     parser.add_argument("--problem", type=Path)
     parser.add_argument("--retry-invalid", action="store_true")

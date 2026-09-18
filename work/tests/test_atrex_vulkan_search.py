@@ -64,3 +64,20 @@ def test_only_formal_pass_evidence_updates_incumbent():
     assert result["best_candidate"] == "formal-win"
     assert result["best_delta_percent"] == -2.0
     assert result["valid_candidates"] == 1
+
+
+def test_new_state_uses_campaign_baseline(tmp_path):
+    state = MODULE.load_state(tmp_path / "state.json", "down-bm64-bn64-bk32-bk4")
+    assert state["baseline_candidate"] == "down-bm64-bn64-bk32-bk4"
+    assert state["best_candidate"] == "down-bm64-bn64-bk32-bk4"
+
+
+def test_existing_state_rejects_different_campaign_baseline(tmp_path):
+    path = tmp_path / "state.json"
+    path.write_text(json.dumps({"baseline_candidate": "gate", "attempts": []}))
+    try:
+        MODULE.load_state(path, "down")
+    except ValueError as error:
+        assert "does not match" in str(error)
+    else:
+        raise AssertionError("cross-campaign state reuse was accepted")
