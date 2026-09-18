@@ -43,6 +43,14 @@ perf path and is therefore profiling-only; never use its wall throughput as a
 service result. Run the resident 8K C1/C4 traces and aggregate by graph, N and
 pipeline next.
 
+Completed at ROCmFPX `c800bd8360f40aa6044173578e9fbed055e74951`:
+resident-8K C1/C4 phase traces are shape-labelled and summarized. At C4,
+Q8 preparation is only 2.04% of Q8+MMV; gate/up already shares one preparation
+between two consumers. The next kernel experiment must be limited to a measured
+family. Prefer gate/up 10752x2048 N=4 (39.60% of measured MMV) unless a selector
+or scheduler experiment can convert the 6144x2048 path from N=1 without adding
+interactive delay. Do not implement another Q8 cache.
+
 ## Checkpoint V3
 
 El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva tanto en un commit local de `campaign-v3` como en el checkpoint local ROCmFPX `2678844a0af778c7c41b2d552667e9a05d98248c`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.

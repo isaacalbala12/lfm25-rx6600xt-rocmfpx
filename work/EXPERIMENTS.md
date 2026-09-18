@@ -208,6 +208,20 @@ Follow-up:
 - Two pre-measurement harness rejections are retained under
   `v4-profile-a-fpx-q8-chunk128-invalid-*`; neither enters statistics.
 - Decision remains **STAGE** pending paired repetition and Profile B guardrail.
+
+## EXP-V4-DMMV-PHASE-PROFILE — KEEP evidence
+
+- Dedicated paired Vulkan timestamps isolate Q8_1 preparation from FP4_FAST
+  MMV without mixing them into node-level query indices. Profiling forces a
+  fence and its wall throughput is excluded.
+- Seven resident-8K decode graphs: C1 spends 5.056/72.457 ms in Q8/MMV
+  (Q8 6.52%); C4 spends 1.203/57.661 ms (Q8 2.04%).
+- C4 MMV is led by gate/up N=4 (22.833 ms), down N=4 (12.153 ms), and an
+  unbatched 6144x2048 N=1 path (11.946 ms).
+- Gate/up has 420 MMV calls but 210 Q8 preparations: graph-local RHS reuse is
+  already active and resets safely at graph boundaries.
+- Decision: evidence **KEEP**; Q8 reuse experiment **REJECT as duplicate**.
+  Next optimization must target a measured MMV shape, not all N=4 shapes.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation

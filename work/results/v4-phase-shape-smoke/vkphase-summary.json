@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "source": "work/results/v4-phase-shape-smoke/server.log",
+  "total_graphs_in_log": 5,
+  "selected_tail_graphs": 1,
+  "pipelines": {
+    "mul_mat_vec_rocmfp4_fast_q8_1_f32": {
+      "calls": 167,
+      "total_gpu_ns": 7112880,
+      "dispatch_gpu_ns_p50": 45160.0,
+      "dispatch_gpu_ns_p95": 68228.0,
+      "per_graph_gpu_ns_p50": 7112880,
+      "elements": {
+        "10752x1x1": 60,
+        "128000x1x1": 1,
+        "2048x1x1": 68,
+        "512x1x1": 16,
+        "6144x1x1": 22
+      },
+      "shapes": {
+        "m=10752,k=2048,n=1": {
+          "calls": 60,
+          "total_gpu_ns": 3416200
+        },
+        "m=128000,k=2048,n=1": {
+          "calls": 1,
+          "total_gpu_ns": 643920
+        },
+        "m=2048,k=10752,n=1": {
+          "calls": 30,
+          "total_gpu_ns": 1721720
+        },
+        "m=2048,k=2048,n=1": {
+          "calls": 38,
+          "total_gpu_ns": 551120
+        },
+        "m=512,k=2048,n=1": {
+          "calls": 16,
+          "total_gpu_ns": 8000
+        },
+        "m=6144,k=2048,n=1": {
+          "calls": 22,
+          "total_gpu_ns": 771920
+        }
+      }
+    },
+    "quantize_q8_1_x4": {
+      "calls": 121,
+      "total_gpu_ns": 244200,
+      "dispatch_gpu_ns_p50": 2160.0,
+      "dispatch_gpu_ns_p95": 2320.0,
+      "per_graph_gpu_ns_p50": 244200,
+      "elements": {
+        "10752x1x1": 30,
+        "2048x1x1": 91
+      },
+      "shapes": {
+        "m=10752,k=2048,n=1": {
+          "calls": 30,
+          "total_gpu_ns": 60400
+        },
+        "m=128000,k=2048,n=1": {
+          "calls": 1,
+          "total_gpu_ns": 2200
+        },
+        "m=2048,k=10752,n=1": {
+          "calls": 30,
+          "total_gpu_ns": 60720
+        },
+        "m=2048,k=2048,n=1": {
+          "calls": 38,
+          "total_gpu_ns": 76800
+        },
+        "m=6144,k=2048,n=1": {
+          "calls": 22,
+          "total_gpu_ns": 44080
+        }
+      }
+    }
+  },
+  "quantize_plus_mmv_gpu_ns": 7357080,
+  "quantize_share_of_quantize_plus_mmv": 0.0331925165962583,
+  "per_graph": [
+    {
+      "absolute_graph_index": 5,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 244200,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 7112880
+      }
+    }
+  ],
+  "warning": "profiling-only fenced execution; do not use wall throughput as service throughput"
+}

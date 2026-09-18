@@ -159,5 +159,28 @@
     ],
     "decision": "unlimited scheduling rejected; chunk256 rejected versus chunk128; chunk128 STAGE pending paired confirmation and simultaneous-prefill guardrail"
   },
+  "decode_phase_profile": {
+    "protocol": "paired internal Vulkan timestamps; final seven resident decode graphs only; profiler wall throughput excluded",
+    "rocmfpx_checkpoint": "c800bd8360f40aa6044173578e9fbed055e74951",
+    "c1": {
+      "result_dir": "work/results/v4-phase-resident8k-c1-shapes",
+      "quantize_q8_1_gpu_ns": 5055840,
+      "fp4_fast_mmv_gpu_ns": 72456720,
+      "quantize_share": 0.06522607432911517
+    },
+    "c4": {
+      "result_dir": "work/results/v4-phase-resident8k-c4-shapes",
+      "quantize_q8_1_gpu_ns": 1202800,
+      "fp4_fast_mmv_gpu_ns": 57660600,
+      "quantize_share": 0.02043375000424712,
+      "dominant_mmv_shapes_gpu_ns": {
+        "m10752_k2048_n4": 22833360,
+        "m2048_k10752_n4": 12153360,
+        "m6144_k2048_n1": 11945760
+      }
+    },
+    "gate_up_reuse": "420 MMV dispatches consume 210 Q8 preparations; existing graph-local reuse confirmed",
+    "decision": "KEEP profile evidence; target shape-specific MMV and do not duplicate Q8 reuse"
+  },
   "dynamic_service": {}
 }

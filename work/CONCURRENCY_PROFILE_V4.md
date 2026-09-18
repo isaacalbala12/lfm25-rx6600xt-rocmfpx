@@ -153,3 +153,38 @@ graph boundary, so it does not reuse by address across tokens, users or steps.
 
 This smoke validates instrumentation and graph-local reuse; it is not yet the
 resident-8K C1/C4 profile and is not used as a bottleneck percentage.
+
+### Resident 8K decode: C1 versus C4
+
+The labelled follow-up selects only the final seven decode graphs after the
+resident cache-hit boundary. Initial 8K fill and four-token reevaluation are
+excluded. Every request observed 8188 cached prompt tokens and completed.
+
+| Profile | Q8_1 GPU interval | FP4_FAST MMV GPU interval | Q8 share of pair | MMV per-graph p50 |
+|---|---:|---:|---:|---:|
+| C1, N=1 | 5.056 ms | 72.457 ms | 6.52% | 10.276 ms |
+| C4 effective mix | 1.203 ms | 57.661 ms | 2.04% | 8.233 ms |
+
+The C4 MMV shape mix is causal evidence against assuming HTTP concurrency is
+the matrix N. Gate/up and down run at N=4, but the 6144x2048 path remains N=1,
+as do part of the 2048x2048 calls.
+
+Dominant C4 MMV families over seven decode graphs:
+
+| M x K, N | Calls | GPU interval | Share of measured MMV |
+|---|---:|---:|---:|
+| 10752 x 2048, N=4 (gate/up) | 420 | 22.833 ms | 39.60% |
+| 2048 x 10752, N=4 (down) | 210 | 12.153 ms | 21.08% |
+| 6144 x 2048, N=1 | 154 | 11.946 ms | 20.72% |
+| 128000 x 2048, N=4 | 7 | 4.498 ms | 7.80% |
+| 2048 x 2048, N=1/N=4 | 266 | 6.201 ms | 10.75% |
+
+Gate/up records 420 MMV dispatches but only 210 Q8 preparations in both C1 and
+C4: the same graph-local RHS is already prepared once and consumed twice.
+Consequently a new Q8 reuse layer would duplicate existing behavior, while the
+MMV family accounts for 97.96% of the measured pair at C4.
+
+Decision: **KEEP profile evidence**. The next kernel target is shape-specific
+MMV, not activation preparation. Start with gate/up N=4 or explain why the
+unbatched 6144x2048 path offers higher end-to-end leverage; do not revive K1's
+rejected N-only selector.

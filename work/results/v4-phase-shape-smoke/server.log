@@ -1,0 +1,1610 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+0.00.073.843 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.074.320 W srv  llama_server: -----------------
+0.00.074.323 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.074.323 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.074.323 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.074.323 W srv  llama_server: -----------------
+0.00.075.642 I srv    load_model: loading model 'work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf'
+0.01.899.191 I cmn          init: llama threadpool init, n_threads = 4
+----------------
+Vulkan Timings:
+ADD: 59 x 8.857 us = 522.6 us
+CONCAT: 21 x 7.354 us = 154.44 us
+CPY, SSM_CONV: 22 x 12.509 us = 275.2 us
+FLASH_ATTN_EXT dst(64,32,2,1),  q(64,2,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,2,1,1), SCALE: 8 x 110.461 us = 883.69 us (37.9708 GFLOPS/s)
+GET_ROWS: 1 x 7.4 us = 7.4 us
+GET_ROWS, GET_ROWS, CONCAT, CPY: 1 x 12.44 us = 12.44 us
+GET_ROWS, GET_ROWS, CPY, MUL_MAT f32 m=64 n=64 k=64: 8 x 34.41 us = 275.28 us (15.1175 GFLOPS/s)
+GET_ROWS, GET_ROWS, MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=10752: 12 x 157.746 us = 1892.96 us (558.34 GFLOPS/s)
+GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,2,1,1), CPY: 1 x 16.44 us = 16.44 us
+GLU: 18 x 9.784 us = 176.12 us
+GLU, SCALE: 12 x 14.63 us = 175.56 us
+MUL: 43 x 8.085 us = 347.68 us
+MUL, SCALE: 1 x 17.72 us = 17.72 us
+MUL_MAT f32 m=64 n=16 k=64: 8 x 15.425 us = 123.4 us (8.43099 GFLOPS/s)
+MUL_MAT f32 m=64 n=16 k=64, RMS_NORM_MUL_ROPE RMS_NORM(64,8,2,1), MUL_MAT f32 m=64 n=64 k=64: 8 x 37.865 us = 302.92 us (17.1726 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=10752: 1 x 67 us = 67 us (657.286 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048: 1 x 130.04 us = 130.04 us (677.168 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=2 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=2 k=2048: 29 x 270.739 us = 7851.44 us (650.507 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=10752: 17 x 247.71 us = 4211.08 us (355.561 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=2048: 30 x 43.986 us = 1319.6 us (381.323 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=2 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=2 k=2048: 8 x 61.125 us = 489 us (411.61 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=2 k=2048: 10 x 289.641 us = 2896.41 us (173.73 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=2 k=2048, CPY: 12 x 91.08 us = 1092.96 us (552.474 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,1,1,1): 2 x 10.32 us = 20.64 us
+RMS_NORM_MUL RMS_NORM(2048,2,1,1): 57 x 12.128 us = 691.32 us
+RMS_NORM_MUL RMS_NORM(2048,2,1,1), GET_ROWS: 1 x 8.92 us = 8.92 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,2,1): 8 x 14.535 us = 116.28 us
+SCALE: 1 x 15.52 us = 15.52 us
+SET_ROWS, SET_ROWS: 8 x 12.565 us = 100.52 us
+Total time: 24194.6 us.
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=3960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=122120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=44640
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=169240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=128920
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=81240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=126680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=44280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=127320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=127480
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=8360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=81360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=8760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=348960
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=125960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=44200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32440
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125720
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=30480
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125200
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31840
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125240
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=125440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=142200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=44040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32600
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=127000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125560
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=126080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=8160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=81760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125360
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=30640
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=44120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32920
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=167880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=124920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=134120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=81200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=163040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=143280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125160
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31840
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125520
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=44040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=36800
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125840
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=138000
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=80880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32120
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=127120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125320
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=79480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=48920
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=137520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=125760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=44360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=1000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32600
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=126080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=81560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=32400
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=127040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=125640
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=7320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=81040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31800
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=136440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=126560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=7920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=122600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=41640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=31200
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=129520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=119720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=3360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=119120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=6920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=76680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=7320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=30400
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=7320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=117760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=105400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=6280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=104040
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=6160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=66640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=6160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=42480
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=6120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=112720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=109480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=6320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=104120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=6200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=36000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=5280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=22400
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=5320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=97600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=90040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=89720
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=5280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=58240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=5240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=42160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=5280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=97560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=95000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=5480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=89600
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=56960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=4880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=19280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=65160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=56760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=59480
+VKPHASE pipeline=quantize_q8_1_x4 m=128000 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=128000 k=2048 n=1 elements=128000,1,1 gpu_ns=698400
+----------------
+Vulkan Timings:
+ADD: 59 x 4.378 us = 258.36 us
+CONCAT: 21 x 4.215 us = 88.52 us
+CPY, SSM_CONV: 22 x 6.665 us = 146.64 us
+FLASH_ATTN_EXT dst(64,32,2,1),  q(64,2,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,2,1,1), SCALE: 8 x 18.36 us = 146.88 us (228.448 GFLOPS/s)
+GET_ROWS: 1 x 2.48 us = 2.48 us
+GET_ROWS, GET_ROWS, CONCAT, CPY: 1 x 7.72 us = 7.72 us
+GET_ROWS, GET_ROWS, CPY, MUL_MAT f32 m=64 n=64 k=64: 8 x 16.36 us = 130.88 us (31.7966 GFLOPS/s)
+GET_ROWS, GET_ROWS, MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=10752: 12 x 78.57 us = 942.84 us (1120.99 GFLOPS/s)
+GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,2,1,1), CPY: 1 x 11.84 us = 11.84 us
+GLU: 18 x 4.508 us = 81.16 us
+GLU, SCALE: 12 x 8.236 us = 98.84 us
+MUL: 43 x 4.457 us = 191.68 us
+MUL, SCALE: 1 x 10.4 us = 10.4 us
+MUL_MAT f32 m=64 n=16 k=64: 8 x 7.865 us = 62.92 us (16.535 GFLOPS/s)
+MUL_MAT f32 m=64 n=16 k=64, RMS_NORM_MUL_ROPE RMS_NORM(64,8,2,1), MUL_MAT f32 m=64 n=64 k=64: 8 x 20.39 us = 163.12 us (31.8901 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=10752: 1 x 53.6 us = 53.6 us (821.607 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048: 1 x 102.48 us = 102.48 us (859.279 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=2 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=2 k=2048: 29 x 151.233 us = 4385.76 us (1164.55 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=10752: 17 x 77.724 us = 1321.32 us (1133.18 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=2048: 30 x 22.832 us = 684.96 us (734.632 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=2 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=2 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=2 k=2048: 8 x 32.715 us = 261.72 us (769.056 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=2 k=2048: 10 x 53.552 us = 535.52 us (939.635 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=2 k=2048, CPY: 12 x 50.14 us = 601.68 us (1003.58 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,1,1,1): 2 x 6.72 us = 13.44 us
+RMS_NORM_MUL RMS_NORM(2048,2,1,1): 57 x 7.189 us = 409.8 us
+RMS_NORM_MUL RMS_NORM(2048,2,1,1), GET_ROWS: 1 x 5.72 us = 5.72 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,2,1): 8 x 11.845 us = 94.76 us
+SCALE: 1 x 7.96 us = 7.96 us
+SET_ROWS, SET_ROWS: 8 x 5.955 us = 47.64 us
+Total time: 10870.6 us.
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=85800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=29440
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=153360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=86600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=81800
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=49520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=19160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=83920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=77600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=77640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=27000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=21200
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=96400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=86280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=85680
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=54000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=20840
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=92600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=85680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=5040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=85120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=54160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=5200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=21800
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=5200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=96280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=88920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=5200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=88480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=5240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=38920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=21320
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=5240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=96280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=89120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=88600
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=5200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=56920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=21880
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=5120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=95080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=87960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=87080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=5120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=55600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=21440
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=5160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=96080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=105480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=87520
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=5080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=55680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=5160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=21440
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=5200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=93320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=82280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=82280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=28040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=20520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=90720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=87320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=96080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=52200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=20160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=89320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=75640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=74360
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=47240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=18360
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=80440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=74560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=88640
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=48080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=18280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=80440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=74640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=74440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=25240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=16320
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=70280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=65040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=64840
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=40720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=15640
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=70040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=70960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=81480
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=46320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=16480
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=2000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=70560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=65160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=2000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=65360
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=38720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=13920
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=61520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=56600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=57280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=17440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=14720
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=61360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=56760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=57600
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=35800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=13760
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=61200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=56600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=57200
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=35800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=15400
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=54400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=48600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=53640
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=31880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=13000
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=54200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=48600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=69560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=16400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=12240
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=61440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=60400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=54240
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=31960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=13000
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=54160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=48560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=55080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=31800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=10520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=56440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=44920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=50320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=15360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=10880
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=56120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=46640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=51800
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=31160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=11240
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=56720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=44880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=50760
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=31280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=11200
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=56360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=46720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=51320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=14880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=2 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=10520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=54280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=43120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=51760
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=31520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=11440
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=2 elements=4096,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=62120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=2 elements=10752,1,1 gpu_ns=61560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=2 elements=21504,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=2 elements=2048,1,1 gpu_ns=70400
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=2 elements=4096,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=2 elements=6144,1,1 gpu_ns=42040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=2 elements=4096,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=2 elements=2048,1,1 gpu_ns=11080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=55520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=43720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=49280
+VKPHASE pipeline=quantize_q8_1_x4 m=128000 k=2048 n=1 elements=2048,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=128000 k=2048 n=1 elements=128000,1,1 gpu_ns=563520
+0.01.951.139 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 8704, kv_unified = 'false'
+0.01.951.202 I srv    load_model: sequence policy: lowest_slot_first=1 dense_sequences=0 remap_trace=0
+0.01.956.580 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.01.956.621 I srv  llama_server: model loaded
+0.01.956.626 I srv  llama_server: listening on http://127.0.0.1:18186
+0.10.287.779 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.10.287.810 I slot launch_slot_: id  0 | task 1 | processing task, is_child = 0
+----------------
+Vulkan Timings:
+ADD: 58 x 5.21 us = 302.2 us
+CONCAT: 21 x 4.563 us = 95.84 us
+CPY, SSM_CONV: 22 x 10.91 us = 240.04 us
+FLASH_ATTN_EXT dst(64,32,4,1),  q(64,4,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,4,1,1), SCALE: 8 x 21.26 us = 170.08 us (394.572 GFLOPS/s)
+GET_ROWS, GET_ROWS, CONCAT, CPY: 1 x 16.88 us = 16.88 us
+GET_ROWS, GET_ROWS, CPY, MUL_MAT f32 m=64 n=128 k=64: 8 x 19.68 us = 157.44 us (52.865 GFLOPS/s)
+GET_ROWS, GET_ROWS, MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=10752: 12 x 136.716 us = 1640.6 us (1288.45 GFLOPS/s)
+GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,4,1,1), CPY: 1 x 23.52 us = 23.52 us
+GLU: 17 x 8.272 us = 140.64 us
+GLU, SCALE: 12 x 11.26 us = 135.12 us
+MUL: 43 x 5.491 us = 236.12 us
+MUL, SCALE: 1 x 16 us = 16 us
+MUL_MAT f32 m=64 n=32 k=64: 8 x 43.36 us = 346.88 us (5.99852 GFLOPS/s)
+MUL_MAT f32 m=64 n=32 k=64, RMS_NORM_MUL_ROPE RMS_NORM(64,8,4,1), MUL_MAT f32 m=64 n=128 k=64: 8 x 22.485 us = 179.88 us (57.8377 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048: 29 x 274.709 us = 7966.57 us (1282.21 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=10752: 17 x 133.44 us = 2268.48 us (1320.09 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=2048: 29 x 43.268 us = 1254.8 us (775.296 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=4 k=2048: 8 x 51.755 us = 414.04 us (972.261 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=4 k=2048: 10 x 164.704 us = 1647.04 us (611.028 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=4 k=2048, CPY: 12 x 76.453 us = 917.44 us (1316.34 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,4,1,1): 57 x 8.344 us = 475.64 us
+RMS_NORM_MUL RMS_NORM(2048,4,1,1), GET_ROWS: 1 x 5.12 us = 5.12 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,4,1): 8 x 14.375 us = 115 us
+SCALE: 1 x 17.16 us = 17.16 us
+SET_ROWS, SET_ROWS: 8 x 9.055 us = 72.44 us
+Total time: 18855 us.
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=9120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=921160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=267560
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=1208640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=189120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=4240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=182320
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=116920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43840
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=177480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=60880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=44160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=189240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=3480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=179080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=115760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=7560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=177440
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=115880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=60760
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=197240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=177680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=60760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=3440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=44760
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=3520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=177720
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=115880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=46560
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=3360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=398680
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=114600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43720
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=197880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=176800
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=116120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43760
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=12440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=217680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=187400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=230280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=47880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=59360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=25240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43600
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=187800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=3440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=177160
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=115840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43640
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=197960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=3440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=176920
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=116200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=47960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=199240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=185840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=177440
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=116440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=208610
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=55000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=58320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=18400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=15480
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=59080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=54400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=58160
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=35560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=13800
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=60040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=53640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=57680
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=35400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=60440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=53160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=58120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=35720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14560
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=66920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=57240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=76120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=17760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=18280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=58600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=52680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=57600
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=35200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14320
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=58000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=52880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=57400
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=35240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14360
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=58520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=52160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=74880
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=44560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14240
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=65440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=64360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=17320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=16520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=56360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=51000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56920
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=34360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=57400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=49760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56560
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=33360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=18040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=57320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=49600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=17440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=18520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=56480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=50480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56680
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=34040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=55680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=50800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56160
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=33840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=56680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=49840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=55920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=16880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=16360
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=65200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=63800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=72680
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=34280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14680
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=56200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=50120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56480
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=34120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=13800
+----------------
+Vulkan Timings:
+ADD: 59 x 5.319 us = 313.84 us
+CONCAT: 21 x 5.398 us = 113.36 us
+CONCAT, CPY: 1 x 3.4 us = 3.4 us
+CPY, SSM_CONV: 22 x 7.658 us = 168.48 us
+FLASH_ATTN_EXT dst(64,32,4,1),  q(64,4,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,4,1,1), SCALE: 1 x 11.12 us = 11.12 us (754.371 GFLOPS/s)
+FLASH_ATTN_EXT dst(64,32,4,1),  q(64,4,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,4,1,1), SCALE, GET_ROWS, GET_ROWS, CPY: 7 x 22.628 us = 158.4 us (370.709 GFLOPS/s)
+GET_ROWS: 1 x 2.4 us = 2.4 us
+GET_ROWS, GET_ROWS, CPY, MUL_MAT f32 m=64 n=128 k=64: 1 x 9.12 us = 9.12 us (114.077 GFLOPS/s)
+GLU: 18 x 7.675 us = 138.16 us
+GLU, SCALE, GET_ROWS, GET_ROWS: 12 x 12.766 us = 153.2 us
+MUL: 43 x 6.029 us = 259.28 us
+MUL, SCALE, GET_ROWS, GET_ROWS: 1 x 5.32 us = 5.32 us
+MUL_MAT f32 m=64 n=128 k=64: 7 x 14.822 us = 103.76 us (70.1878 GFLOPS/s)
+MUL_MAT f32 m=64 n=32 k=64: 8 x 8.39 us = 67.12 us (31.0007 GFLOPS/s)
+MUL_MAT f32 m=64 n=32 k=64, RMS_NORM_MUL_ROPE RMS_NORM(64,8,4,1), MUL_MAT f32 m=64 n=128 k=64: 8 x 25.54 us = 204.32 us (50.9193 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=10752: 1 x 58.88 us = 58.88 us (747.93 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048: 1 x 102.2 us = 102.2 us (861.633 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048: 29 x 250.157 us = 7254.56 us (1408.06 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=10752: 29 x 121.081 us = 3511.36 us (1454.83 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=2048: 30 x 34.309 us = 1029.28 us (977.758 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=4 k=2048: 8 x 49.58 us = 396.64 us (1014.91 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=4 k=2048: 10 x 68.716 us = 687.16 us (1464.56 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=4 k=2048, CPY: 12 x 86.89 us = 1042.68 us (1158.23 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,1,1,1): 2 x 4.06 us = 8.12 us
+RMS_NORM_MUL RMS_NORM(2048,4,1,1): 57 x 9.068 us = 516.88 us
+RMS_NORM_MUL RMS_NORM(2048,4,1,1), GET_ROWS: 1 x 5.68 us = 5.68 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,4,1): 8 x 16.715 us = 133.72 us
+SCALE, GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,4,1,1), CPY: 1 x 9.64 us = 9.64 us
+SET_ROWS, SET_ROWS: 8 x 7.705 us = 61.64 us
+Total time: 16529.7 us.
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=40440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=16960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=81080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=76680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=72720
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=47600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=16920
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=80120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=76560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=71800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=23800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=18160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=80720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=78320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=97640
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=62360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=23280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=107520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=102080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=4160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=96400
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=62280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=23200
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=4640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=123960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=101360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=125200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=5720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=22600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=5640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=32520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=5640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=151560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=144600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=5840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=143240
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=5640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=88480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=197880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=176920
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=115880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43440
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=197920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=187880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=176760
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=115920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=53080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=11160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=222680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=191280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=177040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=60840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43720
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=176680
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=116200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43640
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=198040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=188160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=192680
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=116000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=43560
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=197880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=187920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=8240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=190240
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=7480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=113160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=7640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=42640
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=7600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=192800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=183080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=7800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=169840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=6560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=51880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=3000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=37760
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=6600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=173560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=165600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=6720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=155160
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=6480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=100760
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=5640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=32280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=5600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=149960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=159640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=5760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=133720
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=5600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=87000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=5600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=32280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=5560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=149840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=135000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=130120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=75280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=29600
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=127520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=120840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=4800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=113800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=38080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=27760
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=116520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=102520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=96120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=62040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=23040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=106560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=101440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=4160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=95520
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=61800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=22400
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=107280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=89280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=95280
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=57160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=18800
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=88520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=84520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=79480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=26000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=21960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=88480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=84480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=79560
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=51320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=20960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=74840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=80040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=83280
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=43480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=16880
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=75160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=70960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=67680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=24200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=19320
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=74840
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=75480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=58480
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=37280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14360
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=63800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=60080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=59280
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=37120
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14320
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=64040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=59880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=57680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=19640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=4 elements=512,1,1 gpu_ns=320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=15800
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=63920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=60000
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=59120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=40400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14920
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=65640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=4 elements=10752,1,1 gpu_ns=63840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=4 elements=43008,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=4 elements=2048,1,1 gpu_ns=56000
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=4 elements=6144,1,1 gpu_ns=33280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=4 elements=8192,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=4 elements=2048,1,1 gpu_ns=14680
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=55600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=43600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=49200
+VKPHASE pipeline=quantize_q8_1_x4 m=128000 k=2048 n=1 elements=2048,1,1 gpu_ns=1400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=128000 k=2048 n=1 elements=128000,1,1 gpu_ns=566280
+----------------
+Vulkan Timings:
+ADD: 22 x 5.825 us = 128.16 us
+CONCAT: 21 x 4.323 us = 90.8 us
+CONCAT, CPY: 1 x 2.72 us = 2.72 us
+CPY, SSM_CONV: 22 x 6.696 us = 147.32 us
+FLASH_ATTN_EXT dst(64,32,1,1),  q(64,1,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,1,1,1), SCALE: 1 x 19 us = 19 us (110.376 GFLOPS/s)
+FLASH_ATTN_EXT dst(64,32,1,1),  q(64,1,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,1,1,1), SCALE, GET_ROWS, GET_ROWS, CPY: 7 x 17.737 us = 124.16 us (118.235 GFLOPS/s)
+GET_ROWS: 1 x 7.52 us = 7.52 us
+GET_ROWS, GET_ROWS, CPY, MUL_MAT f32 m=64 n=32 k=64: 1 x 11.08 us = 11.08 us (23.4744 GFLOPS/s)
+GLU: 18 x 4.955 us = 89.2 us
+GLU, SCALE, GET_ROWS, GET_ROWS: 12 x 7.413 us = 88.96 us
+MUL: 43 x 4.675 us = 201.04 us
+MUL, SCALE, GET_ROWS, GET_ROWS: 1 x 4.6 us = 4.6 us
+MUL_MAT f32 m=64 n=32 k=64: 7 x 7.371 us = 51.6 us (35.2843 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=10752: 30 x 81.697 us = 2450.91 us (539.042 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=2048: 8 x 19.885 us = 159.08 us (421.753 GFLOPS/s)
+MUL_MAT_VEC f32 m=64 n=8 k=64: 8 x 5.765 us = 46.12 us (11.2791 GFLOPS/s)
+MUL_MAT_VEC f32 m=64 n=8 k=64, RMS_NORM_MUL_ROPE RMS_NORM(64,8,1,1), MUL_MAT f32 m=64 n=32 k=64: 8 x 15.585 us = 124.68 us (20.8611 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048: 30 x 120.913 us = 3627.4 us (728.281 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=2048: 22 x 19.687 us = 433.12 us (425.989 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=1 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=1 k=2048: 8 x 28.12 us = 224.96 us (447.363 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=1 k=2048: 10 x 41.556 us = 415.56 us (605.44 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=1 k=2048, CPY: 12 x 41.606 us = 499.28 us (604.703 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,1,1,1): 59 x 6.623 us = 390.8 us
+RMS_NORM_MUL RMS_NORM(2048,1,1,1), GET_ROWS: 1 x 9.72 us = 9.72 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,1,1): 8 x 6.27 us = 50.16 us
+SCALE, GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,1,1,1), CPY: 1 x 9 us = 9 us
+SET_ROWS, SET_ROWS: 8 x 5.985 us = 47.88 us
+Total time: 9454.83 us.
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=31480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=11200
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=56000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=45600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=49880
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=31080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=9400
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=53000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=44080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=50600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=14880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=11680
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=52880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=43480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=50080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=29080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=10040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=52440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=45640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=49120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=29600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=12040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=54480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=42800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=48800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=14360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=11640
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=54240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=42960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=51320
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=30080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=12240
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=52720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=44360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=51080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1760
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=30200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1680
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=11320
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=53440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=43520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=51080
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=30400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=9280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=54120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=46440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=52360
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=16240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=400
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=12200
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=53960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=44400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=53640
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=30320
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=12000
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=53320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=45160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=1880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=52200
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=30240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=12160
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=1920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=53480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=44800
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=54920
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=32640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=12720
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=56560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=49160
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=54720
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=17320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=480
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2000
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=14080
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=55200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=49560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=54800
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=32400
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=13920
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=54600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=49640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=54320
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=31880
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=13840
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2040
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=59920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=65040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=75720
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=43640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=14040
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=68240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=60520
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=58080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=19520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=560
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=14840
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=61880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=56560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=58200
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=36440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=14520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2120
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=64920
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=69080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=62800
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=39600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15520
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=67080
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=61560
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=62120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=39480
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15720
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=67600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=60960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=62040
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=20720
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=600
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=16200
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=69200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=69280
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=71240
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=46920
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15960
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=69440
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=63960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=64120
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=40680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15760
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=69600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=63080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=63840
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=21360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=16400
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=67800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=62200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2320
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=62520
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=39680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15720
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=68200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=62080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=62720
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=40440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15800
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2360
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=67800
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=62200
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=62440
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2280
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=20960
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=640
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=512 k=2048 n=1 elements=512,1,1 gpu_ns=640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15360
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=63880
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=58080
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=59160
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=37960
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=14880
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=63600
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=58240
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2160
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=58840
+VKPHASE pipeline=quantize_q8_1_x4 m=6144 k=2048 n=1 elements=2048,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=6144 k=2048 n=1 elements=6144,1,1 gpu_ns=37680
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=2048 n=1 elements=2048,1,1 gpu_ns=15280
+VKPHASE pipeline=quantize_q8_1_x4 m=10752 k=2048 n=1 elements=2048,1,1 gpu_ns=2240
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=63520
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=10752 k=2048 n=1 elements=10752,1,1 gpu_ns=58640
+VKPHASE pipeline=quantize_q8_1_x4 m=2048 k=10752 n=1 elements=10752,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=2048 k=10752 n=1 elements=2048,1,1 gpu_ns=58960
+VKPHASE pipeline=quantize_q8_1_x4 m=128000 k=2048 n=1 elements=2048,1,1 gpu_ns=2200
+VKPHASE pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 m=128000 k=2048 n=1 elements=128000,1,1 gpu_ns=643920
+0.10.352.737 I slot print_timing: id  0 | task 1 | prompt eval time =      48.77 ms /     8 tokens (    6.10 ms per token,   164.03 tokens per second)
+0.10.352.742 I slot print_timing: id  0 | task 1 |        eval time =      16.10 ms /     2 tokens (   16.10 ms per token,    62.10 tokens per second)
+0.10.352.743 I slot print_timing: id  0 | task 1 |       total time =      64.88 ms /    10 tokens
+0.10.352.749 I slot print_timing: id  0 | task 1 |    graphs reused =          1
+0.10.352.776 I slot      release: id  0 | task 1 | stop processing: n_tokens = 9, truncated = 0
+0.15.905.593 I srv    operator(): operator(): cleaning up before exit...
