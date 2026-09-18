@@ -137,8 +137,21 @@ i32vec2 repack(uint ib, uint iqs) {
     const u8vec4 i_a1 = unpack8((qs >> 4) & 0x0F0F0F0F);
 
 #if defined(DATA_A_ROCMFP4) || defined(DATA_A_ROCMFP4_FAST)
+#if defined(ROCMFP4_FAST_ARITH_CODEBOOK)
+    // The frozen ROCmFP4 codebook magnitude is {0,1,2,3,4,6,8,10}; bit 3
+    // carries the sign. Decode in registers so the exact gate/up experiment
+    // can measure whether avoiding eight LDS codebook lookups helps RDNA2.
+    ivec4 a0_mag = ivec4(i_a0 & u8vec4(7));
+    ivec4 a1_mag = ivec4(i_a1 & u8vec4(7));
+    ivec4 a0 = a0_mag + max(a0_mag - ivec4(4), ivec4(0));
+    ivec4 a1 = a1_mag + max(a1_mag - ivec4(4), ivec4(0));
+    a0 = mix(a0, -a0, notEqual(i_a0 & u8vec4(8), u8vec4(0)));
+    a1 = mix(a1, -a1, notEqual(i_a1 & u8vec4(8), u8vec4(0)));
+    return i32vec2(pack32(i8vec4(a0)), pack32(i8vec4(a1)));
+#else
     return i32vec2(pack32(i8vec4(kvalues_rocmfp4[i_a0.x], kvalues_rocmfp4[i_a0.y], kvalues_rocmfp4[i_a0.z], kvalues_rocmfp4[i_a0.w])),
                    pack32(i8vec4(kvalues_rocmfp4[i_a1.x], kvalues_rocmfp4[i_a1.y], kvalues_rocmfp4[i_a1.z], kvalues_rocmfp4[i_a1.w])));
+#endif
 #else
     return i32vec2(pack32(i8vec4(kvalues_mxfp4[i_a0.x], kvalues_mxfp4[i_a0.y], kvalues_mxfp4[i_a0.z], kvalues_mxfp4[i_a0.w])),
                    pack32(i8vec4(kvalues_mxfp4[i_a1.x], kvalues_mxfp4[i_a1.y], kvalues_mxfp4[i_a1.z], kvalues_mxfp4[i_a1.w])));
