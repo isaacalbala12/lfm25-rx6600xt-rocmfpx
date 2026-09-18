@@ -1,0 +1,75 @@
+{
+  "candidate": {
+    "mean_us": 429.76800000000003,
+    "median_us": 428.90999999999997,
+    "p5_us": 426.741,
+    "p95_us": 435.49,
+    "samples_us": [
+      427.85,
+      428.59,
+      427.61,
+      428.94,
+      430.17,
+      429.57,
+      428.88,
+      426.03,
+      430.32,
+      439.72
+    ],
+    "stdev_us": 3.722573184117565
+  },
+  "candidate_id": "gateup-control",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "control": {
+    "mean_us": 427.652,
+    "median_us": 426.89,
+    "p5_us": 424.28000000000003,
+    "p95_us": 431.764,
+    "samples_us": [
+      423.56,
+      426.45,
+      425.16,
+      433.06,
+      429.47,
+      425.45,
+      429.41,
+      427.0,
+      426.78,
+      430.18
+    ],
+    "stdev_us": 2.8375764306887006
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "decision": "REJECT_MICRO",
+  "finished_at_unix": 1789743380.6527307,
+  "gate": "PASS",
+  "mutation": "unaltered ROCmFPX Vulkan medium MMQ pipeline",
+  "paired_bootstrap_95ci_percent": [
+    -0.1945888000745799,
+    1.526325616131441
+  ],
+  "paired_delta_median_percent": 0.563795442848436,
+  "paired_delta_percent": [
+    0.7564616886860165,
+    -0.1945888000745799,
+    0.563795442848436,
+    -0.17514975303886127,
+    1.526325616131441
+  ],
+  "pairs": 5,
+  "parent": null,
+  "provenance": {
+    "backend_sha256": "40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048",
+    "manifest_sha256": "884ab1345e053095ec0e3cb3b751c55a067a72323243329ef67ee992016285c5",
+    "source_head": "7c4b5c0e50f9a3228f2b53b12764165dcb3e61ac",
+    "source_status": "",
+    "test_sha256": "6cc800a685038caa9b3af3a38b01a0c2c247e3028c8daaa809a1b9ea74cf6331"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789743330.2390168
+}
