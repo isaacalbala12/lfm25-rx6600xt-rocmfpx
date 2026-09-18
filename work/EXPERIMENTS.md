@@ -519,3 +519,18 @@ Follow-up output identity:
   p95 -1.240%, E2E p95 -1.347%, identical outputs 3/3.
 - Decision: **STAGE** pending ten pairs plus 3D+1P/resident/quality guardrails.
   Production was restored to backend `40f6b9c...b25b40`.
+
+## EXP-V7-GATEUP-SELECTIVE-BK3 — KEEP production
+
+- Ten paired Profile-B runs: +1.1641% throughput, paired bootstrap 95% CI
+  [+0.8093%, +1.3767%], exact outputs 10/10.
+- Ten paired 3D+1P runs: retention +1.5442%, resident ITL p95 -1.4472% and
+  new-user TTFT -1.6769%; fairness remained effectively unchanged.
+- Resident C4 8K stayed above 260 tok/s in all candidate runs and did not route
+  through BK3. The paired median was -0.1467%, inside uncertainty.
+- Service-EOS quality passed 7/7 exact comparisons. Exact operation correctness
+  and local speedups were confirmed throughout N=65/96/112/120/126/127/128;
+  observed service N values were 112/120/126/128.
+- Decision: **KEEP production**. ROCmFPX `283a889`, backend
+  `5b3b36d...3edc763`. Same-binary BK4 control remains available with
+  `GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP=0`.

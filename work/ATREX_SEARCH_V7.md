@@ -1,0 +1,43 @@
+# Atrex-style Vulkan search V7
+
+## Selective BK3 promotion
+
+Selective gate/up BK3 is **KEEP production** for FP4_FAST prefill at
+`M=10752, K=2048, N>64`. Down and decode remain on BK4/current pipelines.
+
+- Profile B, ten paired C4 8K runs: **+1.1641%** aggregate throughput,
+  paired bootstrap 95% CI **[+0.8093%, +1.3767%]**; exact outputs 10/10.
+- 3D+1P, ten pairs: retention **+1.5442%**, resident ITL p95 **-1.4472%**
+  (89.211 -> 87.865 ms), new-user TTFT **-1.6769%**.
+- Resident C4 8K: candidate 261.99--262.65 tok/s, all above the 260 tok/s
+  guardrail; paired median -0.1467%, CI [-0.155%, +2.847%]. Exact outputs 3/3.
+- Service-EOS reserved corpus: 7/7 VALID in both arms and exact text,
+  finish reason and token count.
+- Exact operation tests pass for N=65/96/112/120/126/127/128. Every shape
+  improves locally, from -3.36% to -4.77% latency.
+- Service traces observed BK3 at N=112/120/126/128. N=12/16 remained on the
+  small control pipeline; resident decode does not enter BK3.
+
+The production ROCmFPX checkpoint is `283a889`; BK3 is enabled by default and
+`GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP=0` provides a same-binary BK4 control.
+The rebuilt backend SHA-256 is
+`5b3b36d54c45e7b8f6c51e654dcca96726e8fe02f4418b4e43cea0a593edc763`.
+Correctness and selector proof are under
+`work/results/v7-bk3-production-promotion/`. The first attempt omitted plugin
+loading and is retained as INVALID under the explicitly named sibling folder.
+
+## Static evidence
+
+The BK3 SPIR-V is 20,460 bytes versus 23,152 for BK4 (-11.63%) and contains
+11.25% fewer SPIR-V instructions. The largest structural reductions are in
+address chains, integer additions, loads, stores and composite extraction.
+This supports lower loop/address overhead as the mechanism, but is not RDNA2
+ISA evidence: VGPR, SGPR, LDS, spills and occupancy remain unmeasured.
+
+## Next search mechanism
+
+BK_STEP is closed. The next candidate bank must keep BK3 as incumbent and test
+orthogonal mechanisms in one binary: K-loop scheduling, safe prefetch/load
+reordering, LDS organization and Q8/FP4 consumption order. The evaluator
+remains the authority and candidates may not alter its correctness, route or
+measurement gates.

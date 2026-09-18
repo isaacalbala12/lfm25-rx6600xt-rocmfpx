@@ -1,34 +1,25 @@
 # Próxima acción
 
-## Producción V6
+## Producción V7
 
 - Scheduler fixed chunk128 **KEEP**; runtime R0; R1 sigue STAGE.
 - ROCmFPXVulkan0 FP4_FAST, KV q8/q8, C=4, >=8192 tokens/slot.
-- ROCmFPX `7c4b5c0`, fuente limpia.
-- Backend restaurado real: `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
-- Selective BK3 no está instalado; queda **STAGE**.
+- Selective gate/up BK3 **KEEP**; down y decode permanecen en sus rutas control.
+- ROCmFPX `283a889`, fuente limpia.
+- Backend real: `5b3b36d54c45e7b8f6c51e654dcca96726e8fe02f4418b4e43cea0a593edc763`.
 
 ## Siguiente experimento exacto
 
-Confirmar `patches/v6-auto/gateup-selective-bkstep3.patch` sin cambiar scheduler
-ni workload:
+1. Añadir un banco opt-in de variantes ortogonales en una sola biblioteca.
+2. Hacer reanudable el driver y deduplicar por contenido/mutación, no por nombre.
+3. Usar BK3 como incumbent y probar primero una modificación estructural del
+   K-loop respaldada por la reducción de instrucciones SPIR-V observada.
+4. Si diez candidatos válidos no mejoran el incumbent, cerrar gate/up y
+   parametrizar el evaluator para down `M=2048,K=10752,N=128`.
+5. Probar en servidor únicamente candidatos con leverage global >=0.75%.
 
-1. diez pares Profile B AB/BA, con outputs idénticos e intervalo por pares;
-2. 3D+1P exploratorio y diez pares si conserva ITL/retention/TTFT;
-3. resident C4 8K para guardrail >=260 tok/s y VRAM;
-4. selector selectivo en N=120/128/129 y prueba de que down sigue BK4;
-5. service EOS y corpus reservado antes de KEEP;
-6. solo después probar BK3 + BK2 archivado, sin asumir aditividad.
-
-Si BK3 no conserva valor en 3D+1P, rechazarlo para producto aunque gane Profile
-B. Si lo conserva, medir un único scheduler temporal EWMA contra chunk128; no
-mezclar kernel y scheduler en la primera comparación.
-
-## Search loop
-
-Compilar varias variantes opt-in en una biblioteca, alternarlas por variable de
-entorno y restaurar una vez. El evaluador actual es correcto, pero recompila
-cientos de shaders por patch. No ampliar el espacio hasta amortizar ese coste.
+No abrir todavía scheduler EWMA: primero debe existir otro kernel KEEP y debe
+repetirse la timeline del mixed batch.
 
 ## No reabrir
 
