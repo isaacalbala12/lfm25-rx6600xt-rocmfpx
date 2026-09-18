@@ -98,10 +98,16 @@ void compute_outputs(const uint32_t first_row, const uint32_t num_rows) {
     b_offset /= QUANT_K_Q8_1;
 
     FLOAT_TYPE temp[NUM_COLS][NUM_ROWS];
+#if defined(ROCMFP4_FAST_DUAL_ACCUM)
+    FLOAT_TYPE temp_alt[NUM_COLS][NUM_ROWS];
+#endif
 
     [[unroll]] for (uint j = 0; j < NUM_COLS; ++j) {
         [[unroll]] for (uint n = 0; n < num_rows; ++n) {
             temp[j][n] = FLOAT_TYPE(0.0f);
+#if defined(ROCMFP4_FAST_DUAL_ACCUM)
+            temp_alt[j][n] = FLOAT_TYPE(0.0f);
+#endif
         }
     }
 
@@ -109,7 +115,22 @@ void compute_outputs(const uint32_t first_row, const uint32_t num_rows) {
     if (num_iters * K_PER_ITER * BLOCK_SIZE + K_PER_ITER*tid < p.ncols) {
         num_iters++;
     }
-#if defined(DATA_A_ROCMFPX_FP2) || defined(DATA_A_ROCMFPX_FP3)
+#if defined(ROCMFP4_FAST_DUAL_ACCUM)
+    uint i = 0;
+    while (i + 1 < num_iters) {
+        iter(temp,     first_row, num_rows, tid, i*K_PER_ITER);
+        iter(temp_alt, first_row, num_rows, tid, (i + 1)*K_PER_ITER);
+        i += 2;
+    }
+    if (i < num_iters) {
+        iter(temp, first_row, num_rows, tid, i*K_PER_ITER);
+    }
+    [[unroll]] for (uint j = 0; j < NUM_COLS; ++j) {
+        [[unroll]] for (uint n = 0; n < num_rows; ++n) {
+            temp[j][n] += temp_alt[j][n];
+        }
+    }
+#elif defined(DATA_A_ROCMFPX_FP2) || defined(DATA_A_ROCMFPX_FP3)
     uint i = 0;
     while (i < num_iters) {
         iter(temp, first_row, num_rows, tid, i*K_PER_ITER);
