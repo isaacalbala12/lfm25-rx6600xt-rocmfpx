@@ -1,0 +1,81 @@
+{
+  "candidate": {
+    "mean_us": 412.464,
+    "median_us": 412.94,
+    "p5_us": 410.0665,
+    "p95_us": 413.87699999999995,
+    "samples_us": [
+      411.77,
+      410.82,
+      413.69,
+      412.81,
+      413.07,
+      412.14,
+      414.03,
+      413.26,
+      409.45,
+      413.6
+    ],
+    "stdev_us": 1.4429922614715138
+  },
+  "candidate_id": "gateup-selective-bkstep3",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_shmem_types.glsl",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp"
+  ],
+  "control": {
+    "mean_us": 428.718,
+    "median_us": 428.975,
+    "p5_us": 425.6865,
+    "p95_us": 430.81600000000003,
+    "samples_us": [
+      431.05,
+      425.25,
+      426.22,
+      430.44,
+      430.53,
+      429.0,
+      429.65,
+      428.95,
+      427.33,
+      428.76
+    ],
+    "stdev_us": 1.9114904016383483
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "decision": "ADVANCE_SERVER",
+  "finished_at_unix": 1789745279.7658787,
+  "gate": "PASS",
+  "mutation": "compile BK_STEP=3 as an opt-in gate/up-only pipeline and preserve down BK_STEP=4",
+  "paired_bootstrap_95ci_percent": [
+    -3.992879829674345,
+    -3.5206499661476043
+  ],
+  "paired_delta_median_percent": -3.8594073053066835,
+  "paired_delta_percent": [
+    -3.936704426018922,
+    -3.5206499661476043,
+    -3.992879829674345,
+    -3.6466340554390797,
+    -3.8594073053066835
+  ],
+  "pairs": 5,
+  "parent": "gateup-bkstep3",
+  "provenance": {
+    "candidate_backend_sha256": "b59203b2afe5d1471929c909ef29f002b43d51068d4389ba95ea4df6502f5982",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048",
+    "manifest_sha256": "165303aaf28485d1bb8013b2e3f6b399292c5309af5501821dd4d4a214938968",
+    "source_head": "7c4b5c0e50f9a3228f2b53b12764165dcb3e61ac",
+    "source_status": "M extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp\n M extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_shmem_types.glsl\n M extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp",
+    "test_sha256": "6cc800a685038caa9b3af3a38b01a0c2c247e3028c8daaa809a1b9ea74cf6331"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789744720.8919048
+}
