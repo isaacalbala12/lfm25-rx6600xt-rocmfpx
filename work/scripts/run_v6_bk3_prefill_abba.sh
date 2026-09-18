@@ -14,6 +14,8 @@ OUTPUT=${OUTPUT:-$ROOT/work/results/v6-prefill8k-c4-selective-bk3-paired3}
 PAIRS=${PAIRS:-3}
 PORT=${PORT:-18230}
 PATCH_APPLIED=0
+export LD_PRELOAD=/home/isaac/vllm-challenge/toolchain/lib/libstdc++.so.6:/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1
+export ROCMFPX_BACKEND_PATH=$BACKEND
 
 if [[ -e "$OUTPUT" ]]; then
   echo "output already exists: $OUTPUT" >&2
