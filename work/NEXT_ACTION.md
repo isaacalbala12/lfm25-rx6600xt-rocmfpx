@@ -14,8 +14,9 @@
 2. Hacer reanudable el driver y deduplicar por contenido/mutación, no por nombre.
 3. Usar BK3 como incumbent y probar primero una modificación estructural del
    K-loop respaldada por la reducción de instrucciones SPIR-V observada.
-4. Si diez candidatos válidos no mejoran el incumbent, cerrar gate/up y
-   parametrizar el evaluator para down `M=2048,K=10752,N=128`.
+4. El evaluator ya está parametrizado y down tiene baseline. Mantener BM64;
+   BM32/BN64 fue +21.80% y queda cerrado. Atacar K-load scheduling o consumo
+   de códigos/escalas sin repetir BK2/BK3 ni reducir el tile de filas.
 5. Probar en servidor únicamente candidatos con leverage global >=0.75%.
 
 No abrir todavía scheduler EWMA: primero debe existir otro kernel KEEP y debe

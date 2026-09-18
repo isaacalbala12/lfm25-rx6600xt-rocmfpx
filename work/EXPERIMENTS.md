@@ -543,3 +543,12 @@ Follow-up output identity:
   [-0.652%, +0.107%].
 - Decision: **REJECT_MICRO**. The explicit directive adds no useful value over
   the compiler's BK3 code generation; no server benchmark was run.
+
+## EXP-V7-DOWN-BM32-BN64 — REJECT_MICRO
+
+- Parametric evaluator pinned `M=2048,K=10752,N=128`; the candidate kept
+  BN64/BK32/BK_STEP4 but used BM32, WMITER1 and two wave32s.
+- Correctness and exact route proof passed. Five ABBA pairs measured
+  510.905 -> 621.560 us: +21.802%, 95% CI [+20.420%, +23.029%].
+- Decision: **REJECT_MICRO**. Halving the A row tile destroys useful reuse;
+  no server benchmark was run.

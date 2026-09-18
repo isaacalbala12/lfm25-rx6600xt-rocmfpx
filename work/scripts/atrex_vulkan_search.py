@@ -117,6 +117,8 @@ def run_search(args: argparse.Namespace) -> dict[str, Any]:
             "--pairs",
             str(args.pairs),
         ]
+        if args.problem:
+            command.extend(["--problem", str(args.problem)])
         evaluator_env = dict(os.environ)
         evaluator_env["ATREX_SEARCH_SUPERVISOR_PID"] = str(os.getpid())
         completed = subprocess.run(command, cwd=ROOT, env=evaluator_env, check=False)
@@ -174,6 +176,7 @@ def main() -> int:
     parser.add_argument("--max-attempts", type=int, default=60)
     parser.add_argument("--max-stall", type=int, default=10)
     parser.add_argument("--evaluator", type=Path, default=EVALUATOR)
+    parser.add_argument("--problem", type=Path)
     parser.add_argument("--retry-invalid", action="store_true")
     args = parser.parse_args()
     state = run_search(args)

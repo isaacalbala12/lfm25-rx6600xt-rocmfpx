@@ -56,3 +56,25 @@ relative result-path failure). Both failed attempts are retained as INVALID;
 the fixes preserve exact foreign-process rejection, add explicit INVALID-only
 retry, use manifest IDs rather than filenames, and deduplicate semantically
 equivalent mutations by SHA-256 fingerprint. Three unit tests cover the queue.
+
+Static comparison explains the null result: control and explicit-unroll SPIR-V
+have exactly the same byte length, instruction count and opcode histogram.
+The compiler had already produced the same structural loop form, so this is a
+closed mechanism rather than evidence that loop scheduling is unimportant.
+
+The evaluator now accepts a separately pinned, immutable problem definition.
+Gate/up and down specify their own M/K/N and parsers outside candidate
+manifests; a candidate cannot alter the benchmark shape while being evaluated.
+
+## Down campaign start
+
+The immutable down problem is `M=2048,K=10752,N=128`. A five-pair identity
+run places the operation around 510 us, but its nominal arm delta (-0.375%) is
+measurement drift, not an optimization: both arms execute the same pipeline.
+
+Candidate `down-bm32-bn64` halved BM and WMITER while retaining BN64, BK32 and
+BK_STEP4. It passed exact correctness and route proof but regressed 510.905 ->
+621.560 us: **+21.802%**, bootstrap 95% CI **[+20.420%, +23.029%]**.
+**REJECT_MICRO**. The loss of row-tile reuse dominates any lower LDS/register
+footprint. Future down candidates must retain BM64 and target K-load scheduling
+or address/scale consumption instead of reducing the row tile.

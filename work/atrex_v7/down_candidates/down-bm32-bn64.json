@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "id": "down-bm32-bn64",
+  "parent": "down-bk4-control",
+  "mutation": "halve down BM from 64 to 32 while retaining BN64, BK32 and BK_STEP4",
+  "hypothesis": "the long-K small-M down projection can trade row reuse for lower per-workgroup LDS and accumulator pressure",
+  "expected_mechanism": "two wave32 workgroups with WMITER1 expose more independent row tiles while halving the A tile",
+  "affected_resource": "LDS footprint, accumulator registers and workgroup parallelism",
+  "expected_leverage": "down is 23.28% of the profiled N128 prefill tile",
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_BM32": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_BM32": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_bm32_m"
+}

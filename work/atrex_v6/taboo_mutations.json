@@ -52,6 +52,12 @@
       "status": "REJECTED",
       "patterns": ["explicitly unroll the BK3 compute K-step loop", "bk3-unroll-kstep"],
       "reason": "five paired exact-plugin runs improved only 0.159% and the 95% interval crossed zero"
+    },
+    {
+      "id": "down-bm32-bn64",
+      "status": "TABOO_STRONG",
+      "patterns": ["down bm32 bn64", "halve down BM from 64 to 32"],
+      "reason": "+21.80% exact down N128 latency; lost row-tile reuse dominates"
     }
   ]
 }

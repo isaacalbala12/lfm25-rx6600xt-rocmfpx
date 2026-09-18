@@ -25,6 +25,25 @@ class EvaluatorUnitTests(unittest.TestCase):
         self.assertEqual(float(MODULE.PERF_RE.search(output).group(1)), 426.75)
         self.assertIsNone(MODULE.PERF_RE.search(output.replace("n=128", "n=129")))
 
+    def test_problem_definition_changes_filter_and_parser_together(self) -> None:
+        problem = MODULE.validate_problem(
+            {
+                "schema_version": 1,
+                "family": "down",
+                "type_a": "q4_0_rocmfp4_fast",
+                "type_b": "f32",
+                "m": 2048,
+                "n": 128,
+                "k": 10752,
+            }
+        )
+        self.assertEqual(
+            MODULE.problem_filter(problem),
+            "type_a=q4_0_rocmfp4_fast,type_b=f32,m=2048,n=128,k=10752",
+        )
+        output = "MUL_MAT(" + MODULE.problem_filter(problem) + "): 10 runs - 999.5 us/run"
+        self.assertEqual(MODULE.perf_regex(problem).search(output).group(1), "999.5")
+
     def test_taboo_is_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "taboo.json"

@@ -37,14 +37,55 @@ DEFAULT_PRELOAD = ":".join(
         "/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1",
     ]
 )
-FILTER = "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048"
-PERF_RE = re.compile(
-    r"MUL_MAT\(type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048.*?"
-    r"-\s+([0-9.]+) us/run"
-)
-ROUTE_RE = re.compile(
-    r"VKSEL event=mul_mat .*?m=10752 n=128 k=2048 .*?pipeline=([^\s]+)"
-)
+DEFAULT_PROBLEM = {
+    "schema_version": 1,
+    "family": "gateup",
+    "type_a": "q4_0_rocmfp4_fast",
+    "type_b": "f32",
+    "m": 10752,
+    "n": 128,
+    "k": 2048,
+}
+
+
+def validate_problem(value: Any) -> dict[str, Any]:
+    required = ("schema_version", "family", "type_a", "type_b", "m", "n", "k")
+    if not isinstance(value, dict) or any(key not in value for key in required):
+        raise EvaluationError("problem definition is missing required immutable fields")
+    if value["schema_version"] != 1:
+        raise EvaluationError("problem definition must use schema_version 1")
+    if not re.fullmatch(r"[a-zA-Z0-9_.-]+", str(value["family"])):
+        raise EvaluationError("problem family is invalid")
+    if not re.fullmatch(r"[a-zA-Z0-9_]+", str(value["type_a"])) or not re.fullmatch(
+        r"[a-zA-Z0-9_]+", str(value["type_b"])
+    ):
+        raise EvaluationError("problem tensor type is invalid")
+    for key in ("m", "n", "k"):
+        if not isinstance(value[key], int) or value[key] <= 0:
+            raise EvaluationError(f"problem {key} must be a positive integer")
+    return {key: value[key] for key in required}
+
+
+def problem_filter(problem: dict[str, Any]) -> str:
+    return (
+        f"type_a={problem['type_a']},type_b={problem['type_b']},"
+        f"m={problem['m']},n={problem['n']},k={problem['k']}"
+    )
+
+
+def perf_regex(problem: dict[str, Any]) -> re.Pattern[str]:
+    return re.compile(r"MUL_MAT\(" + re.escape(problem_filter(problem)) + r".*?-\s+([0-9.]+) us/run")
+
+
+def route_regex(problem: dict[str, Any]) -> re.Pattern[str]:
+    return re.compile(
+        rf"VKSEL event=mul_mat .*?m={problem['m']} n={problem['n']} k={problem['k']} .*?pipeline=([^\s]+)"
+    )
+
+
+FILTER = problem_filter(DEFAULT_PROBLEM)
+PERF_RE = perf_regex(DEFAULT_PROBLEM)
+ROUTE_RE = route_regex(DEFAULT_PROBLEM)
 ALLOWED_PREFIXES = (
     "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
     "extensions/rocmfpx-vulkan/backend/vulkan-shaders/",
@@ -213,9 +254,9 @@ def build(cmake: Path, build_dir: Path, log: Path) -> None:
         raise EvaluationError("candidate build failed")
 
 
-def correctness(test: Path, backend: Path, extra: dict[str, str], log: Path) -> None:
+def correctness(test: Path, backend: Path, extra: dict[str, str], problem: dict[str, Any], log: Path) -> None:
     result = run(
-        [str(test), "test", "-b", "ROCmFPXVulkan0", "-o", "MUL_MAT", "-p", FILTER],
+        [str(test), "test", "-b", "ROCmFPXVulkan0", "-o", "MUL_MAT", "-p", problem_filter(problem)],
         cwd=ROOT,
         env=environment(backend, extra),
         timeout=300,
@@ -229,17 +270,18 @@ def route_proof(
     test: Path,
     backend: Path,
     extra: dict[str, str],
+    problem: dict[str, Any],
     expected_pipeline: str,
     log: Path,
 ) -> str:
     result = run(
-        [str(test), "perf", "-b", "ROCmFPXVulkan0", "-o", "MUL_MAT", "-p", FILTER],
+        [str(test), "perf", "-b", "ROCmFPXVulkan0", "-o", "MUL_MAT", "-p", problem_filter(problem)],
         cwd=ROOT,
         env=environment(backend, extra, selection=True),
         timeout=300,
         output_prefix=log,
     )
-    routes = ROUTE_RE.findall(result.stderr)
+    routes = route_regex(problem).findall(result.stderr)
     if result.returncode or not routes:
         raise EvaluationError("selector proof did not observe the exact gate/up route")
     if expected_pipeline and any(route != expected_pipeline for route in routes):
@@ -253,16 +295,17 @@ def perf_once(
     test: Path,
     backend: Path,
     extra: dict[str, str],
+    problem: dict[str, Any],
     log: Path,
 ) -> float:
     result = run(
-        [str(test), "perf", "-b", "ROCmFPXVulkan0", "-o", "MUL_MAT", "-p", FILTER],
+        [str(test), "perf", "-b", "ROCmFPXVulkan0", "-o", "MUL_MAT", "-p", problem_filter(problem)],
         cwd=ROOT,
         env=environment(backend, extra),
         timeout=300,
         output_prefix=log,
     )
-    match = PERF_RE.search(result.stdout)
+    match = perf_regex(problem).search(result.stdout)
     if result.returncode or not match:
         raise EvaluationError("logger-free perf run did not produce the exact shape")
     return float(match.group(1))
@@ -307,6 +350,8 @@ def provenance(
     control_backend: Path,
     candidate_backend: Path,
     manifest: Path,
+    problem_path: Path | None,
+    problem: dict[str, Any],
     cmake: Path,
 ) -> dict[str, Any]:
     compiler = run(
@@ -319,7 +364,9 @@ def provenance(
         "control_backend_sha256": sha256(control_backend),
         "candidate_backend_sha256": sha256(candidate_backend),
         "manifest_sha256": sha256(manifest),
-        "filter": FILTER,
+        "problem": problem,
+        "problem_sha256": sha256(problem_path) if problem_path else None,
+        "filter": problem_filter(problem),
         "compiler": compiler.stdout.splitlines()[0] if compiler.returncode == 0 else "unavailable",
         "cmake_sha256": sha256(cmake),
     }
@@ -332,6 +379,10 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
     backend = args.backend.resolve()
     manifest_path = args.manifest.resolve()
     manifest = validate_manifest(json.loads(manifest_path.read_text()))
+    problem_path = args.problem.resolve() if args.problem else None
+    problem = validate_problem(
+        json.loads(problem_path.read_text()) if problem_path else DEFAULT_PROBLEM
+    )
     check_taboo(manifest, args.taboo.resolve())
     require_idle_gpu()
     clean_source(source)
@@ -384,6 +435,8 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             control_backend,
             candidate_backend,
             manifest_path,
+            problem_path,
+            problem,
             args.cmake,
         )
         if patch and (
@@ -395,18 +448,20 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                 "the candidate was not rebuilt into the loaded artifact"
             )
         correctness(
-            test, control_backend, manifest["control_env"], result_dir / "correctness-control"
+            test, control_backend, manifest["control_env"], problem, result_dir / "correctness-control"
         )
         correctness(
             test,
             candidate_backend,
             manifest["candidate_env"],
+            problem,
             result_dir / "correctness-candidate",
         )
         result["control_pipeline"] = route_proof(
             test,
             control_backend,
             manifest["control_env"],
+            problem,
             manifest.get("expected_control_pipeline", ""),
             result_dir / "route-control",
         )
@@ -414,6 +469,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             test,
             candidate_backend,
             manifest["candidate_env"],
+            problem,
             manifest.get("expected_candidate_pipeline", ""),
             result_dir / "route-candidate",
         )
@@ -431,7 +487,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                 extra = manifest[f"{arm}_env"]
                 arm_backend = control_backend if arm == "control" else candidate_backend
                 value = perf_once(
-                    test, arm_backend, extra, result_dir / f"perf-{index:03d}-{arm}"
+                    test, arm_backend, extra, problem, result_dir / f"perf-{index:03d}-{arm}"
                 )
                 pair_values[arm].append(value)
                 (control if arm == "control" else candidate).append(value)
@@ -499,6 +555,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
 def parser() -> argparse.ArgumentParser:
     value = argparse.ArgumentParser(description=__doc__)
     value.add_argument("--manifest", type=Path, required=True)
+    value.add_argument("--problem", type=Path)
     value.add_argument("--output", type=Path, required=True)
     value.add_argument("--pairs", type=int, default=5)
     value.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
