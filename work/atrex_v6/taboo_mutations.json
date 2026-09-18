@@ -58,6 +58,30 @@
       "status": "TABOO_STRONG",
       "patterns": ["down bm32 bn64", "halve down BM from 64 to 32"],
       "reason": "+21.80% exact down N128 latency; lost row-tile reuse dominates"
+    },
+    {
+      "id": "down-bfirst-only",
+      "status": "REJECTED",
+      "patterns": ["down b-first only", "stage down q8 before fp4 only"],
+      "reason": "SPIR-V was identical to control; five formal pairs crossed zero (-0.614% median)"
+    },
+    {
+      "id": "down-stride-hoist-only",
+      "status": "REJECTED",
+      "patterns": ["down stride hoist only", "hoist down stride blocks only"],
+      "reason": "SPIR-V was identical to control; five formal pairs crossed zero (-0.332% median)"
+    },
+    {
+      "id": "down-exact-shape-v8",
+      "status": "COMPOSABLE",
+      "patterns": ["down exact shape v8"],
+      "reason": "-2.161% local with favorable CI, but only about 0.50% predicted global leverage; not server-promoted"
+    },
+    {
+      "id": "down-q8-group4-v8",
+      "status": "COMPOSABLE",
+      "patterns": ["down q8 group4 v8"],
+      "reason": "-1.793% local alone; did not compose with down-exact and remains below server-promotion leverage"
     }
   ]
 }

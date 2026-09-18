@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "down-exact-q8group4",
+  "parent": "down-exact",
+  "mutation": "compose exact down specialization with aligned four-block Q8 address consumption",
+  "hypothesis": "Q8 address simplification may add to the exact-shape control reduction without changing arithmetic or storage",
+  "expected_mechanism": "remove generic control plus repeated Q8 div/mod address construction",
+  "affected_resource": "control-flow and Q8 address instructions",
+  "expected_local_gain": "2-6%",
+  "expected_global_leverage": "0.47-1.40%",
+  "control_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT_Q8GROUP4": "0"},
+  "candidate_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT_Q8GROUP4": "1"},
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_exact_q8group4_m"
+}

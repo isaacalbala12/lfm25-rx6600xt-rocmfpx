@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "down-nobounds",
+  "parent": "down-bm64-bn64-bk32-bk4",
+  "mutation": "specialize exact down M=2048 N=128 to remove output boundary predicates while retaining BM64 BN64 BK32 BK_STEP4",
+  "hypothesis": "M and N are exact multiples of BM64 and BN64, so every output lane selected by the exact route is in bounds",
+  "expected_mechanism": "remove repeated output compare and conditional-store control",
+  "affected_resource": "output control-flow and address instructions",
+  "expected_local_gain": "1-4%",
+  "expected_global_leverage": "0.23-0.93% from the 23.28% down share",
+  "changed_files": ["extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp", "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp", "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp"],
+  "control_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT": "0", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOBOUNDS": "0", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT": "0"},
+  "candidate_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT": "0", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOBOUNDS": "1", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT": "0"},
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_nobounds_m"
+}

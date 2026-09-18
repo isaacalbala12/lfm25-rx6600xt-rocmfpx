@@ -50,6 +50,16 @@ silently. The production default remains the existing down pipeline.
 
 ## Current status
 
-Static baseline captured. Search-bank implementation is next. No V8 down
-candidate has yet been assigned a performance result.
+Search complete: 11 formal PASS candidates, zero INVALID candidates. The best
+microcandidate is `down-exact` at -2.1607%, 95% CI [-2.3803%, -1.1936%]. It
+removes generic K-tail, split-K and output-bound control for the exact shape,
+reducing SPIR-V instructions by 16.40%.
 
+`down-q8group4` validates a second mechanism (-1.793%), but combining it with
+`down-exact` reaches only -1.710%; the wins are not additive. Seven consecutive
+formal candidates after the incumbent failed to improve it. The first V8 down
+family is therefore converged under the predeclared stop rule.
+
+No result reaches the server gate: `down-exact` has only ~0.50% predicted global
+leverage. It is **ARCHIVE COMPOSABLE**, not production. Full results are in
+`work/KERNEL_MICROBENCH_V8.md` and `work/results/v8-down-search/`.

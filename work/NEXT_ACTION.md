@@ -1,31 +1,34 @@
 # Próxima acción
 
-## Producción V7
+## Producción después de V8
 
-- Scheduler fixed chunk128 **KEEP**; runtime R0; R1 sigue STAGE.
+- Scheduler chunk128 **KEEP**; runtime R0; R1 sigue STAGE.
 - ROCmFPXVulkan0 FP4_FAST, KV q8/q8, C=4, >=8192 tokens/slot.
-- Selective gate/up BK3 **KEEP**; down y decode permanecen en sus rutas control.
-- ROCmFPX `15a5120`, fuente limpia; `283a889` es el cambio funcional BK3 y los
-  commits posteriores conservan/revierten candidatos de búsqueda.
-- Backend real: `5b3b36d54c45e7b8f6c51e654dcca96726e8fe02f4418b4e43cea0a593edc763`.
+- Selective gate/up BK3 sigue **KEEP production**.
+- Ninguna variante down V8 está promovida; todos sus selectores opt-in quedan
+  desactivados por defecto.
+- ROCmFPX `063446d`; backend de control contemporáneo
+  `ec4f79bc5545bbecded47b05a2b9bde6fd690c005ca3ef5b7181b0e0a5ff8540`.
+
+## Resultado que cambia la siguiente acción
+
+La búsqueda down alcanzó 11 candidatos formales. `down-exact` ganó 2.1607%
+local, pero su techo global estimado es solo ~0.50%; no cruza el gate de servidor.
+Q8-group4 ganó 1.793% solo y no compuso. La familia queda cerrada como
+**ARCHIVE COMPOSABLE**, no KEEP.
 
 ## Siguiente experimento exacto
 
-1. Añadir un banco opt-in de variantes ortogonales en una sola biblioteca.
-2. Hacer reanudable el driver y deduplicar por contenido/mutación, no por nombre.
-3. Usar BK3 como incumbent y probar primero una modificación estructural del
-   K-loop respaldada por la reducción de instrucciones SPIR-V observada.
-4. El evaluator ya está parametrizado y down tiene baseline. Mantener BM64;
-   BM32/BN64 fue +21.80% y queda cerrado. Atacar K-load scheduling o consumo
-   de códigos/escalas sin repetir BK2/BK3 ni reducir el tile de filas.
-5. Probar en servidor únicamente candidatos con leverage global >=0.75%.
+1. Volver a gate/up BK3 y gastar como máximo diez candidatos ortogonales.
+2. Prioridad: progresión de punteros/address-hoisting que produzca una diferencia
+   SPIR-V real; aplicar pre-gate estático antes de ocupar GPU.
+3. Después probar una sola reorganización LDS justificada por bank mapping, sin
+   aumentar indiscriminadamente los 18,960 bytes del control down.
+4. Server-testear únicamente si el micro gana >=3% o si el leverage perfilado
+   contemporáneo supera 0.75%.
+5. Si gate también converge, reperfilar el mixed batch antes de decidir entre
+   una hipótesis MMQ nueva o el primer scheduler EWMA de ~65 ms.
 
-No abrir todavía scheduler EWMA: primero debe existir otro kernel KEEP y debe
-repetirse la timeline del mixed batch.
-
-## No reabrir
-
-Chunk96/256, caché Q8 adicional, rebatching 6144x2048, gate 2/4 subgroups,
-rows4, packed32, BM32/BN128, BK2 global, FA V5, hybrid down N4, arithmetic
-unpack, dual accumulators, Q2, backend híbrido, hipStreamSynchronize, MTP y
-power/clocks.
+No abrir todavía Flash Attention, R1 ni un sweep de scheduler. No repetir BM32,
+BK_STEP, B-first, stride-hoist equivalente, split-K-only, boundary-only ni
+Q8-group4 combinado con down-exact.

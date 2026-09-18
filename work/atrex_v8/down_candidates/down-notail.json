@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "down-notail",
+  "parent": "down-bm64-bn64-bk32-bk4",
+  "mutation": "specialize exact down K=10752 to remove generic K-tail predicates while retaining BM64 BN64 BK32 BK_STEP4",
+  "hypothesis": "K=10752 is exactly divisible by BK*BK_STEP=128, so all 84 K-loop tiles are complete and generic tail validity work is redundant",
+  "expected_mechanism": "remove repeated comparisons, conditional control and validity propagation from FP4 and Q8 staging",
+  "affected_resource": "control-flow and address-loop instruction overhead",
+  "expected_local_gain": "2-5%",
+  "expected_global_leverage": "0.47-1.16% from the 23.28% down share",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp",
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp"
+  ],
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_HOIST": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_BFIRST": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL": "1",
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_HOIST": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_BFIRST": "0"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_notail_m"
+}

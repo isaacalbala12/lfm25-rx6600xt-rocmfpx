@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 502.229,
+    "median_us": 501.78499999999997,
+    "p5_us": 498.50050000000005,
+    "p95_us": 506.5155,
+    "samples_us": [
+      499.27,
+      500.19,
+      499.21,
+      505.46,
+      503.38,
+      499.5,
+      504.33,
+      506.52,
+      497.92,
+      506.51
+    ],
+    "stdev_us": 3.349303244291592
+  },
+  "candidate_id": "down-exact-q8group4",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_exact_q8group4_m",
+  "control": {
+    "mean_us": 511.41700000000003,
+    "median_us": 510.885,
+    "p5_us": 507.5255000000001,
+    "p95_us": 515.751,
+    "samples_us": [
+      515.94,
+      509.72,
+      512.12,
+      505.73,
+      510.02,
+      510.31,
+      513.04,
+      511.36,
+      515.52,
+      510.41
+    ],
+    "stdev_us": 2.9783778209697367
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "decision": "REVIEW_LEVERAGE",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789763041.0692813,
+  "gate": "PASS",
+  "mutation": "compose exact down specialization with aligned four-block Q8 address consumption",
+  "paired_bootstrap_95ci_percent": [
+    -2.554452742624269,
+    -1.2948862799037286
+  ],
+  "paired_delta_median_percent": -1.7102310036948731,
+  "paired_delta_percent": [
+    -2.554452742624269,
+    -1.2948862799037286,
+    -1.7102310036948731,
+    -1.3227254978524172,
+    -2.0956595479223683
+  ],
+  "pairs": 5,
+  "parent": "down-exact",
+  "provenance": {
+    "candidate_backend_sha256": "ec4f79bc5545bbecded47b05a2b9bde6fd690c005ca3ef5b7181b0e0a5ff8540",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "ec4f79bc5545bbecded47b05a2b9bde6fd690c005ca3ef5b7181b0e0a5ff8540",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=2048,n=128,k=10752",
+    "manifest_sha256": "14aa45de0a6d16f36d0556e800cca828e654485d4f59f417818277db14afd4db",
+    "problem": {
+      "family": "down",
+      "k": 10752,
+      "m": 2048,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "ec12c3e8f96cb1424aed467009eeb31d16f50f4719aa9c99d76009ce5c63539f",
+    "source_head": "063446d03d5464c5c631837bfdfc45547a3b7fbb",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789762990.546681
+}

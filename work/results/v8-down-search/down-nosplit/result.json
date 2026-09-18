@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 511.087,
+    "median_us": 510.225,
+    "p5_us": 506.8765,
+    "p95_us": 517.672,
+    "samples_us": [
+      509.2,
+      508.98,
+      511.25,
+      513.16,
+      506.97,
+      514.02,
+      511.65,
+      508.18,
+      506.8,
+      520.66
+    ],
+    "stdev_us": 4.172191137626457
+  },
+  "candidate_id": "down-nosplit",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_nosplit_m",
+  "control": {
+    "mean_us": 510.167,
+    "median_us": 509.265,
+    "p5_us": 507.4225,
+    "p95_us": 513.1675,
+    "samples_us": [
+      507.78,
+      512.72,
+      507.13,
+      509.56,
+      508.97,
+      511.6,
+      508.89,
+      513.03,
+      513.28,
+      508.71
+    ],
+    "stdev_us": 2.2836328270737605
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "decision": "REJECT_MICRO",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789762442.1005714,
+  "gate": "PASS",
+  "mutation": "specialize exact down to one K partition while retaining BM64 BN64 BK32 BK_STEP4",
+  "paired_bootstrap_95ci_percent": [
+    -0.22733953944144014,
+    0.7593268351217874
+  ],
+  "paired_delta_median_percent": 0.041153473059174495,
+  "paired_delta_percent": [
+    -0.22733953944144014,
+    0.7593268351217874,
+    0.041153473059174495,
+    -0.20451698763113146,
+    0.535230286010635
+  ],
+  "pairs": 5,
+  "parent": "down-bm64-bn64-bk32-bk4",
+  "provenance": {
+    "candidate_backend_sha256": "2193adb632855d4fb736347b3edf8bd3529b83a7bf4aadb461b76cd70d240bf4",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "2193adb632855d4fb736347b3edf8bd3529b83a7bf4aadb461b76cd70d240bf4",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=2048,n=128,k=10752",
+    "manifest_sha256": "12bbfdec19a24ba041522fdcc10e6a5f19674e10eeb8b9acef26e8ab4b8922a4",
+    "problem": {
+      "family": "down",
+      "k": 10752,
+      "m": 2048,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "ec12c3e8f96cb1424aed467009eeb31d16f50f4719aa9c99d76009ce5c63539f",
+    "source_head": "8ffcc916ec96c24d691caff4ac3da5e8be284a42",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789762391.931863
+}

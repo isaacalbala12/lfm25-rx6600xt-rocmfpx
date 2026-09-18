@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "down-q8group4",
+  "parent": "down-bm64-bn64-bk32-bk4",
+  "mutation": "consume each aligned group of four Q8 blocks from one outer address while retaining BM64 BN64 BK32 BK_STEP4",
+  "hypothesis": "down strides and BK_STEP4 keep each four-block RHS group aligned, making per-step div/mod and outer-address reconstruction redundant",
+  "expected_mechanism": "compute the Q8 outer address once and select four inner blocks directly",
+  "affected_resource": "Q8 address arithmetic and load scheduling",
+  "expected_local_gain": "1-4%",
+  "expected_global_leverage": "0.23-0.93%",
+  "control_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_Q8GROUP4": "0"},
+  "candidate_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_Q8GROUP4": "1"},
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_q8group4_m"
+}

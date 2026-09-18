@@ -552,3 +552,26 @@ Follow-up output identity:
   510.905 -> 621.560 us: +21.802%, 95% CI [+20.420%, +23.029%].
 - Decision: **REJECT_MICRO**. Halving the A row tile destroys useful reuse;
   no server benchmark was run.
+
+## EXP-V8-DOWN-STRUCTURAL-SEARCH — ARCHIVE COMPOSABLE / converged
+
+- Added schema-2 evidence levels: only formal PASS results can update an
+  incumbent or convergence count. A campaign baseline mismatch now fails
+  closed. The exact down problem stayed pinned to `2048x10752x128`.
+- Captured safe RADV/ACO static evidence: wave32, workgroup 128, 18,960 bytes
+  shared memory and 2,754 static machine instructions. Occupancy/spills remain
+  unavailable and are not inferred.
+- Evaluated 11 formal candidates with correctness, route proof and five-pair
+  ABBA. `B-first` and stride hoisting generated identical SPIR-V and were
+  rejected. Standalone no-tail was -0.945%; Q8 group-of-four address reuse was
+  -1.793%.
+- Best: exact-shape no-tail + no-split + no-output-bounds, 512.425 -> 501.785
+  us median, **-2.1607%**, bootstrap 95% CI **[-2.3803%, -1.1936%]**.
+  SPIR-V instructions fell 16.40%.
+- The best predicted global ceiling is about 0.50% at the 23.28% down share,
+  below the predeclared 0.75% server gate. No service benchmark was run and no
+  candidate was promoted. Decision: **ARCHIVE COMPOSABLE; down structural
+  simplification family converged for this round**.
+- Search-bank source checkpoint: ROCmFPX `063446d`; same-binary default remains
+  production BK3 plus control down. Backend SHA-256:
+  `ec4f79bc5545bbecded47b05a2b9bde6fd690c005ca3ef5b7181b0e0a5ff8540`.
