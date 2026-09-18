@@ -376,3 +376,14 @@ Follow-up output identity:
 - Decision: **REJECT**, no server run. Neither shape reaches the 0.75% stage
   threshold, and down trends in the wrong direction. ROCmFPX `a6dd6ad`
   restores the production tile and exact control library hash.
+
+## EXP-V5-KERNEL-PREFILL-BKSTEP2-GLOBAL — REJECT / selective STAGE
+
+- FP4_FAST `BK_STEP=2` passes exact gate/up and down N128 correctness.
+- Ten ABBA pairs: gate/up improves -2.400% (95% CI
+  [-2.952%, -2.226%]); down regresses +4.712% ([+4.458%, +5.041%]).
+- The profile-weighted global estimate is a 0.310% regression, so the global
+  candidate is **REJECT** without a server run.
+- The gate-only result is a **STAGE hypothesis** with a measured ~0.787% global
+  ceiling. Follow up only with a distinct gate/up pipeline; never route down or
+  decode through BK_STEP=2. Control is restored at ROCmFPX `f7a53ab`.

@@ -59,3 +59,29 @@ work; it must not reintroduce this extraction sequence.
 The reusable test coverage for both exact N128 shapes remains at ROCmFPX
 `f65b3dc`. Raw samples and paired bootstrap output are in
 `work/results/v5-kernel-prefill-wide-n128/`.
+
+## EXP-V5-KERNEL-PREFILL-BKSTEP2-GLOBAL — REJECT; selective signal STAGE
+
+- Hypothesis: reduce FP4_FAST MMQ `BK_STEP` from 4 to 2. This halves staged K
+  data and LDS per workgroup at the cost of twice as many K-loop barriers. The
+  `MUL_MAT_ID` path remains at its mandatory value 1.
+- Exact CPU-reference correctness passes for gate/up and down N128.
+- Ten logger-free ABBA pairs, twenty samples per arm:
+  - gate/up: 427.455 us control, 416.305 us candidate; paired median -2.400%,
+    bootstrap 95% interval [-2.952%, -2.226%];
+  - down: 508.665 us control, 531.600 us candidate; paired median +4.712%,
+    interval [+4.458%, +5.041%].
+- Profile-weighted estimate for enabling it globally:
+  `32.79% * -2.400% + 23.28% * +4.712% = +0.310%` wall regression. This is an
+  estimate from fenced group fractions, not a server result.
+- Decision: global candidate **REJECT**, no server run. A dedicated gate/up
+  pipeline is **STAGE hypothesis**: the isolated measured ceiling is about
+  `32.79% * 2.400% = 0.787%` overall before dispatch/selector overhead.
+- ROCmFPX `f7a53ab` restores global BK_STEP=4 and reproduces the saved control
+  backend hash exactly. Candidate source and all samples remain reproducible in
+  `patches/v5-fp4fast-bkstep2-candidate.patch` and
+  `work/results/v5-kernel-prefill-bkstep2/`.
+
+Do not enable BK_STEP=2 for all FP4_FAST matrices. The only justified follow-up
+is a second compiled pipeline selected for gate/up-like `M=10752,K=2048,N`
+prefill shapes, with step 4 retained for down and decode.

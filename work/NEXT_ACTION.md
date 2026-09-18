@@ -34,6 +34,17 @@ loop/barrier frequency, so reject it immediately if either dominant family
 regresses by more than 5%. Keep the tile at 64x64 and the byte-load control;
 require exact correctness and ABBA before considering a server run.
 
+That global experiment is complete and **REJECT**: gate/up improves 2.400%, but
+down regresses 4.712%; profile weighting predicts a 0.310% wall regression.
+The actionable signal is gate-only and remains **STAGE hypothesis**, with a
+~0.787% global ceiling. Next add a separately compiled FP4_FAST BK_STEP=2 MMQ
+pipeline and select it only for gate/up-like `M=10752,K=2048` prefill shapes;
+retain BK_STEP=4 for down, decode and fallback. First prove that the selector
+loads the new SPIR-V and reproduces the gate result while down is bit-for-bit on
+the control pipeline. Only then run simultaneous 8K prefill and the chunk128
+3D+1P guardrail. If selector/dispatch overhead erases the sub-1% ceiling,
+reject it and move to the now-material 8K Flash Attention path.
+
 ## Campaign V4 immediate checkpoint
 
 Context capacity is proven with four 8704-token slots. Run the resident-decode
