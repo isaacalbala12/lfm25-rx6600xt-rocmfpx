@@ -348,3 +348,10 @@ Follow-up output identity:
 
 - `6144x2048 N=1` is `[6144,n_seq_tokens=1,n_seqs=4]`. Twenty-two calls per
   graph prove all four batch planes already share each recurrent-layer call.
+
+## EXP-V5-PREFILL8K-PROFILE — KEEP evidence
+
+- Final full N=128 tile: gate/up 23.500 ms (32.79%), down 16.684 ms (23.28%),
+  Flash Attention 16.566 ms (23.11%), short-conv 5.390 ms (7.52%).
+- Fenced profiler throughput is not a service baseline. Gate/up is the next
+  shader target; 8K Flash Attention is now material and remains open.

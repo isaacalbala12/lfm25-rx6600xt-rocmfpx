@@ -7,9 +7,9 @@ Chunk96 is **REJECT**. The light timeline proves each 128-token mixed batch
 costs ~80 ms median; CPU scheduling gaps are not the main limiter. The apparent
 6144x2048 N=1 path already batches four users in `ne[2]`, so close rebatching.
 
-Next: run one fenced 8192-token prefill operation profile with chunking disabled,
-aggregate gate/up and down including preparation, then implement exactly one
-in-wave/tile change in the larger measured family. Require exact plugin
+The fenced profile is complete: gate/up is 32.79%, down 23.28%, and Flash
+Attention 23.11% of grouped time at the final N=128/8K tile. Next implement
+exactly one in-wave/tile or packed-load change for gate/up. Require exact plugin
 microbench correctness and ABBA before 3D+1P. Do not revisit chunk96, Q8 reuse,
 subgroup-count gate/up variants, rows4 short-conv, or N-only selectors.
 
