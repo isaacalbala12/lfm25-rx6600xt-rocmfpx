@@ -76,6 +76,12 @@ changes to the shader.  A candidate that replaces the incumbent globally must
 instead provide two verified backend artifacts and alternate the exact loaded
 library; it receives a stronger provenance check.
 
+The adapter explicitly builds both `ggml-rocmfpx-vulkan` and
+`test-backend-ops`. A patched candidate whose backend hash remains identical
+to control is invalid: this gate was added after the first dry run exposed that
+building `test-backend-ops` alone does not depend on the separately loaded
+plugin backend.
+
 The first evaluator targets gate/up `10752x2048x128`.  Down
 `2048x10752x128` is a separate campaign and search space, not another shape in
 the same fitness aggregate.
@@ -145,4 +151,3 @@ fail-closed campaign where negative results become memory.  Gate/up owns
 local improvement has ceilings of roughly 3.28% and 2.33% respectively before
 server effects.  Those are large enough to justify automated search and small
 enough that exact route proof and paired measurements are essential.
-

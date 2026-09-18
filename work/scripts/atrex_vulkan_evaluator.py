@@ -189,7 +189,16 @@ def check_taboo(manifest: dict[str, Any], taboo_path: Path) -> None:
 
 def build(cmake: Path, build_dir: Path, log: Path) -> None:
     result = run(
-        [str(cmake), "--build", str(build_dir), "--target", "test-backend-ops", "-j", "2"],
+        [
+            str(cmake),
+            "--build",
+            str(build_dir),
+            "--target",
+            "ggml-rocmfpx-vulkan",
+            "test-backend-ops",
+            "-j",
+            "2",
+        ],
         cwd=ROOT,
         timeout=1800,
         output_prefix=log,
@@ -371,6 +380,14 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             manifest_path,
             args.cmake,
         )
+        if patch and (
+            result["provenance"]["control_backend_sha256"]
+            == result["provenance"]["candidate_backend_sha256"]
+        ):
+            raise EvaluationError(
+                "patched candidate produced the same backend hash as the control; "
+                "the candidate was not rebuilt into the loaded artifact"
+            )
         correctness(
             test, control_backend, manifest["control_env"], result_dir / "correctness-control"
         )
