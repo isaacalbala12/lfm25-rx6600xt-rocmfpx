@@ -1825,6 +1825,7 @@ static bool vk_perf_logger_enabled = false;
 static bool vk_perf_logger_concurrent = false;
 static bool vk_enable_sync_logger = false;
 static bool vk_selection_logger_enabled = false;
+static bool vk_dmmv_phase_logger_enabled = false;
 // -1 keeps the upstream selector, 0 forces one subgroup, 1 selects the
 // four-subgroup hybrid reduction for N=2/4, and 2 forces it for all N.
 static int vk_rocmfp4_fast_dmmv_wg = -1;
@@ -2077,6 +2078,12 @@ struct ggml_backend_vk_context {
     std::vector<int> query_node_idx;
     int32_t num_queries {};
     int32_t query_idx {};
+
+    // Dedicated internal-dispatch timestamps, kept separate from node queries.
+    vk::QueryPool dmmv_phase_query_pool;
+    int32_t dmmv_phase_num_queries {};
+    int32_t dmmv_phase_query_idx {};
+    std::vector<std::string> dmmv_phase_names;
 };
 
 static void * const vk_ptr_base = (void *)(uintptr_t) 0x1000;  // NOLINT
@@ -6768,6 +6775,12 @@ static void ggml_vk_instance_init() {
     vk_enable_sync_logger = ggml_vk_env_enabled("GGML_VK_SYNC_LOGGER");
     vk_memory_logger_enabled = ggml_vk_env_enabled("GGML_VK_MEMORY_LOGGER");
     vk_selection_logger_enabled = ggml_vk_env_enabled("GGML_VK_SELECTION_LOGGER");
+    vk_dmmv_phase_logger_enabled = ggml_vk_env_enabled("GGML_VK_DMMV_PHASE_LOGGER");
+    if (vk_dmmv_phase_logger_enabled) {
+        // Reuse the perf path's graph fence, but keep phase queries separate.
+        vk_perf_logger_enabled = true;
+        vk_perf_logger_concurrent = true;
+    }
     if (const char * value = getenv("GGML_VK_ROCMFP4_FAST_DMMV_WG")) {
         if (strcmp(value, "subgroup") == 0 || strcmp(value, "0") == 0) {
             vk_rocmfp4_fast_dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
@@ -7583,6 +7596,17 @@ static void ggml_vk_dispatch_pipeline(ggml_backend_vk_context* ctx, vk_context& 
     vk::WriteDescriptorSet write_descriptor_set{ descriptor_set, 0, 0, pipeline->parameter_count, vk::DescriptorType::eStorageBuffer, nullptr, descriptor_buffer_infos.begin() };
     ctx->device->device.updateDescriptorSets({ write_descriptor_set }, {});
 
+    const bool profile_dmmv_phase = vk_dmmv_phase_logger_enabled &&
+        (pipeline->name == "quantize_q8_1_x4" ||
+         pipeline->name == "mul_mat_vec_rocmfp4_fast_q8_1_f32") &&
+        ctx->dmmv_phase_query_idx + 2 <= ctx->dmmv_phase_num_queries;
+
+    if (profile_dmmv_phase) {
+        subctx->s->buffer->buf.writeTimestamp(vk::PipelineStageFlagBits::eAllCommands,
+                                               ctx->dmmv_phase_query_pool,
+                                               ctx->dmmv_phase_query_idx++);
+    }
+
     subctx->s->buffer->buf.pushConstants(pipeline->layout, vk::ShaderStageFlagBits::eCompute, 0, push_constant_size(push_constants), push_constant_data(push_constants));
     subctx->s->buffer->buf.bindPipeline(vk::PipelineBindPoint::eCompute, pipeline->pipeline);
     subctx->s->buffer->buf.bindDescriptorSets(vk::PipelineBindPoint::eCompute,
@@ -7591,6 +7615,15 @@ static void ggml_vk_dispatch_pipeline(ggml_backend_vk_context* ctx, vk_context& 
                                 { descriptor_set },
                                 {});
     subctx->s->buffer->buf.dispatch(wg0, wg1, wg2);
+
+    if (profile_dmmv_phase) {
+        subctx->s->buffer->buf.writeTimestamp(vk::PipelineStageFlagBits::eAllCommands,
+                                               ctx->dmmv_phase_query_pool,
+                                               ctx->dmmv_phase_query_idx++);
+        ctx->dmmv_phase_names.push_back(pipeline->name +
+            " elements=" + std::to_string(elements[0]) + "," +
+            std::to_string(elements[1]) + "," + std::to_string(elements[2]));
+    }
 }
 
 static void ggml_vk_end_submission(vk_submission& s, std::vector<vk_semaphore> wait_semaphores, std::vector<vk_semaphore> signal_semaphores) {
@@ -15114,6 +15147,12 @@ static void ggml_vk_cleanup(ggml_backend_vk_context * ctx) {
     }
     ctx->gc.events.clear();
 
+    if (ctx->dmmv_phase_query_pool) {
+        ctx->device->device.destroyQueryPool(ctx->dmmv_phase_query_pool);
+        ctx->dmmv_phase_query_pool = nullptr;
+        ctx->dmmv_phase_num_queries = 0;
+    }
+
     ctx->device->device.destroyFence(ctx->fence);
     ctx->device->device.destroyFence(ctx->almost_ready_fence);
 
@@ -16271,6 +16310,23 @@ static ggml_status ggml_backend_vk_graph_compute(ggml_backend_t backend, ggml_cg
         ggml_vk_sync_buffers(ctx, compute_ctx);
     }
 
+    if (vk_dmmv_phase_logger_enabled) {
+        const int32_t required_queries = cgraph->n_nodes * 4 + 100;
+        if (ctx->dmmv_phase_num_queries < required_queries) {
+            if (ctx->dmmv_phase_query_pool) {
+                ctx->device->device.destroyQueryPool(ctx->dmmv_phase_query_pool);
+            }
+            vk::QueryPoolCreateInfo query_create_info;
+            query_create_info.queryType = vk::QueryType::eTimestamp;
+            query_create_info.queryCount = required_queries;
+            ctx->dmmv_phase_query_pool = ctx->device->device.createQueryPool(query_create_info);
+            ctx->dmmv_phase_num_queries = required_queries;
+        }
+        ctx->device->device.resetQueryPool(ctx->dmmv_phase_query_pool, 0, ctx->dmmv_phase_num_queries);
+        ctx->dmmv_phase_query_idx = 0;
+        ctx->dmmv_phase_names.clear();
+    }
+
     ctx->prealloc_y_last_pipeline_used = nullptr;
     ctx->prealloc_y_last_tensor_used = nullptr;
     ctx->prealloc_y_last_decode_vector_staging = false;
@@ -16581,6 +16637,22 @@ static ggml_status ggml_backend_vk_graph_compute(ggml_backend_t backend, ggml_cg
             }
         }
         ctx->perf_logger->print_timings();
+
+        if (vk_dmmv_phase_logger_enabled && ctx->dmmv_phase_query_idx > 0) {
+            std::vector<uint64_t> phase_timestamps(ctx->dmmv_phase_query_idx);
+            VK_CHECK(ctx->device->device.getQueryPoolResults(
+                         ctx->dmmv_phase_query_pool, 0, ctx->dmmv_phase_query_idx,
+                         phase_timestamps.size() * sizeof(uint64_t), phase_timestamps.data(),
+                         sizeof(uint64_t), vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait),
+                     "get DMMV phase timestamp results");
+            for (size_t i = 0; i < ctx->dmmv_phase_names.size(); ++i) {
+                const uint64_t elapsed_ns = uint64_t(
+                    (phase_timestamps[2*i + 1] - phase_timestamps[2*i]) *
+                    ctx->device->properties.limits.timestampPeriod);
+                std::cerr << "VKPHASE pipeline=" << ctx->dmmv_phase_names[i]
+                          << " gpu_ns=" << elapsed_ns << std::endl;
+            }
+        }
     }
 
     if (!ctx->device->support_async) {
