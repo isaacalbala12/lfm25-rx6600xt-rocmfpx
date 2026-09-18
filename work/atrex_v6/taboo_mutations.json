@@ -100,6 +100,18 @@
       "status": "COMPOSABLE",
       "patterns": ["gateup bk3 exact shape v8"],
       "reason": "-1.316% local with favorable CI, but only about 0.43% predicted global leverage; not server-promoted"
+    },
+    {
+      "id": "gateup-bk3-bpair-v9",
+      "status": "REJECTED",
+      "patterns": ["gateup bk3 bpair", "prefetch both tn=2 q8 columns into array caches"],
+      "reason": "+0.767% latency with CI crossing zero; SPIR-V added 18 access chains, 9 loads and 9 stores"
+    },
+    {
+      "id": "scheduler-ewma-ratio-65-68-v9",
+      "status": "REJECTED",
+      "patterns": ["ewma ratio target 65", "ewma ratio target 68", "ms per prompt token min chunk 64"],
+      "reason": "ITL improved 13-15% but fresh-user TTFT regressed 45-48%; scope is the tested ratio controller, not every temporal scheduler"
     }
   ]
 }

@@ -595,3 +595,36 @@ Follow-up output identity:
   All candidate selectors default off; production remains selective BK3.
 - Final default-route check selected `matmul_rocmfp4_fast_q8_1_bk3_m` and passed
   exact CPU-reference correctness. The repository harness finished 26/26 tests.
+
+## EXP-V9-MIXED-GRAPH-PROFILE — KEEP evidence
+
+- Contemporary uninstrumented 3D+1P: 236.261 tok/s resident C3, 38.542 tok/s
+  during prefill, 16.313% retention, 88.471 ms ITL p95 and 5137.25 ms TTFT.
+- Sixty-three full 128-prompt + 3-decode batches measured 78.257 ms median and
+  86.479 ms p95; decode-only C3 measured 11.572 ms median.
+- A separate invasive operation profile proves each mixed batch has a decode
+  graph (16.51% of profiled time) and a prefill graph (83.49%). Within prefill,
+  gate/up is 35.34% and down 26.64%.
+- Decision: **KEEP evidence**. Profiler wall time is not a service metric.
+
+## EXP-V9-GATEUP-BK3-BPAIR — REJECT_MICRO
+
+- Opt-in exact pipeline prefetched both TN=2 Q8 columns into separate caches.
+  CPU-reference correctness and route proof passed.
+- Five ABBA pairs: 412.085 -> 413.485 us, +0.767% latency, bootstrap 95% CI
+  [-0.144%, +0.825%].
+- SPIR-V grew 4.15% in instructions and added 18 access chains, nine loads and
+  nine stores. The attempted ILP materialized extra traffic.
+- Decision: **REJECT_MICRO**, no server run.
+
+## EXP-V9-SCHED-TEMPORAL-EWMA65 — REJECT production
+
+- Opt-in same-binary scheduler estimates mixed-batch ms/prompt-token and clamps
+  chunks to 64--128; default remains disabled.
+- Three paired runs: retention +16.61%, ITL p95 -14.63%, but new-user TTFT
+  +47.97% (5150 -> 7583 ms).
+- Diagnostic chunks 64/65 took ~59.45 ms and 66/67 ~69--71 ms, exposing a
+  nonlinear shape cliff and weakness of the ratio estimator.
+- EWMA68 was stopped after one pair: ITL -13.12%, TTFT +44.64%.
+- Decision: **REJECT production**. The policy fails both <=70 ms ITL and
+  <=5.5 s TTFT. Fixed chunk128 remains KEEP.

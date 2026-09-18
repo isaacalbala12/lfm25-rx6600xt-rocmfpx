@@ -1,40 +1,37 @@
 # Próxima acción
 
-## Producción después de V8
+## Producción después de V9
 
-- Scheduler chunk128 **KEEP**; runtime R0; R1 sigue STAGE.
+- Scheduler fijo chunk128 **KEEP**; runtime R0; R1 sigue STAGE.
 - ROCmFPXVulkan0 FP4_FAST, KV q8/q8, C=4, >=8192 tokens/slot.
 - Selective gate/up BK3 sigue **KEEP production**.
-- Ninguna variante down V8 está promovida; todos sus selectores opt-in quedan
-  desactivados por defecto.
-- ROCmFPX `91655b2`; backend de control contemporáneo
-  `3fd66d51fba2d2f1e4ae0e2957d119a05df96ec7022db5364bb6907652bd68dd`.
+- El scheduler temporal EWMA y gate BK3 bpair están desactivados por defecto.
+- ROCmFPX `f5acc76`; verificar el hash del backend después de cada rebuild.
 
 ## Resultado que cambia la siguiente acción
 
-La búsqueda down alcanzó 11 candidatos formales. `down-exact` ganó 2.1607%
-local, pero su techo global estimado es solo ~0.50%; no cruza el gate de servidor.
-Q8-group4 ganó 1.793% solo y no compuso. La familia queda cerrada como
-**ARCHIVE COMPOSABLE**, no KEEP.
+La baseline contemporánea 3D+1P mide 78.257 ms de mediana por mixed batch,
+88.471 ms de ITL p95 y 16.313% de retention. El perfil diagnóstico separa dos
+grafos: decode 16.51% y prefill 83.49%. Dentro de prefill, gate/up es 35.34% y
+down 26.64%.
 
-Gate/up exact-shape también convergió por debajo del gate. El mejor candidato
-ganó 1.3163% local, IC 95% [-1.4474%, -0.4203%], pero su techo global es solo
-~0.43%. Se conserva como **ARCHIVE COMPOSABLE** y no cambia producción.
+El prefetch de dos columnas Q8 añadió instrucciones/cargas y regredió 0.767%.
+El scheduler EWMA65 mejoró ITL 14.63% pero empeoró TTFT 47.97%; EWMA68 repitió
+la misma frontera. Ambos quedan cerrados. Chunk128 permanece producción.
 
 ## Siguiente experimento exacto
 
-1. Reperfilar de forma ligera el mixed batch de producción actual para comprobar
-   si gate/down/FA conservan sus shares después de BK3.
-2. Si los shares se mantienen, no ampliar las especializaciones exact-shape:
-   ninguna supera ~0.50% de techo global.
-3. Abrir una sola hipótesis estructural de mayor leverage: software pipeline de
-   loads/compute con evidencia estática de cambio real, o cerrar MMQ si añade
-   registros/LDS sin ocultar latencia.
-4. Si MMQ no ofrece un mecanismo con >0.75% de leverage, probar el primer
-   scheduler EWMA con objetivo ~65 ms contra chunk128, manteniendo chunk128 como
-   fallback y midiendo ITL/retention/TTFT.
-5. Server-testear únicamente cambios que crucen el gate predeclarado.
+1. Prototipar prepacking reversible para **una** matriz gate/up real, conservando
+   exactamente códigos FP4 y escalas.
+2. Elegir el layout a partir del consumo wave32 (`K-block` y `M-tile`), no de
+   una analogía con Metal u otra GPU.
+3. Incluir coste de pack, VRAM y fallback; no duplicar el modelo completo.
+4. Medir exact-plugin N=127, N=128 y un tail real, con buffers calientes y
+   rotación entre matrices.
+5. Exigir >=2.55% local aproximadamente antes de servidor: con el share actual
+   es lo necesario para superar 0.75% de leverage mixed.
+6. Si falla, cerrar MMQ y descomponer el 9.15% `other` del grafo prefill por
+   operación antes de reabrir FA o scheduler.
 
-No abrir todavía Flash Attention, R1 ni un sweep de scheduler. No repetir BM32,
-BK_STEP, B-first, stride-hoist equivalente, split-K-only, boundary-only,
-compile-time-K-only ni Q8-group4 combinado con down-exact.
+No hacer más sweep de chunks/targets. No repetir bpair, exact-shape/bounds,
+BK_STEP, BM32, B-first, Q8-group4 ni las familias cerradas de V4--V8.
