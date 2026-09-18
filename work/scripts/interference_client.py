@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import statistics
@@ -29,6 +30,7 @@ def timed_request(url: str, payload: dict, timeout: float, first_event: Event | 
     )
     started = time.perf_counter()
     events: list[float] = []
+    text_parts: list[str] = []
     usage: dict = {}
     timings: dict = {}
     finish_reason = None
@@ -60,6 +62,7 @@ def timed_request(url: str, payload: dict, timeout: float, first_event: Event | 
                 if text is None:
                     text = choices[0].get("text")
                 if text:
+                    text_parts.append(text)
                     events.append(now)
                     if first_event is not None:
                         first_event.set()
@@ -80,6 +83,7 @@ def timed_request(url: str, payload: dict, timeout: float, first_event: Event | 
             "ended_s": ended,
             "events_s": events,
             "timings": timings,
+            "output_text": "".join(text_parts),
         }
     except Exception as exc:  # exact error retained in the raw artifact
         ended = time.perf_counter()
@@ -97,6 +101,7 @@ def timed_request(url: str, payload: dict, timeout: float, first_event: Event | 
             "ended_s": ended,
             "events_s": [],
             "timings": {},
+            "output_text": "".join(text_parts),
         }
 
 
@@ -219,6 +224,14 @@ def main() -> int:
         if baseline_metrics["aggregate_event_tok_s"] > 0 else None
     )
     all_results = prime + baseline + interference + [prefill]
+    for result in all_results:
+        output_text = result["output_text"]
+        token_ids = tokenizer.encode(output_text, add_special_tokens=False)
+        result["output_text_sha256"] = hashlib.sha256(output_text.encode()).hexdigest()
+        result["retokenized_ids"] = token_ids
+        result["retokenized_ids_sha256"] = hashlib.sha256(
+            json.dumps(token_ids, separators=(",", ":")).encode()
+        ).hexdigest()
     origin = min(result["started_s"] for result in all_results)
     cached_ok = all(
         result["cached_prompt_tokens"] is not None
