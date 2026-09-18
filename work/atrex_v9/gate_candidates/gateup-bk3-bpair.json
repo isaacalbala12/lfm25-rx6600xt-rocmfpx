@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "gateup-bk3-bpair",
+  "parent": "gateup-selective-bkstep3",
+  "mutation": "prefetch both TN=2 Q8 columns into distinct register caches before FP4 dot-product accumulation",
+  "hypothesis": "the control serializes each LDS Q8 load behind the preceding column's dot chain; exposing both independent columns may hide load latency",
+  "expected_mechanism": "increase instruction-level parallelism between Q8 LDS loads and independent column accumulations",
+  "affected_resource": "Q8 load scheduling and private-register pressure",
+  "expected_local_gain": "3-8% if LDS dependency latency dominates; regression risk from extra registers",
+  "expected_global_leverage": "gate/up is 29.50% of the contemporary mixed profile; 2.54% local reaches the 0.75% server gate",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp"
+  ],
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_BPAIR": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_BPAIR": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_bpair_m"
+}
