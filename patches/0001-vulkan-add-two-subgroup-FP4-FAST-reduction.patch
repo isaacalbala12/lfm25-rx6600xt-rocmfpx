@@ -1,0 +1,110 @@
+From a62c523746bac882f2f38c5a443df2e78b3f7f70 Mon Sep 17 00:00:00 2001
+From: isaacalbala12 <isaacalbala12@users.noreply.github.com>
+Date: Fri, 18 Sep 2026 02:59:33 +0200
+Subject: [PATCH] vulkan: add two-subgroup FP4 FAST reduction
+
+---
+ .../rocmfpx-vulkan/backend/ggml-vulkan.cpp    | 28 +++++++++++++------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
+
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index a1d0734..09322c0 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -470,6 +470,7 @@ vk_conv_block_size vk_conv_block_sizes[CONV_SHAPE_COUNT] = {
+ enum dmmv_wg_sizes {
+     DMMV_WG_SIZE_SUBGROUP,
+     DMMV_WG_SIZE_LARGE,
++    DMMV_WG_SIZE_DOUBLE,
+     DMMV_WG_SIZE_COUNT,
+ };
+ 
+@@ -1828,10 +1829,12 @@ static bool vk_selection_logger_enabled = false;
+ static bool vk_dmmv_phase_logger_enabled = false;
+ // -1 keeps the upstream selector, 0 forces one subgroup, 1 selects the
+ // four-subgroup hybrid reduction for N=2/4, 2 forces it for all N, and 3
+-// selects it only for the gate/up M=10752, K=2048, N=4 shape.
++// selects it only for the gate/up M=10752, K=2048, N=4 shape. Mode 4 uses a
++// two-subgroup hybrid reduction for that same exact shape.
+ static int vk_rocmfp4_fast_dmmv_wg = -1;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4 = 3;
++static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE = 4;
+ // number of calls between perf logger prints
+ static uint32_t vk_perf_logger_frequency = 1;
+ static std::string vk_pipeline_stats_filter;
+@@ -4800,15 +4803,16 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+     static constexpr uint32_t mul_mat_vec_id_num_bindings = 6;
+ 
+     for (uint32_t w = 0; w < DMMV_WG_SIZE_COUNT; ++w) {
+-        const uint32_t wg_size_subgroup   = (w == DMMV_WG_SIZE_SUBGROUP) ? subgroup_size : (subgroup_size * 4);
+-        const uint32_t wg_size_subgroup16 = (w == DMMV_WG_SIZE_SUBGROUP) ? subgroup_size16 : (subgroup_size16 * 4);
++        const uint32_t subgroup_count = w == DMMV_WG_SIZE_SUBGROUP ? 1 : (w == DMMV_WG_SIZE_DOUBLE ? 2 : 4);
++        const uint32_t wg_size_subgroup   = subgroup_size * subgroup_count;
++        const uint32_t wg_size_subgroup16 = subgroup_size16 * subgroup_count;
+ 
+         const shader_reduction_mode reduc = (use_subgroups && w == DMMV_WG_SIZE_SUBGROUP) ? SHADER_REDUCTION_MODE_SUBGROUP :
+-                                            (use_subgroups && w == DMMV_WG_SIZE_LARGE) ? SHADER_REDUCTION_MODE_HYBRID :
++                                            use_subgroups ? SHADER_REDUCTION_MODE_HYBRID :
+                                             SHADER_REDUCTION_MODE_SHMEM;
+ 
+         const shader_reduction_mode reduc16 = (use_subgroups16 && w == DMMV_WG_SIZE_SUBGROUP) ? SHADER_REDUCTION_MODE_SUBGROUP :
+-                                              (use_subgroups16 && w == DMMV_WG_SIZE_LARGE) ? SHADER_REDUCTION_MODE_HYBRID :
++                                              use_subgroups16 ? SHADER_REDUCTION_MODE_HYBRID :
+                                               SHADER_REDUCTION_MODE_SHMEM;
+ 
+         for (uint32_t i = 0; i < mul_mat_vec_max_cols; ++i) {
+@@ -4879,7 +4883,7 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+ #if defined(GGML_VULKAN_INTEGER_DOT_GLSLC_SUPPORT)
+             if (device->integer_dot_product) {
+                 const uint32_t subgroup_size_int = (device->vendor_id == VK_VENDOR_ID_INTEL && device->subgroup_size_control) ? device->subgroup_min_size : device->subgroup_size;
+-                const uint32_t wg_size_subgroup_int = (w == DMMV_WG_SIZE_SUBGROUP) ? subgroup_size_int : (subgroup_size_int * 4);
++                const uint32_t wg_size_subgroup_int = subgroup_size_int * subgroup_count;
+ 
+                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q4_0][i], "mul_mat_vec_q4_0_q8_1_f32", arr_dmmv_q4_0_q8_1_f32_len[reduc], arr_dmmv_q4_0_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {1*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 1*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
+                 ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_q8_1_f32[w][GGML_TYPE_Q4_1][i], "mul_mat_vec_q4_1_q8_1_f32", arr_dmmv_q4_1_q8_1_f32_len[reduc], arr_dmmv_q4_1_q8_1_f32_data[reduc], "main", mul_mat_vec_num_bindings, sizeof(vk_mat_vec_push_constants), {1*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 1*rm_stdq_int, i+1}, 1, true, use_subgroups, subgroup_size_int);
+@@ -4943,7 +4947,7 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+ #if defined(GGML_VULKAN_INTEGER_DOT_GLSLC_SUPPORT)
+         if (device->integer_dot_product) {
+             const uint32_t subgroup_size_int = (device->vendor_id == VK_VENDOR_ID_INTEL && device->subgroup_size_control) ? device->subgroup_min_size : device->subgroup_size;
+-            const uint32_t wg_size_subgroup_int = (w == DMMV_WG_SIZE_SUBGROUP) ? subgroup_size_int : (subgroup_size_int * 4);
++            const uint32_t wg_size_subgroup_int = subgroup_size_int * subgroup_count;
+ 
+             ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_id_q8_1_f32[w][GGML_TYPE_Q4_0], "mul_mat_vec_id_q4_0_q8_1_f32", arr_dmmv_id_q4_0_q8_1_f32_len[reduc], arr_dmmv_id_q4_0_q8_1_f32_data[reduc], "main", mul_mat_vec_id_num_bindings, sizeof(vk_mat_vec_id_push_constants), {1*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 1*rm_stdq_int}, 1, true, use_subgroups, subgroup_size_int);
+             ggml_vk_create_pipeline(device, device->pipeline_dequant_mul_mat_vec_id_q8_1_f32[w][GGML_TYPE_Q4_1], "mul_mat_vec_id_q4_1_q8_1_f32", arr_dmmv_id_q4_1_q8_1_f32_len[reduc], arr_dmmv_id_q4_1_q8_1_f32_data[reduc], "main", mul_mat_vec_id_num_bindings, sizeof(vk_mat_vec_id_push_constants), {1*rm_stdq_int, 1, 1}, {wg_size_subgroup_int, 1*rm_stdq_int}, 1, true, use_subgroups, subgroup_size_int);
+@@ -6794,8 +6798,10 @@ static void ggml_vk_instance_init() {
+             vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_LARGE_ALL;
+         } else if (strcmp(value, "gateup-n4") == 0 || strcmp(value, "3") == 0) {
+             vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_GATEUP_N4;
++        } else if (strcmp(value, "gateup-n4-2sg") == 0 || strcmp(value, "4") == 0) {
++            vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE;
+         } else if (strcmp(value, "auto") != 0 && value[0] != '\0') {
+-            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, or gateup-n4");
++            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, gateup-n4, or gateup-n4-2sg");
+         }
+     }
+     if (vk_selection_logger_enabled) {
+@@ -7243,6 +7249,8 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context *
+             const bool target_gateup_n4 = m == 10752 && k == 2048 && num_cols == 4;
+             if (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_SUBGROUP) {
+                 dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
++            } else if (vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE && target_gateup_n4) {
++                dmmv_wg = DMMV_WG_SIZE_DOUBLE;
+             } else if ((vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_GATEUP_N4 && target_gateup_n4) ||
+                        (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_LARGE && target_n) ||
+                        vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_LARGE_ALL) {
+@@ -7250,8 +7258,10 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context *
+             }
+         }
+         if (vk_selection_logger_enabled && a_type == GGML_TYPE_Q4_0_ROCMFP4_FAST) {
++            const char * reduction = dmmv_wg == DMMV_WG_SIZE_LARGE ? "large_hybrid" :
++                                     dmmv_wg == DMMV_WG_SIZE_DOUBLE ? "double_hybrid" : "subgroup";
+             std::cerr << "VKSEL event=dmmv_selector m=" << m << " n=" << num_cols << " k=" << k
+-                      << " reduction=" << (dmmv_wg == DMMV_WG_SIZE_LARGE ? "large_hybrid" : "subgroup")
++                      << " reduction=" << reduction
+                       << std::endl;
+         }
+         return ctx->device->pipeline_dequant_mul_mat_vec_q8_1_f32[dmmv_wg][a_type][num_cols-1];
+-- 
+2.53.0
+

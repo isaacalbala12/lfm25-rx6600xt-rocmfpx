@@ -247,6 +247,16 @@ Profile B guardrail completed:
   two-subgroup geometry next; do not reuse the four-subgroup K1 pipeline.
 - Evidence: `work/KERNEL_MICROBENCH_V4.md` and
   `work/results/v4-kernel-gateup-n4-micro-abba10/`.
+
+## EXP-V4-KERNEL-GATEUP-N4-2SG — REJECT
+
+- Compiled a true 64-thread/two-subgroup hybrid pipeline and selected it only
+  for gate/up M=10752, K=2048, N=4. Exact correctness and selector isolation
+  pass.
+- Ten logger-free ABBA pairs give 61.095 us for one subgroup versus 83.230 us
+  for two subgroups: **+36.23% latency**.
+- Decision: **REJECT** without a server run. One wave is decisively better than
+  two and four waves for this shape. Close subgroup-count tuning here.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation

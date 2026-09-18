@@ -127,3 +127,10 @@ Next, compile and test a true two-subgroup hybrid reduction for only this exact
 shape. Require CPU-reference correctness and logger-free ABBA evidence before
 any resident C4x8K server run. Chunk128 remains a separate STAGE scheduler
 candidate and must not be enabled during kernel comparisons.
+
+Result: the true two-subgroup candidate also regresses (+36.23% exact-kernel
+latency). Close gate/up N=4 subgroup-count tuning: one wave beats both two and
+four waves. The next kernel investigation should target the unbatched
+6144x2048,N=1 path (20.72% of measured C4 MMV) or alter gate/up's per-wave
+algorithm; do not add more cooperative-wave variants without new ISA/resource
+evidence.

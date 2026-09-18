@@ -46,3 +46,28 @@ Evidence:
 - `work/results/v4-kernel-gateup-n4-correctness/`
 - `work/results/v4-kernel-gateup-selector-proof/`
 
+## K3: two-subgroup gate/up N=4 reduction — REJECT
+
+- Source checkpoint: `a62c523746bac882f2f38c5a443df2e78b3f7f70`.
+- Candidate: a newly compiled 64-thread/two-wave hybrid reduction selected
+  only for M=10752, K=2048, N=4 by `gateup-n4-2sg`.
+- Correctness: exact operation passes the CPU-reference test; selection proof
+  keeps all adjacent shapes on the one-subgroup control.
+- Protocol: ten ABBA pairs, 20 samples per arm, loggers absent.
+
+| Arm | Median us | Range us |
+| --- | ---: | ---: |
+| subgroup | 61.095 | 60.50--61.80 |
+| gateup-n4-2sg | 83.230 | 82.46--84.53 |
+
+Delta: **+36.23% latency** (regression). Together K2 and K3 establish a
+monotonic loss for this exact hot shape as workgroup size grows from one to
+two to four wave32 subgroups. Decision: **REJECT** and close subgroup-count
+tuning for gate/up N=4. A future gate/up candidate must change the per-wave
+algorithm, packing, or reuse rather than merely add cooperating waves.
+
+Evidence:
+
+- `work/results/v4-kernel-gateup-2sg-micro-abba10/`
+- `work/results/v4-kernel-gateup-2sg-correctness/`
+- `work/results/v4-kernel-gateup-2sg-selector-proof/`
