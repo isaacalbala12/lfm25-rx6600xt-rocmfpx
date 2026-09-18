@@ -139,3 +139,16 @@ prefill shapes, with step 4 retained for down and decode.
   8773.06/8703.19 us. Median delta: **+14.58% latency**.
 - Decision: **REJECT immediately**; no server run. The experiment exceeds the
   5% micro-regression cutoff, so no further FA tile sweep is justified in V5.
+
+## EXP-V5-KERNEL-DOWN-N4-HYBRID — REJECT
+
+- Exact path: `quantize_q8_1_x4 -> mul_mat_vec_rocmfp4_fast_q8_1_f32`,
+  `M=2048,K=10752,N=4` in the plugin backend.
+- Candidate: exact-shape selector for the existing four-subgroup
+  `large_hybrid` reduction; all other forms remain subgroup.
+- Selector proof reports `m=2048 n=4 k=10752 reduction=large_hybrid`.
+- CPU-reference correctness passes for both arms.
+- Ten ABBA pairs / twenty measurements per arm: 58.020 us subgroup versus
+  68.315 us hybrid, **+17.744% latency**.
+- Decision: **REJECT**, no server run. The current one-subgroup kernel is
+  decisively better for down N=4; do not revive the old broad selector.

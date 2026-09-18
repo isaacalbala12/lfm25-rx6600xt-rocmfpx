@@ -74,3 +74,19 @@ real, correct +0.486% effect in the 0.2–0.75% band, but not a standalone
 production promotion. The candidate has been removed from the active build;
 its selector, patch and evidence remain available for later composition. The
 rebuilt production backend matches the saved control hash.
+
+## Decode-aware idle chunks
+
+The bounded A1 prototype kept chunk128 whenever a decoder was active and used
+chunk512 per request only for prompt-only service. Three Profile-B pairs were
+all favorable and output-identical: +0.259% aggregate throughput median
+(observed +0.099% to +0.390%) and -0.259% E2E p95. An unlimited idle variant
+was rejected because one request monopolized the batch and harmed fairness.
+
+The primary 3D+1P guardrail did not improve in its single pair: retention
+15.894% -> 15.818%, ITL p95 88.984 -> 89.618 ms and TTFT 5226.0 -> 5242.8 ms.
+These sub-percent changes are not a regression claim, but they prevent a
+production promotion for a merely +0.259% secondary-workload benefit.
+
+Decision: **ARCHIVE COMPOSABLE / INCONCLUSIVE guardrail**. Fixed chunk128
+remains production. Candidate patches and raw paired evidence are retained.

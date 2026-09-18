@@ -10,24 +10,24 @@
   `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
 - Remapeo denso R1 sigue **STAGE** y no debe componerse todavía con producción.
 
-## Siguiente experimento: down projection N=4
+## Siguiente experimento: trabajo dentro de una wave FP4_FAST
 
-Flash Attention queda cerrada en V5: quitar el límite de ocupación tenía un
-techo global de ~0.35%, y el único Bc64 permitido empeoró la latencia exacta
-8Kx4 un 14.58%. El siguiente candidato de leverage alto es la proyección down
-`M=2048,K=10752,N=4`, que representa 21.08% del MMV decode medido y 23.28% del
-prefill 8K agrupado.
+Flash Attention y los cambios de geometría cooperativa quedan cerrados. La
+variante hybrid exacta de down `M=2048,K=10752,N=4` regresa +17.744%, así que
+una wave32 subgroup sigue siendo el control. El siguiente candidato de leverage
+alto debe cambiar trabajo **dentro de esa wave**, no añadir subgroups.
 
-Usar el runtime estable y chunk128. Aislar exclusivamente la forma down y
-comparar el pipeline subgroup actual con la variante hybrid/large ya compilada,
-sin repetir el selector N-only rechazado. Primero:
+Usar runtime estable y chunk128. Inspeccionar el shader/ISA de
+`mul_mat_vec_rocmfp4_fast_q8_1_f32` en gate/up N=4 (39.60% del MMV) y down N=4
+(21.08%). Elegir una sola transformación respaldada por instrucciones:
 
-1. confirmar pipeline, tipos y strides exactos en el plugin;
-2. ejecutar correctitud de operación y ABBA logger-free para down N=4;
-3. exigir una mejora local clara y estimar leverage global antes del servidor;
-4. si pasa, validar C4 resident 8K y Profile B/3D+1P por separado;
-5. si la señal antigua no se reproduce, cerrar la variante y atacar K tiling o
-   unpack con una hipótesis nueva, no ampliar el selector.
+1. contar unpack, shifts/masks, conversiones y cargas de escala por bloque;
+2. buscar una conversión redundante o una cadena de dependencias que pueda
+   dividirse entre dos acumuladores sin aumentar spills;
+3. crear un pipeline opt-in exacto para una sola forma;
+4. correctitud y ABBA logger-free antes del servidor;
+5. exigir >2% local para continuar, y estimar leverage con la participación
+   contemporánea; no hacer otro sweep de rows/waves.
 
 ## Hipótesis cerradas que no deben reabrirse sin evidencia nueva
 
@@ -41,6 +41,8 @@ sin repetir el selector N-only rechazado. Primero:
 - `BK_STEP=2` global para todas las formas.
 - eliminación del limitador de ocupación FA de RDNA2.
 - `Bc=64` FA sobre la forma exacta 8Kx4.
+- hybrid/large para down `2048x10752,N=4` (+17.744% latencia).
+- prefill idle ilimitado (rompe equidad del batch).
 
 El selectivo gate-only fue una mejora real pero insuficiente: diez pares AB/BA
 dieron +0.486% de throughput (95% CI [+0.371%, +0.705%]) y outputs exactos
@@ -56,6 +58,10 @@ tocar ocupación sin una modificación algorítmica que cambie ese techo.
 Bc64 también está cerrado: pasa correctitud, pero el microbenchmark exacto
 regresa +14.58%. No ejecutar una campaña de servidor ni probar más tiles FA en
 V5.
+
+El scheduler decode-aware acotado (idle512/active128) queda archivado: gana
++0.259% en prompt-only, pero no mejora el único guardrail 3D+1P. Fixed chunk128
+sigue siendo la configuración de producción.
 
 ## Control experimental
 

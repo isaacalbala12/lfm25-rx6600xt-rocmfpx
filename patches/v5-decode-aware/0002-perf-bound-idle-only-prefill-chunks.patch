@@ -1,0 +1,51 @@
+From 0aa6de2806bf0123ff161734e84d3c3869d68384 Mon Sep 17 00:00:00 2001
+From: isaacalbala12 <isaacalbala12@users.noreply.github.com>
+Date: Fri, 18 Sep 2026 15:25:59 +0200
+Subject: [PATCH 2/2] perf: bound idle-only prefill chunks
+
+---
+ tools/server/server-context.cpp | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index f7ac627..88c42e6 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -924,6 +924,7 @@ private:
+     bool remap_trace = false;       // env: LLAMA_SERVER_REMAP_TRACE
+     int32_t prefill_chunk_tokens = 0; // env: LLAMA_SERVER_PREFILL_CHUNK_TOKENS; 0 = n_batch
+     bool prefill_chunk_decode_aware = false;
++    int32_t prefill_chunk_idle_tokens = 0;
+     bool compact_sequences_pending = false;
+     bool batch_trace = false; // env: LLAMA_SERVER_BATCH_TRACE
+     uint64_t batch_trace_id = 0;
+@@ -1420,12 +1421,16 @@ private:
+             prefill_chunk_tokens = LLAMA_SERVER_PREFILL_CHUNK_TOKENS ?
+                 std::max(0, atoi(LLAMA_SERVER_PREFILL_CHUNK_TOKENS)) : 0;
+             prefill_chunk_decode_aware = env_flag("LLAMA_SERVER_PREFILL_CHUNK_DECODE_AWARE", false);
++            const char * LLAMA_SERVER_PREFILL_CHUNK_IDLE_TOKENS = getenv("LLAMA_SERVER_PREFILL_CHUNK_IDLE_TOKENS");
++            prefill_chunk_idle_tokens = LLAMA_SERVER_PREFILL_CHUNK_IDLE_TOKENS ?
++                std::max(0, atoi(LLAMA_SERVER_PREFILL_CHUNK_IDLE_TOKENS)) : 0;
+ 
+             if (prefill_chunk_tokens > 0) {
+                 SRV_WRN("LLAMA_SERVER_PREFILL_CHUNK_TOKENS = %d\n", prefill_chunk_tokens);
+             }
+             if (prefill_chunk_decode_aware) {
+-                SRV_WRN("%s", "LLAMA_SERVER_PREFILL_CHUNK_DECODE_AWARE = 1\n");
++                SRV_WRN("LLAMA_SERVER_PREFILL_CHUNK_DECODE_AWARE = 1, idle_tokens = %d\n",
++                        prefill_chunk_idle_tokens);
+             }
+ 
+             SRV_INF("sequence policy: lowest_slot_first=%d dense_sequences=%d remap_trace=%d\n",
+@@ -3370,7 +3375,7 @@ private:
+         if (params_base.cont_batching || batch.size() == 0) {
+             bool add_ok = true; // false means the batch is full, skip remaining slots
+             const int32_t active_prefill_chunk_tokens =
+-                prefill_chunk_decode_aware && generating.empty() ? 0 : prefill_chunk_tokens;
++                prefill_chunk_decode_aware && generating.empty() ? prefill_chunk_idle_tokens : prefill_chunk_tokens;
+ 
+             std::vector<server_slot *> prompt_order;
+             prompt_order.reserve(slots.size());
+-- 
+2.53.0
+

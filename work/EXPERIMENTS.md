@@ -434,3 +434,33 @@ Follow-up output identity:
   micro-regression cutoff. Patch and raw evidence are archived; ROCmFPX
   `55dfdf0` restores the exact production backend hash. Flash Attention is
   closed for V5 absent a new >0.75%-global-leverage hypothesis.
+
+## EXP-V5-KERNEL-DOWN-N4-HYBRID — REJECT
+
+- Hypothesis: isolate the existing four-subgroup hybrid reduction to the exact
+  decode down projection `M=2048,K=10752,N=4`, avoiding the rejected N-only
+  selector. Its measured MMV share is 21.08%, so a substantial local win would
+  have useful global leverage.
+- Selection logging proves `large_hybrid` executed only on the target shape;
+  control and candidate both pass the CPU-reference operation test.
+- Contemporary logger-free ABBA, 20 samples per arm: subgroup median 58.020 us,
+  hybrid median 68.315 us, **+17.744% latency**.
+- Decision: **REJECT immediately**, no server run. The historical -1.02%
+  signal does not reproduce on the current backend/build. Patch, selector proof
+  and all samples are retained; ROCmFPX `6f6a8ce` restores production.
+
+## EXP-V5-SCHED-DECODE-AWARE-IDLE — ARCHIVE COMPOSABLE / not production
+
+- Unlimited idle prefill was stopped after one pair: the first prompt filled
+  the 4096-token batch, harmed fairness and moved 48.684 -> 47.890 tok/s.
+- The bounded candidate uses 512 tokens per request when no decoder is active
+  and the production 128 when one or more decoders are active.
+- Three simultaneous-prefill ABBA pairs, all valid and output-identical:
+  aggregate input/output +0.259% median, observed range +0.099% to +0.390%;
+  E2E p95 -0.259%. TTFT p95 median -0.230%, with one pair at +0.033%.
+- One 3D+1P guardrail is slightly unfavorable: retention -0.475%, ITL p95
+  +0.713%, TTFT +0.321%. This is one pair and consistent with noise, but the
+  candidate does not improve the primary workload.
+- Decision: **ARCHIVE COMPOSABLE / INCONCLUSIVE guardrail**. Preserve the
+  low-cost patch and evidence, but keep fixed chunk128 in production. ROCmFPX
+  `cce47ba` restores the production scheduler.
