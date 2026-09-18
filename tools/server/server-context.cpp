@@ -923,7 +923,6 @@ private:
     bool dense_sequences = false;   // env: LLAMA_SERVER_DENSE_SEQUENCES
     bool remap_trace = false;       // env: LLAMA_SERVER_REMAP_TRACE
     int32_t prefill_chunk_tokens = 0; // env: LLAMA_SERVER_PREFILL_CHUNK_TOKENS; 0 = n_batch
-    bool prefill_chunk_decode_aware = false;
     bool compact_sequences_pending = false;
     bool batch_trace = false; // env: LLAMA_SERVER_BATCH_TRACE
     uint64_t batch_trace_id = 0;
@@ -1419,13 +1418,9 @@ private:
             const char * LLAMA_SERVER_PREFILL_CHUNK_TOKENS = getenv("LLAMA_SERVER_PREFILL_CHUNK_TOKENS");
             prefill_chunk_tokens = LLAMA_SERVER_PREFILL_CHUNK_TOKENS ?
                 std::max(0, atoi(LLAMA_SERVER_PREFILL_CHUNK_TOKENS)) : 0;
-            prefill_chunk_decode_aware = env_flag("LLAMA_SERVER_PREFILL_CHUNK_DECODE_AWARE", false);
 
             if (prefill_chunk_tokens > 0) {
                 SRV_WRN("LLAMA_SERVER_PREFILL_CHUNK_TOKENS = %d\n", prefill_chunk_tokens);
-            }
-            if (prefill_chunk_decode_aware) {
-                SRV_WRN("%s", "LLAMA_SERVER_PREFILL_CHUNK_DECODE_AWARE = 1\n");
             }
 
             SRV_INF("sequence policy: lowest_slot_first=%d dense_sequences=%d remap_trace=%d\n",
@@ -3369,8 +3364,6 @@ private:
         // next, batch any pending prompts without exceeding n_batch
         if (params_base.cont_batching || batch.size() == 0) {
             bool add_ok = true; // false means the batch is full, skip remaining slots
-            const int32_t active_prefill_chunk_tokens =
-                prefill_chunk_decode_aware && generating.empty() ? 0 : prefill_chunk_tokens;
 
             std::vector<server_slot *> prompt_order;
             prompt_order.reserve(slots.size());
@@ -3807,7 +3800,7 @@ private:
                     // add prompt tokens for processing in the current batch
                     while (slot.prompt.n_tokens() < slot.task->n_tokens() &&
                            batch.size() < n_batch &&
-                           (active_prefill_chunk_tokens == 0 || batch.size() - n_tokens_prev < active_prefill_chunk_tokens)) {
+                           (prefill_chunk_tokens == 0 || batch.size() - n_tokens_prev < prefill_chunk_tokens)) {
                         // get next token to process
                         llama_token cur_tok = input_tokens[slot.prompt.n_tokens()];
                         if (cur_tok == LLAMA_TOKEN_NULL) {
