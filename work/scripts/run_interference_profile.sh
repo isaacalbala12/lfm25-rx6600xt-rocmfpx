@@ -20,6 +20,8 @@ RESOURCE_SAMPLER=${RESOURCE_SAMPLER:-$SCRIPT_DIR/resource_sampler.py}
 CONTEXT_TOKENS=${CONTEXT_TOKENS:-8192}
 DECODE_TOKENS=${DECODE_TOKENS:-768}
 MIN_CACHED_PROMPT_TOKENS=${MIN_CACHED_PROMPT_TOKENS:-8188}
+DECODER_COUNTS=${DECODER_COUNTS:-"1 2 3"}
+PREFILL_CHUNK_TOKENS=${LLAMA_SERVER_PREFILL_CHUNK_TOKENS:-0}
 
 if [[ -d "$OUTPUT" ]] && find "$OUTPUT" -mindepth 1 -print -quit | grep -q .; then
   echo "output directory is not empty: $OUTPUT" >&2
@@ -29,8 +31,9 @@ mkdir -p "$OUTPUT"
 
 sha256sum "$SERVER" "$MODEL" "$SCRIPT_DIR/interference_client.py" "$RESOURCE_SAMPLER" >"$OUTPUT/hashes.txt"
 find "$TOKENIZER" -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum >>"$OUTPUT/hashes.txt"
-printf 'server=%q\nmodel=%q\ndevice=%q\ncontext_tokens=%q\ndecode_tokens=%q\n' \
-  "$SERVER" "$MODEL" "$DEVICE" "$CONTEXT_TOKENS" "$DECODE_TOKENS" >"$OUTPUT/command.txt"
+printf 'server=%q\nmodel=%q\ndevice=%q\ncontext_tokens=%q\ndecode_tokens=%q\ndecoder_counts=%q\nprefill_chunk_tokens=%q\n' \
+  "$SERVER" "$MODEL" "$DEVICE" "$CONTEXT_TOKENS" "$DECODE_TOKENS" \
+  "$DECODER_COUNTS" "$PREFILL_CHUNK_TOKENS" >"$OUTPUT/command.txt"
 
 server_pid=0
 sampler_pid=0
@@ -70,7 +73,8 @@ while IFS= read -r file; do [[ -f "$file" ]] && sha256sum "$file"; done <"$OUTPU
   >"$OUTPUT/resource-sampler.log" 2>&1 &
 sampler_pid=$!
 
-for n in 1 2 3; do
+for n in $DECODER_COUNTS; do
+  [[ "$n" =~ ^[123]$ ]] || { echo "invalid decoder count: $n" >&2; exit 2; }
   "$PYTHON" "$SCRIPT_DIR/interference_client.py" --base-url "http://$HOST:$PORT" \
     --tokenizer "$TOKENIZER" --request-model "$MODEL" --n-decoders "$n" \
     --context-tokens "$CONTEXT_TOKENS" --decode-tokens "$DECODE_TOKENS" \
