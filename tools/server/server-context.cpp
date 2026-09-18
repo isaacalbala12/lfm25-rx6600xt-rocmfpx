@@ -925,6 +925,7 @@ private:
     int32_t prefill_chunk_tokens = 0; // env: LLAMA_SERVER_PREFILL_CHUNK_TOKENS; 0 = n_batch
     bool compact_sequences_pending = false;
     bool batch_trace = false; // env: LLAMA_SERVER_BATCH_TRACE
+    uint64_t batch_trace_id = 0;
 
     int n_empty_consecutive = 0;
 
@@ -3955,6 +3956,7 @@ private:
             n_prompt_tokens += batch.tokens[i].is_prompt ? 1 : 0;
         }
 
+        const uint64_t trace_id = batch_trace ? batch_trace_id++ : 0;
         if (batch_trace) {
             std::set<int32_t> active_slot_ids;
             std::set<int32_t> active_seq_ids;
@@ -3980,20 +3982,25 @@ private:
                 first = false;
                 seq_ids << id;
             }
-            SRV_WRN("BATCHTRACE off=%d tokens=%d prompt_tokens=%d decode_tokens=%d logical_ids=[%s] physical_ids=[%s] has_output=%d\n",
-                    off, batch_view.n_tokens, n_prompt_tokens, batch_view.n_tokens - n_prompt_tokens,
+            SRV_WRN("BATCHTRACE id=%" PRIu64 " phase=submit off=%d tokens=%d prompt_tokens=%d decode_tokens=%d logical_ids=[%s] physical_ids=[%s] has_output=%d\n",
+                    trace_id, off, batch_view.n_tokens, n_prompt_tokens, batch_view.n_tokens - n_prompt_tokens,
                     slot_ids.str().c_str(), seq_ids.str().c_str(), has_output ? 1 : 0);
         }
 
         // yield to the queue, so we can still handle metrics tasks while decoding
         // note: the sync is done here too, so that the wait is also covered by the yield
         int ret = 0;
+        const int64_t trace_start_us = batch_trace ? ggml_time_us() : 0;
         queue_tasks.yield_to_queue([&]() {
             ret = llama_decode(ctx_tgt, batch_view);
             if (ret == 0 && has_output) {
                 llama_synchronize(ctx_tgt);
             }
         });
+        if (batch_trace) {
+            SRV_WRN("BATCHTRACE id=%" PRIu64 " phase=complete wall_us=%" PRId64 " ret=%d\n",
+                    trace_id, ggml_time_us() - trace_start_us, ret);
+        }
 
         if (ret != 0) {
             {
