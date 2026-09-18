@@ -387,3 +387,18 @@ Follow-up output identity:
 - The gate-only result is a **STAGE hypothesis** with a measured ~0.787% global
   ceiling. Follow up only with a distinct gate/up pipeline; never route down or
   decode through BK_STEP=2. Control is restored at ROCmFPX `f7a53ab`.
+
+## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — STAGE
+
+- Added a separate BK2 SPIR-V and exact shape selector, disabled by default.
+  Logs prove gate/up uses BK2 while down remains on the control pipeline.
+- Four CPU-reference cases pass: gate N120/128/129 and down N128.
+- Ten same-binary ABBA pairs: gate/up -2.601% (95% CI
+  [-2.862%, -2.211%]); down -0.005% ([-0.410%, +0.373%]).
+- Three-run simultaneous 8K C4: 48.084 -> 48.600 output tok/s and 1538.70 ->
+  1555.19 input tok/s (+1.072%); TTFT p95 improves 1.31%. Corresponding
+  generated texts, finish reasons and token counts match 12/12.
+- One 3D+1P guardrail is favorable on retention, ITL and TTFT, but is not a
+  statistical confirmation.
+- Decision: **STAGE** at ROCmFPX `24376c3`; require ten paired service batches
+  before KEEP. Default remains off.

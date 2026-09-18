@@ -45,6 +45,16 @@ the control pipeline. Only then run simultaneous 8K prefill and the chunk128
 3D+1P guardrail. If selector/dispatch overhead erases the sub-1% ceiling,
 reject it and move to the now-material 8K Flash Attention path.
 
+The selective implementation now works and is **STAGE**. Ten micro ABBA pairs
+confirm gate/up -2.601% while down is flat; three simultaneous-prefill service
+runs improve +1.072%, and one 3D+1P guardrail is favorable. Next run ten paired
+Profile B service batches with randomized AB/BA order using the same binary and
+environment switch, then at least three additional paired 3D+1P guardrails.
+Promote only if the ~1% service effect survives and output hashes remain equal.
+Resident decode does not execute this selector, but retain one C4 smoke as a
+configuration guard. If the service confidence interval crosses zero, keep the
+code experimental and move to the 23.11% 8K Flash Attention path.
+
 ## Campaign V4 immediate checkpoint
 
 Context capacity is proven with four 8704-token slots. Run the resident-decode

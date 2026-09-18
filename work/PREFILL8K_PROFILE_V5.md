@@ -24,3 +24,15 @@ time is 71.677 ms:
 This is the first V5 causal ordering. Gate/up has the largest single leverage;
 down is second. Flash Attention now exceeds the campaign's 5–10% trigger and
 must remain open for 8K-specific tuning. V3's 2048-token shares are not reused.
+
+## Gate-only BK_STEP=2 candidate
+
+The selective pipeline at ROCmFPX `24376c3` retains BK_STEP=4 for down and
+decode, and routes only gate/up-like `10752x2048,N>64` through BK_STEP=2.
+Microbenchmark gate/up improves 2.601% paired while the down guardrail is flat.
+
+With chunk128 enabled, a three-repetition simultaneous 8K C4 exploration moves
+aggregate input throughput from 1538.70 to 1555.19 tok/s (+1.072%) and TTFT p95
+from 17807.29 to 17573.98 ms (-1.31%). This contemporary control is slower than
+the historical 1562 tok/s baseline, so the candidate is compared only against
+its paired-build control and remains **STAGE**, not a new universal baseline.

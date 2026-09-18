@@ -85,3 +85,31 @@ The reusable test coverage for both exact N128 shapes remains at ROCmFPX
 Do not enable BK_STEP=2 for all FP4_FAST matrices. The only justified follow-up
 is a second compiled pipeline selected for gate/up-like `M=10752,K=2048,N`
 prefill shapes, with step 4 retained for down and decode.
+
+## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — STAGE
+
+- Implementation: a second embedded SPIR-V,
+  `matmul_rocmfp4_fast_q8_1_bk2`, selected only when FP4_FAST uses quantized
+  RHS with `M=10752,K=2048,N>64`. It is opt-in through
+  `GGML_VK_ROCMFP4_FAST_MMQ_BK2_GATEUP=1`; default remains the control.
+- Pipeline proof: gate/up N128 logs
+  `matmul_rocmfp4_fast_q8_1_bk2_m`; down logs the unchanged
+  `matmul_rocmfp4_fast_q8_1_m`. Decode N<=6 cannot satisfy the selector.
+- CPU-reference correctness: gate/up N=120/128/129 and down N=128 all pass.
+- Same-binary ABBA, ten pairs and twenty samples per arm:
+  - gate/up: 426.790 -> 416.495 us; paired -2.601%, 95% CI
+    [-2.862%, -2.211%];
+  - down control guardrail: paired -0.005%, CI [-0.410%, +0.373%].
+- Boundary exploration also wins at N=120/128/129 by approximately
+  2.47%/3.10%/3.17% respectively.
+- Simultaneous 8K prefill C4 with chunk128, three repetitions per arm:
+  aggregate output 48.084 -> 48.600 tok/s (+1.072%), input 1538.70 ->
+  1555.19 tok/s; TTFT p95 17807.29 -> 17573.98 ms (-1.31%). All 24 requests
+  are valid and uncached. All 12 corresponding generated texts, finish reasons
+  and output-token counts match exactly between arms.
+- One contemporary 3D+1P guardrail: retention 15.632% -> 15.947%, resident ITL
+  p95 89.366 -> 88.212 ms, and new-user TTFT 5304.59 -> 5221.88 ms. This is a
+  single pair and is not a confidence claim.
+- Decision: **STAGE**. The server signal exceeds 0.75% and all measured
+  directions are favorable, but a ~1% promotion requires at least ten paired
+  service batches. ROCmFPX checkpoint: `24376c3`.

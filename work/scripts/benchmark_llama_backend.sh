@@ -139,6 +139,7 @@ find "$TOKENIZER" -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum 
   printf 'hsa_override_gfx_version=%s\n' "${HSA_OVERRIDE_GFX_VERSION:-}"
   printf 'ggml_vk_visible_devices=%s\n' "${GGML_VK_VISIBLE_DEVICES:-}"
   printf 'rocmfpx_plugin_path=%s\n' "${ROCMFPX_PLUGIN_PATH:-}"
+  printf 'rocmfpx_mmq_bk2_gateup=%s\n' "${GGML_VK_ROCMFP4_FAST_MMQ_BK2_GATEUP:-}"
   printf 'power_dpm_force_performance_level='; cat /sys/class/drm/card1/device/power_dpm_force_performance_level 2>/dev/null || true
   printf 'power_profile_active='; sed -n 's/^ \?\([0-9][0-9]* [^:]*\)\*:.*/\1/p' \
     /sys/class/drm/card1/device/pp_power_profile_mode 2>/dev/null || true

@@ -55,3 +55,13 @@ Rebatching to N=4 would cross recurrent layout semantics. **REJECT hypothesis.**
 - lightweight timeline: **KEEP diagnostic only**.
 - 6144 N=1 rebatching: **REJECT hypothesis**; already batched in `ne[2]`.
 
+## Selective gate/up BK_STEP=2 guardrail
+
+The opt-in gate-only pipeline improves simultaneous 8K C4 service throughput
+by 1.072% over its contemporary control (three repetitions each). In one 3D+1P
+pair it also moves retention 15.632% -> 15.947%, ITL p95 89.366 -> 88.212 ms,
+and new-user TTFT 5304.59 -> 5221.88 ms. It does not execute for resident decode
+N<=6, so the steady-state decode path remains unchanged by construction.
+
+Decision: **STAGE** pending ten paired Profile B batches and more than one
+paired interference guardrail. Do not enable it by default yet.
