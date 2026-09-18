@@ -767,6 +767,7 @@ struct vk_device_struct {
     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat[GGML_TYPE_COUNT];
     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_f16[GGML_TYPE_COUNT];
     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_COUNT];
+    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk2;
 
     vk_matmul_pipeline pipeline_matmul_id_f32 {};
     vk_matmul_pipeline pipeline_matmul_id_bf16 {};
@@ -1833,6 +1834,7 @@ static bool vk_dmmv_phase_logger_enabled = false;
 // selects it only for the gate/up M=10752, K=2048, N=4 shape. Mode 4 uses a
 // two-subgroup hybrid reduction for that same exact shape.
 static int vk_rocmfp4_fast_dmmv_wg = -1;
+static bool vk_rocmfp4_fast_mmq_bk2_gateup = false;
 static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
 static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4 = 3;
 static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE = 4;
@@ -4483,6 +4485,7 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
             CREATE_MMQ(GGML_TYPE_MXFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_MXFP4], matmul_mxfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4], matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST], matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk2, matmul_rocmfp4_fast_q8_1_bk2, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
 
             CREATE_MMQ(GGML_TYPE_Q2_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q2_K], matmul_q2_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, , 0);
             CREATE_MMQ(GGML_TYPE_Q3_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q3_K], matmul_q3_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, , 0);
@@ -6810,6 +6813,9 @@ static void ggml_vk_instance_init() {
             throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, gateup-n4, gateup-n4-2sg, or conv-n1-rows4");
         }
     }
+    if (const char * value = getenv("GGML_VK_ROCMFP4_FAST_MMQ_BK2_GATEUP")) {
+        vk_rocmfp4_fast_mmq_bk2_gateup = strcmp(value, "1") == 0;
+    }
     if (vk_selection_logger_enabled) {
         std::cerr << "VKSEL event=backend source=rocmfpx-vulkan-plugin" << std::endl;
     }
@@ -8869,6 +8875,14 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
 
     // Check for mmq first
     vk_matmul_pipeline mmp = quantize_y ? ggml_vk_get_mul_mat_mat_pipeline(ctx, src0->type, GGML_TYPE_Q8_1, (ggml_prec)dst->op_params[0]) : nullptr;
+
+    const bool use_rocmfp4_fast_bk2_gateup =
+        vk_rocmfp4_fast_mmq_bk2_gateup && quantize_y &&
+        src0->type == GGML_TYPE_Q4_0_ROCMFP4_FAST &&
+        ne01 == 10752 && ne10 == 2048 && ne11 > 64;
+    if (use_rocmfp4_fast_bk2_gateup) {
+        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk2.f32acc;
+    }
 
     if (mmp == nullptr) {
         // Fall back to f16 dequant mul mat
