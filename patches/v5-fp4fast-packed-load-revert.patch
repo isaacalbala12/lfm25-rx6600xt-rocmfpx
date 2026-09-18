@@ -1,0 +1,54 @@
+From d92f6a43c78228a578628b03147d190b548c38f0 Mon Sep 17 00:00:00 2001
+From: isaacalbala12 <isaacalbala12@users.noreply.github.com>
+Date: Fri, 18 Sep 2026 04:59:36 +0200
+Subject: [PATCH] revert: reject aligned FP4 FAST MMQ loads
+
+---
+ .../rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp   | 6 ------
+ .../backend/vulkan-shaders/mul_mmq_funcs.glsl            | 9 ---------
+ 2 files changed, 15 deletions(-)
+
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+index 698e066..aae1c2e 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+@@ -24,12 +24,6 @@
+ layout(local_size_x_id = 0, local_size_y = 1, local_size_z = 1) in;
+ 
+ layout (binding = 0) readonly buffer A {A_TYPE data_a[];};
+-#if defined(DATA_A_ROCMFP4_FAST)
+-// FP4_FAST blocks are 17 bytes, so four-byte code groups are not naturally
+-// aligned after the first block. A uint view lets the candidate loader use
+-// two aligned reads instead of four scalar byte reads without changing bytes.
+-layout (binding = 0) readonly buffer A_RAW32 {uint data_a_raw32[];};
+-#endif
+ #if defined(A_TYPE_PACKED16)
+ layout (binding = 0) readonly buffer A_PACKED16 {A_TYPE_PACKED16 data_a_packed16[];};
+ #endif
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+index 6147c60..82d036c 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+@@ -147,19 +147,10 @@ ACC_TYPE mmq_dot_product(const uint ib_a) {
+ #if defined(DATA_A_MXFP4) || defined(DATA_A_ROCMFP4) || defined(DATA_A_ROCMFP4_FAST)
+ // 1-byte quant loads for microscaled FP4 blocks. ROCmFP4 uses two compact half-block scales.
+ void block_a_to_shmem(const uint buf_ib, const uint ib, const uint iqs) {
+-#if defined(DATA_A_ROCMFP4_FAST)
+-    const uint byte_offset = ib * 17u + iqs * 4u;
+-    const uint word_index  = byte_offset >> 2;
+-    const uint bit_shift   = (byte_offset & 3u) * 8u;
+-    const uint word_lo     = data_a_raw32[word_index];
+-    const uint qs          = bit_shift == 0u ? word_lo :
+-        (word_lo >> bit_shift) | (data_a_raw32[word_index + 1u] << (32u - bit_shift));
+-#else
+     const uint32_t qs = pack32(u8vec4(data_a[ib].qs[iqs * 4    ],
+                                       data_a[ib].qs[iqs * 4 + 1],
+                                       data_a[ib].qs[iqs * 4 + 2],
+                                       data_a[ib].qs[iqs * 4 + 3]));
+-#endif
+ 
+     const u8vec4 i_a0 = unpack8( qs       & 0x0F0F0F0F);
+     const u8vec4 i_a1 = unpack8((qs >> 4) & 0x0F0F0F0F);
+-- 
+2.53.0
+

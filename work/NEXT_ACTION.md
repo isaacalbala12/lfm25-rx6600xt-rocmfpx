@@ -13,6 +13,16 @@ exactly one in-wave/tile or packed-load change for gate/up. Require exact plugin
 microbench correctness and ABBA before 3D+1P. Do not revisit chunk96, Q8 reuse,
 subgroup-count gate/up variants, rows4 short-conv, or N-only selectors.
 
+The first packed-load candidate is now closed: exact aligned uint extraction
+regresses gate/up N128 by +1.880% (95% CI [+1.692%, +2.071%]) and is
+**REJECT**. Production is restored byte-for-byte. The selector evidence shows
+this shape uses the plugin's medium integer MMQ tile on RADV. Next isolate one
+medium-tile geometry change—prefer `BM=128` versus the current AMD-GCN
+`BM=256`, with all other parameters fixed—and test both gate/up and down N128.
+Reject immediately on >5% regression in either dominant family; require ABBA
+and exact CPU-reference correctness before any server run. Do not combine it
+with the rejected packed-load code.
+
 ## Campaign V4 immediate checkpoint
 
 Context capacity is proven with four 8704-token slots. Run the resident-decode

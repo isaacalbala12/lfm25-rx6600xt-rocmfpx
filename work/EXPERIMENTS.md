@@ -355,3 +355,14 @@ Follow-up output identity:
   Flash Attention 16.566 ms (23.11%), short-conv 5.390 ms (7.52%).
 - Fenced profiler throughput is not a service baseline. Gate/up is the next
   shader target; 8K Flash Attention is now material and remains open.
+
+## EXP-V5-KERNEL-GATEUP-N128-PACKED32 — REJECT
+
+- Changed only the real plugin shader for the medium FP4_FAST x Q8_1 MMQ path:
+  four byte loads became two aligned uint loads plus exact reconstruction.
+- Exact gate/up `10752x2048x128` correctness passed against the CPU reference.
+- Ten logger-free ABBA pairs: 427.475 us control versus 434.800 us candidate;
+  paired regression +1.880%, bootstrap 95% CI [+1.692%, +2.071%].
+- Decision: **REJECT**, no server run. ROCmFPX `d92f6a4` reverts the candidate
+  and reproduces the control library hash exactly. Preserve the evidence, but
+  do not retry this packed-read implementation.
