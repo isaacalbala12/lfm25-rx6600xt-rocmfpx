@@ -3259,6 +3259,17 @@ static vk_fa_tuning_params get_fa_tuning_params_scalar(const vk_device& device, 
         result.block_cols = (D & 8) ? 64 : 32;
     }
 
+    // V5 RDNA2 experiment: double the K/V column tile only for the measured
+    // LFM2 large-prefill path. The default selector remains unchanged.
+    static const bool rdna2_fa_bc64 = ggml_vk_env_enabled("GGML_VK_FA_RDNA2_BC64");
+    if (rdna2_fa_bc64 &&
+        device->vendor_id == VK_VENDOR_ID_AMD &&
+        device->architecture == AMD_RDNA2 &&
+        n_rows >= 32 && n_kv >= 1024 && hsk == 64 && hsv == 64 &&
+        k_type == GGML_TYPE_Q8_0 && v_type == GGML_TYPE_Q8_0) {
+        result.block_cols = 64;
+    }
+
     const uint32_t D_lsb = D ^ (D & (D-1));  // extract lowest set bit
 
     result.d_split = std::min(std::min(result.subgroup_size, 8u), D_lsb / 4);
