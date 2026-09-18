@@ -148,3 +148,9 @@ run deterministic fixed-order logits/output equivalence plus the reserved
 service-EOS quality corpus. Then compare chunk96/chunk128 only if the TTFT/ITL
 product requirement warrants another point; do not reopen a generic chunk
 sweep.
+
+Controlled output equivalence now passes: 10/10 corresponding output hashes
+and retokenized-ID sequences match, including every 768-token resident decode.
+Next production gate is the service-EOS reserved corpus and, if feasible, a
+direct logits checkpoint around chunk boundaries. Do not treat fixed-output
+identity as a complete quality evaluation.

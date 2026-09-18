@@ -160,6 +160,17 @@ reserved quality battery. The measured trade-off is explicit: about 0.96 s
 more TTFT for the entering 8K request in exchange for eliminating a roughly
 2.2-second inter-token stall for existing users.
 
+One fixed-order controlled reproduction now retains full output text,
+retokenized IDs and hashes. All ten corresponding outputs are identical
+between control and chunk128: three one-token primes, three 768-token baseline
+decodes, three 768-token decodes under interference, and the entering user's
+first token. Baseline and interference outputs also match within each arm.
+This is evidence against state corruption or a sampling-policy change in the
+tested greedy fixed-output path; it is not a formal logits proof or service-EOS
+quality evaluation.
+
+Evidence: `work/results/v4-profile-c-chunk128-output-equivalence/`.
+
 ## Kernel experiment outcome
 
 The first shape-specific experiments are complete. Logger-free exact-plugin

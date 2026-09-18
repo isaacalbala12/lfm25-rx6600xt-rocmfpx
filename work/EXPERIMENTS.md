@@ -285,6 +285,15 @@ Profile B guardrail completed:
 - Decision: **KEEP engineering/service value**. Do not make it the production
   default until deterministic output/logit equivalence and reserved quality
   validation are complete.
+
+Follow-up output identity:
+
+- A fixed-order control/chunk128 reproduction retained full text and
+  retokenized IDs. All 10 corresponding outputs match exactly, including six
+  768-token decoder outputs (baseline and interference).
+- Decision remains **KEEP engineering**. This closes an initial output-state
+  corruption check, but not logits equivalence or the service-EOS quality
+  corpus required for a production default.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation
