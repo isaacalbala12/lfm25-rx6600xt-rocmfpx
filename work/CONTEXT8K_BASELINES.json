@@ -125,7 +125,39 @@
       },
       "decision": "STAGE"
     },
-    "decision": "unlimited logical prompt scheduling rejected for interactive service; chunk128 staged pending chunk256 and C4 guardrail"
+    "chunk256": {
+      "result_dir": "work/results/v4-profile-c-fpx-q8-chunk256",
+      "status": "VALID",
+      "one_decode_plus_one_prefill": {
+        "retention": 0.06756386196372803,
+        "decoder_itl_p95_ms": 156.2042480000855,
+        "prefill_ttft_ms": 4617.566461999559
+      },
+      "two_decode_plus_one_prefill": {
+        "retention": 0.07758215155568658,
+        "decoder_itl_p95_ms": 158.98413474978952,
+        "prefill_ttft_ms": 4699.307363000116
+      },
+      "three_decode_plus_one_prefill": {
+        "retention": 0.09195362387022385,
+        "decoder_itl_p95_ms": 161.10004479974123,
+        "prefill_ttft_ms": 4767.349063999973
+      },
+      "decision": "REJECT versus chunk128 for interactive service"
+    },
+    "chunk128_resident_c4_guardrail": {
+      "result_dir": "work/results/v4-profile-a-fpx-q8-chunk128",
+      "status": "VALID",
+      "aggregate_output_tok_s_repetitions": [264.0123740557889, 263.3158275940062, 274.02076363380354],
+      "median_aggregate_output_tok_s": 264.0123740557889,
+      "control_median_aggregate_output_tok_s": 265.79069411578814,
+      "delta_percent": -0.6690678414890461
+    },
+    "excluded_setup_attempts": [
+      "work/results/v4-profile-a-fpx-q8-chunk128-invalid-cache-off",
+      "work/results/v4-profile-a-fpx-q8-chunk128-invalid-slot-auto"
+    ],
+    "decision": "unlimited scheduling rejected; chunk256 rejected versus chunk128; chunk128 STAGE pending paired confirmation and simultaneous-prefill guardrail"
   },
   "dynamic_service": {}
 }

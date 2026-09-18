@@ -29,6 +29,12 @@ retention from 1.01–1.45% to 11.28–15.63% and reduces ITL p95 from more than
 2.1 seconds to 85–90 ms, at a 0.77–0.97 second TTFT cost. It remains STAGE.
 Run chunk256 next, then the no-interference C4 guardrail for the winner.
 
+Completed: chunk256 is inferior for resident inter-token latency, and chunk128
+changes resident-only C4 by -0.67% (264.01 versus 265.79 tok/s median), within
+the observed spread. Next run the four-simultaneous-prefill guardrail, then the
+separate invasive C1/C4 operation profile. Keep chunk128 at STAGE until paired
+confirmation; do not treat the two harness-rejected setup attempts as samples.
+
 ## Checkpoint V3
 
 El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva tanto en un commit local de `campaign-v3` como en el checkpoint local ROCmFPX `2678844a0af778c7c41b2d552667e9a05d98248c`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.

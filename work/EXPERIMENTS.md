@@ -196,6 +196,18 @@ transporte desde el primer envío hasta la última respuesta.
   preserved. Evidence: `work/results/v4-profile-c-fpx-q8-chunk128/`.
 - Decision: **STAGE**. Compare chunk256, then check resident C4 without a fresh
   prefill before considering promotion.
+
+Follow-up:
+
+- Chunk256 retains only 6.76/7.76/9.20% and yields 156–161 ms ITL p95, versus
+  chunk128 at 11.28/13.35/15.63% and 85–90 ms. Its TTFT advantage is only
+  0.44–0.50 seconds. Chunk128 remains the preferred interactive candidate.
+- Chunk128 resident C4 median is 264.01 tok/s (263.32/264.01/274.02) versus
+  control 265.79, a -0.67% guardrail delta inside run variability. All runs
+  are VALID with 8188 cached prompt tokens per request.
+- Two pre-measurement harness rejections are retained under
+  `v4-profile-a-fpx-q8-chunk128-invalid-*`; neither enters statistics.
+- Decision remains **STAGE** pending paired repetition and Profile B guardrail.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation

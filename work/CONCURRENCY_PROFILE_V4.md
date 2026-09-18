@@ -112,10 +112,24 @@ service-quality improvement even though aggregate decode remains far below its
 no-prefill control.
 
 Evidence: `work/results/v4-profile-c-fpx-q8-chunk128/`.
-Decision: **STAGE**, pending the 256-token tradeoff and no-interference C4 check.
+
+The 256-token candidate trades continuity back for prompt speed: retention is
+6.76/7.76/9.20%, ITL p95 is 156/159/161 ms, and TTFT is 4.62–4.77 seconds.
+Chunk128 therefore roughly halves resident-user ITL versus chunk256 for only
+0.44–0.50 seconds of additional new-user TTFT.
+
+The chunk128 no-interference C4 guardrail produced 263.32, 264.01 and 274.02
+tok/s (median 264.01) versus the contemporary control median 265.79 tok/s,
+a -0.67% difference inside the observed run spread. Every request observed
+8188 cached tokens and completed its 256-token output. Two setup attempts were
+excluded before measurement by explicit harness errors (`cache_prompt` and
+slot policy were not declared); both artifacts are retained and labelled.
+
+Decision: **STAGE**, with strong service value but still requiring paired
+repetitions and the four-simultaneous-prefill guardrail before production.
 
 ## Pending measurements
 
 Non-invasive C1/C4 operation profiling, separated Q8_1 preparation versus MMV,
-the 256-token scheduler candidate, and the no-interference C4 guardrail are
-populated by the next checkpoint.
+the paired scheduler confirmation, four-simultaneous-prefill guardrail and
+operation-level C1/C4 profile are populated by the next checkpoint.
