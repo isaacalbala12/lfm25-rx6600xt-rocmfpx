@@ -31,8 +31,15 @@ The selective pipeline at ROCmFPX `24376c3` retains BK_STEP=4 for down and
 decode, and routes only gate/up-like `10752x2048,N>64` through BK_STEP=2.
 Microbenchmark gate/up improves 2.601% paired while the down guardrail is flat.
 
-With chunk128 enabled, a three-repetition simultaneous 8K C4 exploration moves
+With chunk128 enabled, a three-repetition simultaneous 8K C4 exploration moved
 aggregate input throughput from 1538.70 to 1555.19 tok/s (+1.072%) and TTFT p95
-from 17807.29 to 17573.98 ms (-1.31%). This contemporary control is slower than
-the historical 1562 tok/s baseline, so the candidate is compared only against
-its paired-build control and remains **STAGE**, not a new universal baseline.
+from 17807.29 to 17573.98 ms (-1.31%). The required ten-pair AB/BA confirmation
+then measured only +0.486% median aggregate throughput, albeit with a positive
+95% CI [+0.371%, +0.705%]. TTFT p95 improved 0.693%, E2E p95 improved 0.485%,
+and outputs matched exactly in every pair.
+
+This is **REJECT** under the predeclared V5 threshold: the statistically solid
+sub-0.75% service benefit does not pay for a second embedded shader and runtime
+selector. ROCmFPX `7838dd2` restores the production pipeline byte-for-byte.
+Flash Attention, at 23.11% of the 8K grouped GPU time, is the next unclosed
+high-leverage path.

@@ -388,7 +388,7 @@ Follow-up output identity:
   ceiling. Follow up only with a distinct gate/up pipeline; never route down or
   decode through BK_STEP=2. Control is restored at ROCmFPX `f7a53ab`.
 
-## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — STAGE
+## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — REJECT
 
 - Added a separate BK2 SPIR-V and exact shape selector, disabled by default.
   Logs prove gate/up uses BK2 while down remains on the control pipeline.
@@ -400,5 +400,10 @@ Follow-up output identity:
   generated texts, finish reasons and token counts match 12/12.
 - One 3D+1P guardrail is favorable on retention, ITL and TTFT, but is not a
   statistical confirmation.
-- Decision: **STAGE** at ROCmFPX `24376c3`; require ten paired service batches
-  before KEEP. Default remains off.
+- Final ten-pair AB/BA Profile B validation: all pairs valid and favorable;
+  aggregate throughput +0.486% median, 95% CI [+0.371%, +0.705%]; TTFT p95
+  -0.693%; E2E p95 -0.485%; exact corresponding outputs 10/10.
+- Decision: **REJECT**. The effect is reproducible but below the predeclared
+  0.75% threshold, so the extra shader/pipeline/selector is unjustified.
+  ROCmFPX `7838dd2` removes it and rebuilds to the exact saved-control hash.
+  Candidate and revert patches plus raw paired results are retained.

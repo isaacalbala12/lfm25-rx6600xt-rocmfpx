@@ -86,7 +86,7 @@ Do not enable BK_STEP=2 for all FP4_FAST matrices. The only justified follow-up
 is a second compiled pipeline selected for gate/up-like `M=10752,K=2048,N`
 prefill shapes, with step 4 retained for down and decode.
 
-## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — STAGE
+## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — REJECT
 
 - Implementation: a second embedded SPIR-V,
   `matmul_rocmfp4_fast_q8_1_bk2`, selected only when FP4_FAST uses quantized
@@ -110,6 +110,17 @@ prefill shapes, with step 4 retained for down and decode.
 - One contemporary 3D+1P guardrail: retention 15.632% -> 15.947%, resident ITL
   p95 89.366 -> 88.212 ms, and new-user TTFT 5304.59 -> 5221.88 ms. This is a
   single pair and is not a confidence claim.
-- Decision: **STAGE**. The server signal exceeds 0.75% and all measured
-  directions are favorable, but a ~1% promotion requires at least ten paired
-  service batches. ROCmFPX checkpoint: `24376c3`.
+- Final service validation: ten independent paired Profile B batches with
+  alternating AB/BA order, one fresh server per arm and the same binary/model/
+  sampler. All ten pairs are valid and all ten favor the candidate. Median
+  aggregate throughput is +0.486%, with batch-level bootstrap 95% CI
+  [+0.371%, +0.705%]. TTFT p95 improves 0.693% (CI 0.426–0.842%) and E2E p95
+  improves 0.485% (CI 0.371–0.675%). Generated text, finish reason and output
+  token count match exactly in 10/10 pairs.
+- Decision: **REJECT** for production. The effect is reproducible and correct,
+  but +0.486% is below the predeclared 0.75% retention threshold and does not
+  justify an extra embedded shader, pipeline and selector. ROCmFPX `7838dd2`
+  removes the candidate; the rebuilt production library exactly matches the
+  saved control SHA-256 `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
+  The implementation and revert remain reproducible as patches; raw service
+  evidence is in `work/results/v5-prefill8k-c4-selective-bk2-paired10/`.
