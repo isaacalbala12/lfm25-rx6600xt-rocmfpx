@@ -231,6 +231,22 @@ Profile B guardrail completed:
   already active and resets safely at graph boundaries.
 - Decision: evidence **KEEP**; Q8 reuse experiment **REJECT as duplicate**.
   Next optimization must target a measured MMV shape, not all N=4 shapes.
+
+## EXP-V4-KERNEL-GATEUP-N4-LARGE — REJECT
+
+- Added an exact selector for the existing four-subgroup hybrid reduction only
+  at gate/up M=10752, K=2048, N=4. Selection proof confirms no neighboring
+  shape changed, and CPU-reference correctness passes.
+- Found and corrected a microbenchmark defect: Vulkan loggers are enabled by
+  variable presence, so the V3 runner's `LOGGER=0` still enabled fenced
+  profiling. The old 1.69--1.72 ms micro timings are invalid as hot-pipeline
+  measurements; the independent K1 server regression remains valid.
+- With all logger variables absent, ten ABBA pairs give 60.840 us for subgroup
+  versus 110.655 us for gateup-n4: **+81.88% latency**, a clear regression.
+- Decision: **REJECT** without a server run. Implement a genuinely different
+  two-subgroup geometry next; do not reuse the four-subgroup K1 pipeline.
+- Evidence: `work/KERNEL_MICROBENCH_V4.md` and
+  `work/results/v4-kernel-gateup-n4-micro-abba10/`.
 # V3 continuation: runtime remap and exact plugin microbenchmark
 
 ## V3-RUNTIME-02 — deferred remap under active cancellation

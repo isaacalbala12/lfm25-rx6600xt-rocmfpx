@@ -115,3 +115,15 @@ git apply /path/to/patches/campaign-v3-runtime-kernel.patch
 git apply --include='ggml/rocmfpx/rocmfpx_mmq_rdna2.cuh' \
   /path/to/patches/ROCmFPX-gfx1032.patch
 ```
+
+## V4 kernel correction and next experiment
+
+The exact logger-free ABBA microbenchmark rejects the existing four-subgroup
+reduction at gate/up 10752x2048,N=4 (+81.88% latency). The V3 micro runner
+accidentally enabled fenced profiling with `LOGGER=0`; it now unsets logger
+variables. Preserve the independent K1 server rejection.
+
+Next, compile and test a true two-subgroup hybrid reduction for only this exact
+shape. Require CPU-reference correctness and logger-free ABBA evidence before
+any resident C4x8K server run. Chunk128 remains a separate STAGE scheduler
+candidate and must not be enabled during kernel comparisons.
