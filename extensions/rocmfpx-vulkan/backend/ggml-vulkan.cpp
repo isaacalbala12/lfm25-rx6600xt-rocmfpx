@@ -3290,19 +3290,6 @@ static vk_fa_tuning_params get_fa_tuning_params_scalar(const vk_device& device, 
         }
     }
 
-    // Diagnostic RDNA2 prefill candidate: test whether the synthetic shared-
-    // memory allocation still helps the large-N, 64-wide LFM2 attention path.
-    // Keep this opt-in and shape-scoped so decode and other head sizes remain
-    // byte-for-byte on the production selector.
-    static const bool disable_rdna2_prefill_occupancy_limit =
-        ggml_vk_env_enabled("GGML_VK_FA_RDNA2_NO_OCCUPANCY_LIMIT");
-    if (disable_rdna2_prefill_occupancy_limit &&
-        device->vendor_id == VK_VENDOR_ID_AMD &&
-        device->architecture == AMD_RDNA2 &&
-        n_rows >= 64 && hsk == 64 && hsv == 64) {
-        result.limit_occupancy_shmem = 0;
-    }
-
     return result;
 }
 
