@@ -2084,6 +2084,7 @@ struct ggml_backend_vk_context {
     int32_t dmmv_phase_num_queries {};
     int32_t dmmv_phase_query_idx {};
     std::vector<std::string> dmmv_phase_names;
+    std::string dmmv_phase_shape;
 };
 
 static void * const vk_ptr_base = (void *)(uintptr_t) 0x1000;  // NOLINT
@@ -7620,7 +7621,7 @@ static void ggml_vk_dispatch_pipeline(ggml_backend_vk_context* ctx, vk_context& 
         subctx->s->buffer->buf.writeTimestamp(vk::PipelineStageFlagBits::eAllCommands,
                                                ctx->dmmv_phase_query_pool,
                                                ctx->dmmv_phase_query_idx++);
-        ctx->dmmv_phase_names.push_back(pipeline->name +
+        ctx->dmmv_phase_names.push_back(pipeline->name + ctx->dmmv_phase_shape +
             " elements=" + std::to_string(elements[0]) + "," +
             std::to_string(elements[1]) + "," + std::to_string(elements[2]));
     }
@@ -9179,6 +9180,11 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
     // const uint64_t ne22 = dst->ne[2];
     // const uint64_t ne23 = dst->ne[3];
 
+    if (vk_dmmv_phase_logger_enabled) {
+        ctx->dmmv_phase_shape = " m=" + std::to_string(ne01) +
+            " k=" + std::to_string(ne10) + " n=" + std::to_string(ne11);
+    }
+
     const uint64_t r2 = ne12 / ne02;
     const uint64_t r3 = ne13 / ne03;
 
@@ -9411,6 +9417,7 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
     if (y_non_contig || quantize_y) {
         ctx->prealloc_y_need_sync = true;
     }
+    ctx->dmmv_phase_shape.clear();
 }
 
 static void ggml_vk_mul_mat_vec_p021_f16_f32(ggml_backend_vk_context * ctx, vk_context& subctx, const struct ggml_cgraph * cgraph, int node_idx) {
