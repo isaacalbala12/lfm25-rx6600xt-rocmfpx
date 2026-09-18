@@ -46,6 +46,12 @@
       "id": "broad-n-selector",
       "patterns": ["n-only selector", "broad n selector"],
       "reason": "geometry depends on M/K/N; the prior broad selector regressed the server"
+    },
+    {
+      "id": "bk3-explicit-compute-loop-unroll",
+      "status": "REJECTED",
+      "patterns": ["explicitly unroll the BK3 compute K-step loop", "bk3-unroll-kstep"],
+      "reason": "five paired exact-plugin runs improved only 0.159% and the 95% interval crossed zero"
     }
   ]
 }

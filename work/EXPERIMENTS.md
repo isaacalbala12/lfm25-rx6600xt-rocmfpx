@@ -534,3 +534,12 @@ Follow-up output identity:
 - Decision: **KEEP production**. ROCmFPX `283a889`, backend
   `5b3b36d...3edc763`. Same-binary BK4 control remains available with
   `GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP=0`.
+
+## EXP-V7-GATEUP-BK3-UNROLL — REJECT_MICRO
+
+- Same-binary opt-in candidate, with BK3 production as control; exact
+  correctness and selector proof passed.
+- Five ABBA pairs: 412.735 -> 411.595 us, -0.159%, bootstrap 95% CI
+  [-0.652%, +0.107%].
+- Decision: **REJECT_MICRO**. The explicit directive adds no useful value over
+  the compiler's BK3 code generation; no server benchmark was run.

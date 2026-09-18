@@ -112,7 +112,13 @@ def require_idle_gpu() -> None:
         stderr=subprocess.DEVNULL,
         check=False,
     )
-    offenders = [line for line in result.stdout.splitlines() if "atrex_vulkan_evaluator" not in line]
+    supervisor_pid = os.environ.get("ATREX_SEARCH_SUPERVISOR_PID")
+    offenders = []
+    for line in result.stdout.splitlines():
+        pid = line.split(maxsplit=1)[0] if line else ""
+        if "atrex_vulkan_evaluator" in line or (supervisor_pid and pid == supervisor_pid):
+            continue
+        offenders.append(line)
     if offenders:
         raise EvaluationError("another inference process is active: " + offenders[0])
 

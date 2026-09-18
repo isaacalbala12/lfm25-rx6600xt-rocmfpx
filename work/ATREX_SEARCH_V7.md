@@ -41,3 +41,18 @@ orthogonal mechanisms in one binary: K-loop scheduling, safe prefetch/load
 reordering, LDS organization and Q8/FP4 consumption order. The evaluator
 remains the authority and candidates may not alter its correctness, route or
 measurement gates.
+
+## Candidate 01: explicit BK3 compute-loop unroll
+
+The first same-binary orthogonal candidate added an opt-in shader with an
+explicit unroll directive on the three-step compute loop. Correctness and route
+proof passed. Five ABBA pairs measured 412.735 -> 411.595 us, **-0.159%**,
+bootstrap 95% CI **[-0.652%, +0.107%]**. This is below the local promotion
+threshold and crosses zero: **REJECT_MICRO**. No server run was justified.
+
+The experiment also exercised the new build-once path. A supervisor smoke test
+found two orchestration defects (self-detection as an inference process and a
+relative result-path failure). Both failed attempts are retained as INVALID;
+the fixes preserve exact foreign-process rejection, add explicit INVALID-only
+retry, use manifest IDs rather than filenames, and deduplicate semantically
+equivalent mutations by SHA-256 fingerprint. Three unit tests cover the queue.

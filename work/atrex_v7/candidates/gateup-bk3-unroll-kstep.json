@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "id": "gateup-bk3-unroll-kstep",
+  "parent": "gateup-selective-bkstep3",
+  "mutation": "explicitly unroll the BK3 compute K-step loop without changing tile geometry",
+  "hypothesis": "remove residual loop control and expose the three independent K-step bodies to compiler scheduling",
+  "expected_mechanism": "fewer dynamic loop-control instructions and more load/compute scheduling freedom",
+  "affected_resource": "instruction count and live-register scheduling",
+  "expected_leverage": "gate/up is 32.79% of the profiled N128 prefill tile",
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_UNROLL": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_UNROLL": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_unroll_m"
+}
