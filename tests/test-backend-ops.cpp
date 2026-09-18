@@ -10504,6 +10504,11 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
         }
     }
 
+    // Exact LFM2.5 FP4_FAST prefill gate/up shape for candidate correctness.
+    test_cases.emplace_back(new test_mul_mat(
+        GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,
+        10752, 128, 2048, {1, 1}, {1, 1}));
+
     return test_cases;
 }
 #ifdef _MSC_VER
@@ -10522,6 +10527,12 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_perf() {
         test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n, 10752, {1, 1}, {1, 1}));
         test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  6144, n,  2048, {1, 1}, {1, 1}));
         test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n,  2048, {1, 1}, {1, 1}));
+    }
+
+    // Exact LFM2.5 prefill boundaries for the FP4_FAST MMQ hot paths.
+    for (int64_t n : {120, 128, 129}) {
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32, 10752, n,  2048, {1, 1}, {1, 1}));
+        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n, 10752, {1, 1}, {1, 1}));
     }
 
     // Long-sequence Mamba-2 shapes that select the SSD matmul path on capable
