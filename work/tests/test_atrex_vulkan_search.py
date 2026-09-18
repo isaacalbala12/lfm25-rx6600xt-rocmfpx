@@ -49,3 +49,18 @@ def test_queue_rejects_equivalent_mutations(tmp_path):
         assert "equivalent candidate mutation" in str(error)
     else:
         raise AssertionError("equivalent manifests were accepted")
+
+
+def test_only_formal_pass_evidence_updates_incumbent():
+    state = {
+        "baseline_candidate": "control",
+        "attempts": [
+            {"id": "smoke-win", "gate": "PASS", "evidence_level": "smoke", "delta_percent": -9.0},
+            {"id": "invalid-win", "gate": "INVALID", "evidence_level": "formal_micro", "delta_percent": -8.0},
+            {"id": "formal-win", "gate": "PASS", "evidence_level": "formal_micro", "delta_percent": -2.0},
+        ],
+    }
+    result = MODULE.recompute_state(state)
+    assert result["best_candidate"] == "formal-win"
+    assert result["best_delta_percent"] == -2.0
+    assert result["valid_candidates"] == 1

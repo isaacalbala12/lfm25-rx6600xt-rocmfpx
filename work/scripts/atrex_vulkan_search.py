@@ -15,6 +15,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 EVALUATOR = ROOT / "work/scripts/atrex_vulkan_evaluator.py"
+AUTHORITATIVE_LEVELS = {"formal_micro", "formal_server", "production"}
 
 
 def candidate_fingerprint(candidate: dict[str, Any]) -> str:
@@ -79,7 +80,7 @@ def atomic_json(path: Path, value: Any) -> None:
 
 def load_state(path: Path) -> dict[str, Any]:
     if path.exists():
-        return json.loads(path.read_text())
+        return recompute_state(json.loads(path.read_text()))
     return {
         "schema_version": 1,
         "attempts": [],
@@ -88,7 +89,40 @@ def load_state(path: Path) -> dict[str, Any]:
         "consecutive_without_improvement": 0,
         "best_candidate": "gateup-selective-bkstep3",
         "best_delta_percent": 0.0,
+        "baseline_candidate": "gateup-selective-bkstep3",
     }
+
+
+def recompute_state(state: dict[str, Any]) -> dict[str, Any]:
+    """Rebuild derived fields using only formal PASS evidence."""
+    state["schema_version"] = 2
+    baseline = state.setdefault("baseline_candidate", state.get("best_candidate", "control"))
+    best_candidate = baseline
+    best_delta = 0.0
+    valid = 0
+    consecutive = 0
+    for attempt in state.get("attempts", []):
+        level = attempt.get("evidence_level")
+        if level is None:
+            level = "invalid" if attempt.get("gate") == "INVALID" else "smoke"
+            attempt["evidence_level"] = level
+        authoritative = level in AUTHORITATIVE_LEVELS and attempt.get("gate") == "PASS"
+        if not authoritative:
+            continue
+        valid += 1
+        delta = float(attempt["delta_percent"])
+        if delta < best_delta:
+            best_delta = delta
+            best_candidate = str(attempt["id"])
+            consecutive = 0
+        else:
+            consecutive += 1
+    state["total_attempts"] = len(state.get("attempts", []))
+    state["valid_candidates"] = valid
+    state["consecutive_without_improvement"] = consecutive
+    state["best_candidate"] = best_candidate
+    state["best_delta_percent"] = best_delta
+    return state
 
 
 def run_search(args: argparse.Namespace) -> dict[str, Any]:
@@ -116,6 +150,8 @@ def run_search(args: argparse.Namespace) -> dict[str, Any]:
             str(output),
             "--pairs",
             str(args.pairs),
+            "--evidence-level",
+            args.evidence_level,
         ]
         if args.problem:
             command.extend(["--problem", str(args.problem)])
@@ -133,6 +169,7 @@ def run_search(args: argparse.Namespace) -> dict[str, Any]:
             "fingerprint": fingerprint,
             "parent": candidate.get("parent"),
             "mutation": candidate["mutation"],
+            "evidence_level": result.get("evidence_level", args.evidence_level),
             "gate": result.get("gate", "INVALID"),
             "decision": result.get("decision"),
             "delta_percent": result.get("paired_delta_median_percent"),
@@ -141,18 +178,7 @@ def run_search(args: argparse.Namespace) -> dict[str, Any]:
             "result": str(result_path.resolve().relative_to(ROOT)) if result_path.exists() else None,
         }
         state["attempts"].append(record)
-        state["total_attempts"] += 1
-        if result.get("gate") == "PASS":
-            state["valid_candidates"] += 1
-            delta = float(result["paired_delta_median_percent"])
-            if delta < float(state["best_delta_percent"]):
-                state["best_delta_percent"] = delta
-                state["best_candidate"] = candidate["id"]
-                state["consecutive_without_improvement"] = 0
-            else:
-                state["consecutive_without_improvement"] += 1
-        else:
-            state["consecutive_without_improvement"] += 1
+        recompute_state(state)
         atomic_json(args.state, state)
     else:
         state["stop_reason"] = "candidate queue exhausted"
@@ -178,6 +204,11 @@ def main() -> int:
     parser.add_argument("--evaluator", type=Path, default=EVALUATOR)
     parser.add_argument("--problem", type=Path)
     parser.add_argument("--retry-invalid", action="store_true")
+    parser.add_argument(
+        "--evidence-level",
+        choices=("smoke", "exploratory", "formal_micro", "formal_server", "production"),
+        default="formal_micro",
+    )
     args = parser.parse_args()
     state = run_search(args)
     print(json.dumps(state, indent=2, sort_keys=True))

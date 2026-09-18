@@ -405,6 +405,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         "candidate_id": manifest["id"],
         "parent": manifest.get("parent"),
         "mutation": manifest["mutation"],
+        "evidence_level": args.evidence_level,
         "started_at_unix": time.time(),
         "gate": "INVALID",
         "reason": "evaluation did not complete",
@@ -558,6 +559,11 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--problem", type=Path)
     value.add_argument("--output", type=Path, required=True)
     value.add_argument("--pairs", type=int, default=5)
+    value.add_argument(
+        "--evidence-level",
+        choices=("smoke", "exploratory", "formal_micro", "formal_server", "production"),
+        default="formal_micro",
+    )
     value.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     value.add_argument("--build", type=Path, default=DEFAULT_BUILD)
     value.add_argument("--test", type=Path, default=DEFAULT_TEST)
