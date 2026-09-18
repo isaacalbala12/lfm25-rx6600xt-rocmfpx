@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "shape": "M=10752,K=2048,N=128 FP4_FAST x Q8_1",
+  "mutations": [
+    {
+      "id": "gateup-two-subgroups",
+      "patterns": ["two subgroup", "2 subgroup", "2sg"],
+      "reason": "+36.23% latency in the measured gate/up experiment"
+    },
+    {
+      "id": "gateup-four-subgroups",
+      "patterns": ["four subgroup", "4 subgroup", "4sg"],
+      "reason": "+81.88% latency in the measured gate/up experiment"
+    },
+    {
+      "id": "arithmetic-fp4-unpack",
+      "patterns": ["arithmetic unpack", "arithmetic fp4", "lut-free unpack"],
+      "reason": "+44.67% latency for the exact FP4_FAST decode path"
+    },
+    {
+      "id": "dual-accumulators",
+      "patterns": ["dual accumulator", "dualacc", "two accumulator banks"],
+      "reason": "+9.87% latency"
+    },
+    {
+      "id": "packed32-extraction",
+      "patterns": ["packed32", "packed 32", "aligned 32-bit extraction"],
+      "reason": "+1.88% latency at gate/up N=128"
+    },
+    {
+      "id": "bm32-bn128",
+      "patterns": ["bm32 bn128", "bm=32 bn=128", "bm 32 bn 128"],
+      "reason": "no measurable gate/up gain and a down regression trend"
+    },
+    {
+      "id": "global-bk-step-2",
+      "patterns": ["global bk_step=2", "global bk step 2", "bk2 global"],
+      "reason": "gate/up improved but down regressed 4.71%; only selective BK2 is composable"
+    },
+    {
+      "id": "rows4-short-conv",
+      "patterns": ["rows4", "four rows per wave"],
+      "reason": "paired median -0.40% with confidence interval crossing zero"
+    },
+    {
+      "id": "broad-n-selector",
+      "patterns": ["n-only selector", "broad n selector"],
+      "reason": "geometry depends on M/K/N; the prior broad selector regressed the server"
+    }
+  ]
+}
