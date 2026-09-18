@@ -10324,6 +10324,11 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
     test_cases.emplace_back(new test_flash_attn_ext(128, 128, 8, {4, 1},  512, 8, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16, {0, 1, 2, 3}, true, true));
     test_cases.emplace_back(new test_flash_attn_ext(64,  64,  4, {1, 1},  512, 1, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_Q8_0, GGML_TYPE_Q8_0, {0, 1, 2, 3}, true, true));
 
+    // LFM2 C4 long-prefill geometry: 32 Q heads over 8 KV heads, four batch
+    // planes, Q8/Q8 cache and the final 8K context tile.
+    test_cases.emplace_back(new test_flash_attn_ext(64, 64, 8, {4, 4}, 8192, 32, true, false, 0, 0,
+                                                    GGML_PREC_F32, GGML_TYPE_Q8_0, GGML_TYPE_Q8_0));
+
     // large-KV F16 cases (Qwen3.6-27B geometry and a llama-class control): the upstream matrix
     // stops at kv=1024, blind to long-context FA bugs (e.g. the oneDNN SDPA ordering race on BMG).
     for (int64_t kv : { 4096, 16384 }) {
