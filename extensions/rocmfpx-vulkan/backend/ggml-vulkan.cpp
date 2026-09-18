@@ -1837,7 +1837,6 @@ static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
 static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4 = 3;
 static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE = 4;
 static constexpr int ROCMFP4_FAST_DMMV_WG_CONV_N1_ROWS4 = 5;
-static constexpr int ROCMFP4_FAST_DMMV_WG_DOWN_N4 = 6;
 // number of calls between perf logger prints
 static uint32_t vk_perf_logger_frequency = 1;
 static std::string vk_pipeline_stats_filter;
@@ -6807,10 +6806,8 @@ static void ggml_vk_instance_init() {
             vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE;
         } else if (strcmp(value, "conv-n1-rows4") == 0 || strcmp(value, "5") == 0) {
             vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_CONV_N1_ROWS4;
-        } else if (strcmp(value, "down-n4") == 0 || strcmp(value, "6") == 0) {
-            vk_rocmfp4_fast_dmmv_wg = ROCMFP4_FAST_DMMV_WG_DOWN_N4;
         } else if (strcmp(value, "auto") != 0 && value[0] != '\0') {
-            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, gateup-n4, gateup-n4-2sg, conv-n1-rows4, or down-n4");
+            throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, gateup-n4, gateup-n4-2sg, or conv-n1-rows4");
         }
     }
     if (vk_selection_logger_enabled) {
@@ -7257,15 +7254,12 @@ static vk_pipeline ggml_vk_get_dequantize_mul_mat_vec(ggml_backend_vk_context * 
             const bool target_n = num_cols == 4 || (num_cols == 2 && m == 2048);
             const bool target_gateup_n4 = m == 10752 && k == 2048 && num_cols == 4;
             const bool target_conv_n1 = m == 6144 && k == 2048 && num_cols == 1;
-            const bool target_down_n4 = m == 2048 && k == 10752 && num_cols == 4;
             if (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_SUBGROUP) {
                 dmmv_wg = DMMV_WG_SIZE_SUBGROUP;
             } else if (vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_CONV_N1_ROWS4 && target_conv_n1) {
                 dmmv_wg = DMMV_WG_SIZE_ROWS4;
             } else if (vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE && target_gateup_n4) {
                 dmmv_wg = DMMV_WG_SIZE_DOUBLE;
-            } else if (vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_DOWN_N4 && target_down_n4) {
-                dmmv_wg = DMMV_WG_SIZE_LARGE;
             } else if ((vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_GATEUP_N4 && target_gateup_n4) ||
                        (vk_rocmfp4_fast_dmmv_wg == DMMV_WG_SIZE_LARGE && target_n) ||
                        vk_rocmfp4_fast_dmmv_wg == ROCMFP4_FAST_DMMV_WG_LARGE_ALL) {
