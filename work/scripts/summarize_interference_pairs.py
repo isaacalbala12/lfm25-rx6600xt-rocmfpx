@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import random
 import statistics
-import sys
+import argparse
 from pathlib import Path
 
 
@@ -19,7 +19,12 @@ def median_ci(values: list[float]) -> list[float]:
 
 
 def main() -> int:
-    root = Path(sys.argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("root", type=Path)
+    parser.add_argument("--baseline-arm", default="control")
+    parser.add_argument("--candidate-arm", default="chunk128")
+    args = parser.parse_args()
+    root = args.root
     runs: dict[int, dict[str, dict]] = {}
     invalid: list[str] = []
     for path in sorted(root.glob("pair-*-*/n3.json")):
@@ -34,11 +39,11 @@ def main() -> int:
 
     pairs = []
     for pair, arms in sorted(runs.items()):
-        if set(arms) != {"control", "chunk128"}:
+        if set(arms) != {args.baseline_arm, args.candidate_arm}:
             invalid.append(f"pair-{pair:02d}: incomplete")
             continue
-        control = arms["control"]
-        candidate = arms["chunk128"]
+        control = arms[args.baseline_arm]
+        candidate = arms[args.candidate_arm]
         row = {"pair": pair}
         for key, getter in {
             "retention": lambda d: d["decode_throughput_retention"],
@@ -47,8 +52,8 @@ def main() -> int:
         }.items():
             c0 = getter(control)
             c1 = getter(candidate)
-            row[f"control_{key}"] = c0
-            row[f"chunk128_{key}"] = c1
+            row[f"{args.baseline_arm}_{key}"] = c0
+            row[f"{args.candidate_arm}_{key}"] = c1
             row[f"delta_{key}_percent"] = (c1 / c0 - 1.0) * 100.0
         pairs.append(row)
 
@@ -56,8 +61,10 @@ def main() -> int:
     for key in ("retention", "itl_p95_ms", "prefill_ttft_ms"):
         deltas = [row[f"delta_{key}_percent"] for row in pairs]
         metrics[key] = {
-            "control_median": statistics.median(row[f"control_{key}"] for row in pairs),
-            "chunk128_median": statistics.median(row[f"chunk128_{key}"] for row in pairs),
+            "baseline_arm": args.baseline_arm,
+            "candidate_arm": args.candidate_arm,
+            "baseline_median": statistics.median(row[f"{args.baseline_arm}_{key}"] for row in pairs),
+            "candidate_median": statistics.median(row[f"{args.candidate_arm}_{key}"] for row in pairs),
             "paired_delta_percent_median": statistics.median(deltas),
             "paired_delta_percent_bootstrap_95ci": median_ci(deltas),
         }
