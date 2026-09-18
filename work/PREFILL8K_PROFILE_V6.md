@@ -19,3 +19,8 @@ Paired medians: input/output +1.367%, TTFT p95 -1.240%, E2E p95 -1.347%.
 Outputs matched 3/3 and observed global VRAM was 2.079--2.106 GiB for both
 arms. This is below 1668 input tok/s and is **STAGE**, not production.
 
+## V7 superseding result
+
+Ten formal paired runs confirm +1.1641% Profile-B throughput, bootstrap 95% CI
+[+0.8093%, +1.3767%], with exact outputs 10/10. Selective BK3 is therefore
+KEEP; the absolute prefill target of 1668 tok/s is still unmet.

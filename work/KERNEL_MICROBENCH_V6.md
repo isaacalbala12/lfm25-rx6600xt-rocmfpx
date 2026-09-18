@@ -23,3 +23,10 @@ At the 32.79% gate/up profile share, the isolated wall ceiling is about 1.27%.
 The three-pair server median of +1.367% is consistent in scale but remains
 exploratory. Selective BK3 is **STAGE**; global BK3 is **REJECT**.
 
+## V7 superseding result
+
+Selective BK3 passed the complete server, selector-domain and quality gates and
+is now **KEEP production**. Full figures are in `work/ATREX_SEARCH_V7.md`.
+The first orthogonal gate candidate (explicit compute-loop unroll) was
+structurally identical in SPIR-V and measured -0.159% with CI crossing zero:
+REJECT. The first down candidate (BM32/BN64) regressed 21.802%: REJECT.

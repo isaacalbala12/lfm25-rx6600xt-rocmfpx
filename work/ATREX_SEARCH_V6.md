@@ -56,3 +56,8 @@ Next tooling change: compile several opt-in candidates in one library, select
 them by environment and restore once. This retains causal ABBA while avoiding
 two full embedded-shader builds per mutation.
 
+## Superseded by V7
+
+The pending guardrails passed and selective BK3 is KEEP. The same-binary search
+path, parametric gate/down problem definitions and subsequent negative
+candidates are documented in `work/ATREX_SEARCH_V7.md`.

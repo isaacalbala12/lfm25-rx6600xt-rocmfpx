@@ -18,7 +18,9 @@ Selective gate/up BK3 is **KEEP production** for FP4_FAST prefill at
 - Service traces observed BK3 at N=112/120/126/128. N=12/16 remained on the
   small control pipeline; resident decode does not enter BK3.
 
-The production ROCmFPX checkpoint is `283a889`; BK3 is enabled by default and
+The functional production change is `283a889`; the final ROCmFPX checkpoint is
+`15a5120`, which adds explicit reverts of the two rejected search-bank
+candidates. BK3 is enabled by default and
 `GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP=0` provides a same-binary BK4 control.
 The rebuilt backend SHA-256 is
 `5b3b36d54c45e7b8f6c51e654dcca96726e8fe02f4418b4e43cea0a593edc763`.
@@ -78,3 +80,8 @@ BK_STEP4. It passed exact correctness and route proof but regressed 510.905 ->
 **REJECT_MICRO**. The loss of row-tile reuse dominates any lower LDS/register
 footprint. Future down candidates must retain BM64 and target K-load scheduling
 or address/scale consumption instead of reducing the row tile.
+
+The final backend was rebuilt after removing both rejected opt-in shaders. Its
+hash returned exactly to the promoted BK3 artifact
+`5b3b36d54c45e7b8f6c51e654dcca96726e8fe02f4418b4e43cea0a593edc763`,
+and route proof again selected `matmul_rocmfp4_fast_q8_1_bk3_m` by default.

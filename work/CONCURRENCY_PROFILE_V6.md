@@ -16,3 +16,9 @@ Selective BK3 is **STAGE** from Profile B (+1.367% service throughput, -1.240%
 TTFT p95, identical output 3/3). It has no 3D+1P, resident C4 or fairness claim
 and is not installed in production.
 
+## V7 superseding result
+
+Selective BK3 is now installed. Ten paired 3D+1P runs improved retention by
+1.544%, resident ITL p95 by 1.447% (89.211 -> 87.865 ms) and new-user TTFT by
+1.677%. Resident C4 candidate runs remained 261.99--262.65 tok/s and did not
+enter the BK3 selector. Chunk128 and runtime R0 remain production controls.

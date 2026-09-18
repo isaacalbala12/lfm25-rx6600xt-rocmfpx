@@ -5,7 +5,8 @@
 - Scheduler fixed chunk128 **KEEP**; runtime R0; R1 sigue STAGE.
 - ROCmFPXVulkan0 FP4_FAST, KV q8/q8, C=4, >=8192 tokens/slot.
 - Selective gate/up BK3 **KEEP**; down y decode permanecen en sus rutas control.
-- ROCmFPX `283a889`, fuente limpia.
+- ROCmFPX `15a5120`, fuente limpia; `283a889` es el cambio funcional BK3 y los
+  commits posteriores conservan/revierten candidatos de búsqueda.
 - Backend real: `5b3b36d54c45e7b8f6c51e654dcca96726e8fe02f4418b4e43cea0a593edc763`.
 
 ## Siguiente experimento exacto
