@@ -128,11 +128,20 @@ slot policy were not declared); both artifacts are retained and labelled.
 Decision: **STAGE**, with strong service value but still requiring paired
 repetitions and the four-simultaneous-prefill guardrail before production.
 
+The four-simultaneous-prefill guardrail is now complete. Across three valid
+8192+256 C4 repetitions, chunk128 changes median aggregate output from 48.82 to
+48.13 tok/s (-1.42%), TTFT p95 from 17.37 to 17.69 seconds (+1.81%), and wall
+time from 20.98 to 21.28 seconds (+1.44%). All 12 requests completed their full
+prompt and output budgets. This bounded cost is materially smaller than the
+interactive gain, but the run order was not a ten-pair ABBA confirmation.
+
+Evidence: `work/results/v4-profile-b-fpx-q8-chunk128/`.
+Decision remains **STAGE** pending paired confirmation.
+
 ## Pending measurements
 
-Non-invasive C1/C4 operation profiling, separated Q8_1 preparation versus MMV,
-the paired scheduler confirmation, four-simultaneous-prefill guardrail and
-operation-level C1/C4 profile are populated by the next checkpoint.
+The paired scheduler confirmation and the first shape-specific MMV kernel are
+populated by the next checkpoint.
 
 ## Internal phase timestamp instrumentation
 

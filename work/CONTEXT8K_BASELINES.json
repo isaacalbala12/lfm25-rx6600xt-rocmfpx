@@ -153,11 +153,25 @@
       "control_median_aggregate_output_tok_s": 265.79069411578814,
       "delta_percent": -0.6690678414890461
     },
+    "chunk128_simultaneous_prefill_c4_guardrail": {
+      "result_dir": "work/results/v4-profile-b-fpx-q8-chunk128",
+      "status": "VALID",
+      "aggregate_output_tok_s_repetitions": [48.63206213500409, 48.029849688545035, 48.12509124060858],
+      "median_aggregate_output_tok_s": 48.12509124060858,
+      "control_median_aggregate_output_tok_s": 48.81791206696078,
+      "aggregate_delta_percent": -1.4191938921965686,
+      "ttft_p95_ms": 17686.550157499914,
+      "control_ttft_p95_ms": 17371.920051199777,
+      "ttft_delta_percent": 1.8111418045491545,
+      "wall_s": 21.277881736999916,
+      "control_wall_s": 20.975907338999605,
+      "wall_delta_percent": 1.4396249617238954
+    },
     "excluded_setup_attempts": [
       "work/results/v4-profile-a-fpx-q8-chunk128-invalid-cache-off",
       "work/results/v4-profile-a-fpx-q8-chunk128-invalid-slot-auto"
     ],
-    "decision": "unlimited scheduling rejected; chunk256 rejected versus chunk128; chunk128 STAGE pending paired confirmation and simultaneous-prefill guardrail"
+    "decision": "unlimited scheduling rejected; chunk256 rejected versus chunk128; chunk128 STAGE pending paired confirmation"
   },
   "decode_phase_profile": {
     "protocol": "paired internal Vulkan timestamps; final seven resident decode graphs only; profiler wall throughput excluded",

@@ -209,6 +209,15 @@ Follow-up:
   `v4-profile-a-fpx-q8-chunk128-invalid-*`; neither enters statistics.
 - Decision remains **STAGE** pending paired repetition and Profile B guardrail.
 
+Profile B guardrail completed:
+
+- Three valid C4 8192+256 repetitions give a chunk128 median 48.125 tok/s,
+  17.687 s TTFT p95 and 21.278 s wall, versus control 48.818 tok/s, 17.372 s
+  and 20.976 s: -1.42%, +1.81% and +1.44% respectively.
+- This is a bounded regression compared with the 10–15x interference-retention
+  gain, but it is not a ten-pair contemporary ABBA series.
+- Decision remains **STAGE**; proceed to paired confirmation.
+
 ## EXP-V4-DMMV-PHASE-PROFILE — KEEP evidence
 
 - Dedicated paired Vulkan timestamps isolate Q8_1 preparation from FP4_FAST

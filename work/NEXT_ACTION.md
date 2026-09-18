@@ -51,6 +51,12 @@ family. Prefer gate/up 10752x2048 N=4 (39.60% of measured MMV) unless a selector
 or scheduler experiment can convert the 6144x2048 path from N=1 without adding
 interactive delay. Do not implement another Q8 cache.
 
+Chunk128 Profile B guardrail is also complete: median aggregate output -1.42%,
+TTFT p95 +1.81%, wall +1.44%, with all 12 requests valid. Its large Profile C
+benefit still justifies STAGE. Next run a ten-pair control/chunk128 confirmation
+with predeclared exclusions; in parallel, prototype only one measured MMV shape
+family, beginning with 10752x2048 N=4.
+
 ## Checkpoint V3
 
 El punto de revisión padre de esta continuación es `bad60333b6c694915e3ce9777f0cde62fe883ed2`; ROCmFPX parte de `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`. El trabajo se conserva tanto en un commit local de `campaign-v3` como en el checkpoint local ROCmFPX `2678844a0af778c7c41b2d552667e9a05d98248c`; no se hizo push. El equipo actual sigue siendo Ryzen 5 1500X 4C/8T y Navi23/gfx1032.
