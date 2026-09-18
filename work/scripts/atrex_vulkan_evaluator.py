@@ -287,7 +287,12 @@ def bootstrap_ci(values: list[float], seed: int = 260918, draws: int = 10000) ->
 
 
 def provenance(
-    source: Path, test: Path, backend: Path, manifest: Path, cmake: Path
+    source: Path,
+    test: Path,
+    control_backend: Path,
+    candidate_backend: Path,
+    manifest: Path,
+    cmake: Path,
 ) -> dict[str, Any]:
     compiler = run(
         ["/home/isaac/vllm-challenge/toolchain/bin/g++", "--version"], cwd=ROOT
@@ -296,7 +301,8 @@ def provenance(
         "source_head": git(source, "rev-parse", "HEAD"),
         "source_status": git(source, "status", "--porcelain"),
         "test_sha256": sha256(test),
-        "backend_sha256": sha256(backend),
+        "control_backend_sha256": sha256(control_backend),
+        "candidate_backend_sha256": sha256(candidate_backend),
         "manifest_sha256": sha256(manifest),
         "filter": FILTER,
         "compiler": compiler.stdout.splitlines()[0] if compiler.returncode == 0 else "unavailable",
@@ -325,6 +331,9 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
     patch_value = manifest.get("patch")
     patch = (ROOT / patch_value).resolve() if patch_value else None
     patch_applied = False
+    control_backend = backend
+    candidate_backend = backend
+    snapshots: list[Path] = []
     result: dict[str, Any] = {
         "schema_version": 1,
         "candidate_id": manifest["id"],
@@ -346,21 +355,41 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             if applied.returncode:
                 raise EvaluationError("candidate patch application failed: " + applied.stderr.strip())
             patch_applied = True
+            control_backend = build_dir / "bin/.atrex-control-libggml-rocmfpx-vulkan.so"
+            candidate_backend = build_dir / "bin/.atrex-candidate-libggml-rocmfpx-vulkan.so"
+            shutil.copy2(backend, control_backend)
+            snapshots.append(control_backend)
             build(args.cmake, build_dir, result_dir / "build")
+            shutil.copy2(backend, candidate_backend)
+            snapshots.append(candidate_backend)
 
-        result["provenance"] = provenance(source, test, backend, manifest_path, args.cmake)
-        correctness(test, backend, manifest["control_env"], result_dir / "correctness-control")
-        correctness(test, backend, manifest["candidate_env"], result_dir / "correctness-candidate")
+        result["provenance"] = provenance(
+            source,
+            test,
+            control_backend,
+            candidate_backend,
+            manifest_path,
+            args.cmake,
+        )
+        correctness(
+            test, control_backend, manifest["control_env"], result_dir / "correctness-control"
+        )
+        correctness(
+            test,
+            candidate_backend,
+            manifest["candidate_env"],
+            result_dir / "correctness-candidate",
+        )
         result["control_pipeline"] = route_proof(
             test,
-            backend,
+            control_backend,
             manifest["control_env"],
             manifest.get("expected_control_pipeline", ""),
             result_dir / "route-control",
         )
         result["candidate_pipeline"] = route_proof(
             test,
-            backend,
+            candidate_backend,
             manifest["candidate_env"],
             manifest.get("expected_candidate_pipeline", ""),
             result_dir / "route-candidate",
@@ -377,7 +406,10 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             pair_values = {"control": [], "candidate": []}
             for arm in order:
                 extra = manifest[f"{arm}_env"]
-                value = perf_once(test, backend, extra, result_dir / f"perf-{index:03d}-{arm}")
+                arm_backend = control_backend if arm == "control" else candidate_backend
+                value = perf_once(
+                    test, arm_backend, extra, result_dir / f"perf-{index:03d}-{arm}"
+                )
                 pair_values[arm].append(value)
                 (control if arm == "control" else candidate).append(value)
                 index += 1
@@ -431,6 +463,11 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             result["gate"] = "INVALID"
             result["restored_clean"] = False
             result["reason"] += f"; {exc}"
+        for snapshot in snapshots:
+            try:
+                snapshot.unlink()
+            except FileNotFoundError:
+                pass
         result["finished_at_unix"] = time.time()
         atomic_json(result_dir / "result.json", result)
     return result

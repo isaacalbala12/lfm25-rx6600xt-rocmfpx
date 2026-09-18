@@ -53,6 +53,20 @@ class EvaluatorUnitTests(unittest.TestCase):
             with self.assertRaises(MODULE.EvaluationError):
                 MODULE.patch_paths(path)
 
+    def test_patch_allowlist_accepts_plugin_shader(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "good.patch"
+            path.write_text(
+                "diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp "
+                "b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp\n"
+                "--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp\n"
+                "+++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp\n"
+            )
+            self.assertEqual(
+                MODULE.patch_paths(path),
+                ["extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp"],
+            )
+
     def test_bootstrap_is_reproducible(self) -> None:
         values = [-2.0, -1.0, 0.0, 1.0]
         self.assertEqual(MODULE.bootstrap_ci(values), MODULE.bootstrap_ci(values))
