@@ -7,7 +7,9 @@
   ITL p95 de residentes desde ~2189 ms hasta ~89 ms en 3D+1P.
 - Kernel: el backend de producción vuelve al control FP4_FAST. SHA-256 de
   `libggml-rocmfpx-vulkan.so`:
-  `40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40`.
+  `567bead1147b1215f7f0c968fabef1a0ca91e92596d7a68684e6dfac6ef641d0`.
+  El código experimental está revertido; el hash difiere del antiguo
+  `40f6b9c...` porque la build incorpora el checkpoint fuente posterior.
 - Checkpoint ROCmFPX local: `7c4b5c0`; scheduler experimental y selectores
   negativos están revertidos. El `libllama-server-impl.so` reconstruido es
   `a056472b0980a05ea81ee78063d561126660aa119b9ff263245549cd4acab33d`.

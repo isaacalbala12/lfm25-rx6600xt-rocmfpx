@@ -491,3 +491,7 @@ Follow-up output identity:
   final merge cost more than the removed dependency pressure. Patch and raw
   evidence are retained in `patches/` and
   `work/results/v5-kernel-gate-n4-dualacc/`.
+- Production was rebuilt after the revert at ROCmFPX `7c4b5c0`; the backend
+  SHA-256 is `567bead1147b1215f7f0c968fabef1a0ca91e92596d7a68684e6dfac6ef641d0`.
+  An exact gate/up N=4 CPU-reference smoke test passes with all experimental
+  selector variables unset.
