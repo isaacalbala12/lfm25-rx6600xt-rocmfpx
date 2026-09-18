@@ -17,6 +17,7 @@ LINE = re.compile(
 
 def main() -> int:
     root = Path(sys.argv[1])
+    candidate_mode = sys.argv[2] if len(sys.argv) > 2 else "large"
     samples: dict[str, dict[str, list[float]]] = {}
     for path in sorted(root.glob("[0-9]*-*.txt")):
         mode = path.stem.split("-", 1)[1]
@@ -27,15 +28,16 @@ def main() -> int:
     summary = {}
     for shape, modes in sorted(samples.items()):
         control = modes.get("subgroup", [])
-        candidate = modes.get("large", [])
+        candidate = modes.get(candidate_mode, [])
         c0 = statistics.median(control) if control else None
         c1 = statistics.median(candidate) if candidate else None
         summary[shape] = {
             "subgroup_us_median": c0,
-            "large_us_median": c1,
+            "candidate_mode": candidate_mode,
+            "candidate_us_median": c1,
             "delta_percent": ((c1 / c0) - 1.0) * 100.0 if c0 and c1 else None,
             "subgroup_samples": control,
-            "large_samples": candidate,
+            "candidate_samples": candidate,
         }
     print(json.dumps({"schema_version": 1, "shapes": summary}, indent=2))
     return 0 if summary else 2
