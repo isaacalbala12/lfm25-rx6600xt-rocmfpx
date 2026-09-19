@@ -157,15 +157,19 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 
 ## Excluded artifacts
 
-Models, compiled builds, nested source clones and large raw profiler captures
-are deliberately not committed. They total about 16 GiB and include files larger
-than GitHub's normal 100 MB limit. Exact model hashes and source revisions are
-recorded in `work/HARDWARE_MANIFEST.json`; see `MODEL_ARTIFACTS.md` for details.
+Models, compiled builds, nested source clones and profiler captures under
+`work/results/profiling/` are deliberately not committed. They total about
+16 GiB and include files larger than GitHub's normal 100 MB limit. Exact model
+hashes and source revisions are recorded in `work/HARDWARE_MANIFEST.json`; see
+`MODEL_ARTIFACTS.md` for details.
 
-Raw capture files of 1 MiB or more under `work/results/` are excluded as well,
-under the same policy. The excluded files are enumerated with sizes and SHA-256
-hashes in `work/EXCLUDED_CAPTURES.json`, so a reader can tell whether a local
-tree matches the published one.
+Everything else under `work/results/` **is** tracked, including the raw server
+logs and stderr captures for each run, so the evidence for a claim can be read
+directly. That makes the tree about 214 MiB; the largest single file is a
+36.7 MiB selector trace under
+`work/results/v7-bk3-final-guardrails/selector-trace/`. If you only want the
+analysis, a shallow clone or a sparse checkout of `work/*.md`,
+`work/scripts/`, `work/tests/` and the `c*.json` results is enough.
 
 ## Reproducing the benchmarks
 
