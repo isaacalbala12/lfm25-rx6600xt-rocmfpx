@@ -24,17 +24,22 @@ instrumentation, unless the referenced document says otherwise.
 Profile `production-throughput`: ROCmFP4_FAST, KV `q8_0/q8_0`, `b512/ub128`,
 fixed `chunk128` scheduler, compact slot allocation, `-np 4 -cb`.
 
-| Concurrency | Aggregate output tok/s | TTFT p50 | E2E p95 |
-| ---: | ---: | ---: | ---: |
-| 1 | 107.96 | 72.5 ms | 600 ms |
-| 2 | 167.72 | 149.4 ms | 769 ms |
-| 3 | 206.28 | 247.8 ms | 992 ms |
-| 4 | **230.82** | 347.7 ms | 1128 ms |
+| Concurrency | Before V11 | With the decode batch fold | Delta | TTFT p50 | E2E p95 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 107.96 | 108.10 | +0.1% | 72.5 ms | 600 ms |
+| 2 | 167.72 | 173.84 | +3.6% | 149.4 ms | 769 ms |
+| 3 | 206.28 | 220.65 | +7.0% | 247.8 ms | 992 ms |
+| 4 | 230.82 | **250.36** | **+8.4%** | 347.7 ms | 1128 ms |
 
-All four cells `VALID`, 40/40 C=4 requests successful. The original V2 series
-published 108.01 / 169.12 / 207.71 / **233.99** on an earlier build and weight
-artifact; the current production binary measures 0.04% to 1.36% lower. See
-`work/PRIMARY_METRIC_V11.md`.
+The gain grows with concurrency, which is what the fold predicts: at C=1 there
+is no replicated batch to fold and the two figures are identical within noise,
+and at C=4 all four slots share one weight traversal. All cells `VALID`.
+
+For reference, the original V2 series published 108.01 / 169.12 / 207.71 /
+**233.99** on an earlier build; the current production binary with the fold is
+0.04% to 7.0% *above* those figures. See `work/PRIMARY_METRIC_V11.md` and
+`work/DECODE_BATCH_FOLD_V11.md`. Every number here was taken with the GPU in its
+fast clock state (`work/GPU_BIMODAL_V11.md`).
 
 ### Interactive 8K profile, mixed 3 decoders + 1 prefill
 
@@ -159,6 +164,8 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 - `work/GPU_BIMODAL_V11.md`: the two-state GPU clock behaviour and the
   measurement protocol it forces.
 - `work/DECODE_BATCH_FOLD_V11.md`: the four-slot decode weight-reuse fix.
+- `work/PREFILL_LEADS_V11.md`: prefill per-family efficiency, the `down` versus
+  gate/up gap, and the refuted split-k lead.
 - `work/NEXT_ACTION.md`: current production state and the next exact actions.
 - `work/HANDOFF_V9.md`, `work/HANDOFF_V10.md`: per-version handoffs.
 - `work/KERNEL_MICROBENCH_V*.md`, `work/PREFILL8K_PROFILE_V*.md`,

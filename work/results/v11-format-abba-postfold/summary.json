@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "valid_pairs": 2,
+  "invalid": [],
+  "metrics": {
+    "retention": {
+      "baseline_arm": "control",
+      "candidate_arm": "candidate",
+      "baseline_median": 0.1461554281103577,
+      "candidate_median": 0.16817494545434863,
+      "paired_delta_percent_median": 15.075211126135535,
+      "paired_delta_percent_bootstrap_95ci": [
+        14.144792284451512,
+        16.00562996781956
+      ]
+    },
+    "itl_p95_ms": {
+      "baseline_arm": "control",
+      "candidate_arm": "candidate",
+      "baseline_median": 88.51375277790792,
+      "candidate_median": 81.75460329948692,
+      "paired_delta_percent_median": -7.6093354880654385,
+      "paired_delta_percent_bootstrap_95ci": [
+        -8.930609132567223,
+        -6.288061843563653
+      ]
+    },
+    "prefill_ttft_ms": {
+      "baseline_arm": "control",
+      "candidate_arm": "candidate",
+      "baseline_median": 5260.265205499309,
+      "candidate_median": 4782.9212465039745,
+      "paired_delta_percent_median": -9.019460089473817,
+      "paired_delta_percent_bootstrap_95ci": [
+        -11.15375768719532,
+        -6.885162491752316
+      ]
+    }
+  },
+  "pairs": [
+    {
+      "pair": 0,
+      "control_retention": 0.14763024948520093,
+      "candidate_retention": 0.16851224162390013,
+      "delta_retention_percent": 14.144792284451512,
+      "control_itl_p95_ms": 86.7093516553723,
+      "candidate_itl_p95_ms": 81.25701399912941,
+      "delta_itl_p95_ms_percent": -6.288061843563653,
+      "control_prefill_ttft_ms": 5124.556005997874,
+      "candidate_prefill_ttft_ms": 4771.721998004068,
+      "delta_prefill_ttft_ms_percent": -6.885162491752316
+    },
+    {
+      "pair": 1,
+      "control_retention": 0.1446806067355145,
+      "candidate_retention": 0.16783764928479716,
+      "delta_retention_percent": 16.00562996781956,
+      "control_itl_p95_ms": 90.31815390044355,
+      "candidate_itl_p95_ms": 82.25219259984442,
+      "delta_itl_p95_ms_percent": -8.930609132567223,
+      "control_prefill_ttft_ms": 5395.974405000743,
+      "candidate_prefill_ttft_ms": 4794.120495003881,
+      "delta_prefill_ttft_ms_percent": -11.15375768719532
+    }
+  ]
+}

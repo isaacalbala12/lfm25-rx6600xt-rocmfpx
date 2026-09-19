@@ -9,7 +9,7 @@ decode:
 
 | Measurement | Control | Folded | Delta |
 | --- | ---: | ---: | ---: |
-| Direct decode, 4 sequences (fast mode) | 351.9 tok/s | 397.6 tok/s | **+13.0%** |
+| Direct decode, 4 sequences (fast mode) | 352.5 tok/s | 401.3 tok/s | **+13.8%** |
 | Direct decode, 8 sequences | 449.45 tok/s | 519.37 tok/s | +15.6% |
 | Primary metric, C=4 service | 230.02 -- 231.37 | 235.79 -- 249.44 | **+4.0% (means) to +7.8% (fast mode)** |
 | Primary metric C=4, E2E p95 | ~1133 ms | ~1087 ms | −4.0% |
@@ -18,6 +18,10 @@ decode:
 | 8K profile, ITL p95 | 87.24 ms | 86.72 ms | −0.6% |
 | Perplexity, batch 1 | 57.3483 | 57.3483 | identical |
 | Output hashes, C=1 / C=2 | — | — | 10/10 and 20/20 identical |
+
+The first row is the final confirmation, three interleaved runs per backend on
+the rebuilt tree and all six in the fast clock state: control 351.58 / 353.52 /
+352.48, folded 398.93 / 405.63 / 399.39.
 
 The patch is 12 lines in `extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp`.
 

@@ -7,7 +7,10 @@
     "cpu": "AMD Ryzen 5 1500X Quad-Core Processor",
     "physical_cores": 4,
     "logical_cpus": 8,
-    "cpu_frequency_mhz": {"minimum": 1550, "maximum": 3500},
+    "cpu_frequency_mhz": {
+      "minimum": 1550,
+      "maximum": 3500
+    },
     "power_profile": "balanced"
   },
   "gpu": {
@@ -41,7 +44,8 @@
       "path": "work/sources/ROCmFPX",
       "upstream_revision": "aed0d5fd9620ee96a10cb4e6b16c18514ea370e1",
       "local_checkpoint": "2678844a0af778c7c41b2d552667e9a05d98248c",
-      "dirty": false
+      "dirty": false,
+      "v11_patch": "patches/v11-decode-batch-fold.patch"
     },
     "llama_cpp": {
       "path": "work/sources/llama.cpp",
@@ -72,7 +76,9 @@
     "tokenizer_json_sha256_v3": "695be7802a0e4b8a81048f0ff5ebb7fc811a0ba5a6be63dbb24deb5a81096f41",
     "tokenizer_config_sha256_v3": "11f1de897317b489dd09199284528382eeb17f566398b16e2039bb2266d26b09",
     "campaign_v3_runtime_kernel_patch_sha256": "d06458874a0657bc18eb3a595ac22ccb06aac503d60fdced97ce7e14ea37729b",
-    "rocmfpx_patch_sha256_v3_original": "ba589e3fa57e3fb61f7b8f4a5afe82831de1bf5163b432558ff7fdc355a4976b"
+    "rocmfpx_patch_sha256_v3_original": "ba589e3fa57e3fb61f7b8f4a5afe82831de1bf5163b432558ff7fdc355a4976b",
+    "rocmfpx_vulkan_backend_sha256_v11_fold": "cf4c325ec2e400c0914bcec66639a486ff1234e315bcf813cafbfe0ebef9a966",
+    "rocmfpx_plugin_sha256": "40f3f48cfec7310bcfb017371d1232a7df7935f9e9fcadc2efcdda139832a208"
   },
   "models": {
     "q4_0": {
@@ -116,5 +122,6 @@
       "/home/isaac/vllm-challenge/toolchain/lib/libstdc++.so.6",
       "/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1"
     ]
-  }
+  },
+  "notes_bimodal": "The RX 6600 XT randomly enters a state where MEMCLK oscillates between 1000 and 541 MHz, costing about 40% throughput. See work/GPU_BIMODAL_V11.md; every throughput figure needs its clock mode."
 }
