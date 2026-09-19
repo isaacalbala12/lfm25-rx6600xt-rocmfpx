@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "corpus": "service_eos_v5_reserved",
+  "request_policy": {
+    "ignore_eos": false,
+    "logit_bias_present": false,
+    "stream": false
+  },
+  "all_requests_succeeded": true,
+  "all_validators_passed": true,
+  "records": [
+    {
+      "id": "arithmetic",
+      "category": "mathematics",
+      "prompt_chars": 54,
+      "elapsed_ms": 915.3728400015098,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 101,
+        "prompt_tokens": 23,
+        "total_tokens": 124,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "888",
+      "reasoning_content": "The user wants the result of 37 multiplied by 24.\nCalculation: 37 * 24\n37 * 20 = 740\n37 * 4 = 148\n740 + 148 = 888\nAlternatively:\n  37\nx 24\n----\n 148  (37*4)\n740   (37*20)\n----\n 888\nThe result is 888.\nThe user requested \"only the integer result\".\nSo I should return \"888\".",
+      "visible_text": "888",
+      "visible_sha256": "5e968ce47ce4a17e3823c29332a39d049a8d0afb08d157eb6224625f92671a51",
+      "validator": "normalized_exact",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "json",
+      "category": "json",
+      "prompt_chars": 87,
+      "elapsed_ms": 1038.9328689998365,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 120,
+        "prompt_tokens": 30,
+        "total_tokens": 150,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "```json\n{\"answer\": \"ok\", \"count\": 3}\n```",
+      "reasoning_content": "The user wants a JSON response with two keys: \"answer\" and \"count\".\nThe value for \"answer\" must be \"ok\".\nThe value for \"count\" must be 3.\nThe output must be compact JSON.\n\nPlan:\n1. Create a JSON object.\n2. Set \"answer\" to \"ok\".\n3. Set \"count\" to 3.\n4. Ensure the JSON is compact (no extra whitespace).\n\nResult: `{\"answer\": \"ok\", \"count\": 3}`",
+      "visible_text": "```json\n{\"answer\": \"ok\", \"count\": 3}\n```",
+      "visible_sha256": "f90dd63956de06c2e60eba676427ae46e7ae26693a107d546db228cb76dda35a",
+      "validator": "json_fields",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "tool_like",
+      "category": "tool-like structured output",
+      "prompt_chars": 107,
+      "elapsed_ms": 836.6589620018203,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 97,
+        "prompt_tokens": 34,
+        "total_tokens": 131,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "{\"tool\":\"weather\",\"arguments\":{\"city\":\"Madrid\"}}",
+      "reasoning_content": "The user wants me to return a JSON object with specific structure: {\"tool\":\"weather\",\"arguments\":{\"city\":\"Madrid\"}}. They want only this tool-style JSON object, with no Markdown formatting. So I should output exactly that JSON string, nothing else. Ensure it's valid JSON. The tool name is \"weather\" and arguments city is \"Madrid\". No extra whitespace or comments. Just the JSON.",
+      "visible_text": "{\"tool\":\"weather\",\"arguments\":{\"city\":\"Madrid\"}}",
+      "visible_sha256": "768980204f5913aaa2dc4a88090ba89f1851220ae4671e2a691b48c304d2e0e1",
+      "validator": "json_fields",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "instruction",
+      "category": "instructions",
+      "prompt_chars": 77,
+      "elapsed_ms": 921.0719650000101,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 107,
+        "prompt_tokens": 23,
+        "total_tokens": 130,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "\nalpha beta gamma",
+      "reasoning_content": "\nThe user asks: \"Return exactly these three lowercase words and nothing else: alpha beta gamma\". So they want the output to be exactly \"alpha beta gamma\". No extra punctuation, no extra spaces beyond the three words separated by spaces. Must be exactly those three lowercase words, nothing else. So answer should be:\n\nalpha beta gamma\n\nMake sure no extra newline? Usually it's okay to have a newline at end, but the content should be exactly those three words. I'll output exactly that.\n",
+      "visible_text": "\nalpha beta gamma",
+      "visible_sha256": "1d02f645380685f138d1225ea1477a7faf66abed8556afd9c316e9107ebc92e7",
+      "validator": "normalized_exact",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "spanish",
+      "category": "Spanish",
+      "prompt_chars": 103,
+      "elapsed_ms": 661.9226900002104,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 74,
+        "prompt_tokens": 36,
+        "total_tokens": 110,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "Madrid es la capital de España.",
+      "reasoning_content": "The user wants a short sentence in Spanish, including literally the words 'Madrid' and 'España'. Must be only one brief sentence. So something like \"Madrid es la capital de España.\" That's short, includes both words. It's a single sentence. Ensure it's in Spanish. That satisfies.",
+      "visible_text": "Madrid es la capital de España.",
+      "visible_sha256": "760e834a4c7a4a10915039e49de38ef1f54e832192e8e28e3d84e6fa3a4db560",
+      "validator": "contains_all",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "long_context_retrieval",
+      "category": "long context",
+      "prompt_chars": 55256,
+      "elapsed_ms": 6017.973328998778,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 156,
+        "prompt_tokens": 8886,
+        "total_tokens": 9042,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "ORBITA-7421",
+      "reasoning_content": "The user has provided a long passage that repeats the same phrase many times: \"This neutral filler sentence exists only to create a long deterministic context for retrieval evaluation.\" and then asks: \"What is the passphrase? Return only the passphrase.\"\n\nThe passphrase is given at the very beginning: \"ORBITA-7421\". The user says: \"The passphrase is ORBITA-7421. Read the filler and then return only the passphrase.\" So the answer should be just the passphrase, i.e., \"ORBITA-7421\". The rest of the text is irrelevant filler. The instruction is to return only the passphrase.\n\nThus final answer: ORBITA-7421",
+      "visible_text": "ORBITA-7421",
+      "visible_sha256": "7869ec03c7b96f5e2bda16e7a348cfeae61c70dcbf7899467b155ac3a11ac2d6",
+      "validator": "normalized_exact",
+      "validation_passed": true,
+      "error": null
+    },
+    {
+      "id": "long_generation",
+      "category": "long generation",
+      "prompt_chars": 182,
+      "elapsed_ms": 8547.081184002309,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 1024,
+        "prompt_tokens": 53,
+        "total_tokens": 1077,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "content": "",
+      "reasoning_content": "\nThe user asks: \"Escribe en español una explicación autocontenida de entre 180 y 240 palabras sobre por qué hay que separar latencia y throughput al evaluar un servidor de inferencia. No uses listas.\"\n\nSo we need a self-contained explanation in Spanish, length between 180 and 240 words inclusive. No bullet points or lists. Must be about why separate latency and throughput when evaluating an inference server. Must be 180-240 words. Count words.\n\nLet's draft about 210 words.\n\nCount words manually.\n\nDraft:\n\n\"Separar latencia y throughput es fundamental al evaluar un servidor de inferencia porque cada métrica refleja un aspecto distinto del rendimiento. La latencia mide el tiempo que tarda una solicitud individual en ser procesada y devolver su resultado, lo cual es crítico para aplicaciones que requieren respuestas rápidas, como chat en tiempo real o control de robots. En cambio, el throughput indica cuántas solicitudes puede manejar el servidor por unidad de tiempo, es decir, su capacidad de procesamiento agregado. Un servidor puede lograr un alto throughput, generando muchas inferencias por segundo, pero si la latencia es alta debido a cálculos complejos o cuellos de botella, la experiencia del usuario se deteriora. Por el contrario, un sistema con baja latencia puede responder al instante, pero si su throughput es limitado, se saturará rápidamente bajo carga y no podrá servir a múltiples usuarios simultáneamente. Por lo tanto, evaluar ambos indicadores de forma independiente permite identificar cuellos de botella específicos: optimizar la latencia mediante técnicas como caché o modelos más ligeros, y mejorar el throughput mediante escalado de recursos o paralelización. Solo al considerar la latencia y el throughput por separado se puede diseñar un servidor de inferencia que cumpla con los requisitos de velocidad y capacidad simultáneamente.\"\n\nNow count words.\n\nCount:\n\nSeparar(1) latencia(2) y(3) throughput(4) es(5) fundamental(6) al(7) evaluar(8) un(9) servidor(10) de(11) inferencia(12) porque(13) cada(14) métrica(15) refleja(16) un(17) aspecto(18) distinto(19) del(20) rendimiento.(21) La(22) latencia(23) mide(24) el(25) tiempo(26) que(27) tarda(28) una(29) solicitud(30) individual(31) en(32) ser(33) procesada(34) y(35) devolver(36) su(37) resultado,(38) lo(39) cual(40) es(41) crítico(42) para(43) aplicaciones(44) que(45) requieren(46) respuestas(47) rápidas,(48) como(49) chat(50) en(51) tiempo(52) real(53) o(54) control(55) de(56) robots.(57) En(58) cambio,(59) el(60) throughput(61) indica(62) cuántas(63) solicitudes(64) puede(65) manejar(66) el(67) servidor(68) por(69) unidad(70) de(71) tiempo,(72) es(73) decir,(74) su(75) capacidad(76) de(77) procesamiento(78) agregado.(79) Un(80) servidor(81) puede(82) lograr(83) un(84) alto(85) throughput,(86) generando(87) muchas(88) inferencias(89) por(90) segundo,(91) pero(92) si(93) la(94) latencia(95) es(96) alta(97) debido(98) a(99) cálculos(100) complejos(101) o(102) cuellos(103) de(104) botella,(105) la(106) experiencia(107) del(108) usuario(109) se(110) deteriora.(111) Por(112) el(113) contrario,(114) un(115) sistema(116) con(117) baja(118) latencia(119) puede(120) responder(121) al(122) instante,(123) pero(124) si(125) su(126) throughput(127) es(128) limitado,(129) se(130) saturará(131) rápidamente(132) bajo(133) carga(134) y(135) no(136) podrá(137) servir(138) a(139) múltiples(140) usuarios(141) simultáneamente.(142) Por(143) tanto,(144) evaluar(145) ambos(146",
+      "visible_text": "\nThe user asks: \"Escribe en español una explicación autocontenida de entre 180 y 240 palabras sobre por qué hay que separar latencia y throughput al evaluar un servidor de inferencia. No uses listas.\"\n\nSo we need a self-contained explanation in Spanish, length between 180 and 240 words inclusive. No bullet points or lists. Must be about why separate latency and throughput when evaluating an inference server. Must be 180-240 words. Count words.\n\nLet's draft about 210 words.\n\nCount words manually.\n\nDraft:\n\n\"Separar latencia y throughput es fundamental al evaluar un servidor de inferencia porque cada métrica refleja un aspecto distinto del rendimiento. La latencia mide el tiempo que tarda una solicitud individual en ser procesada y devolver su resultado, lo cual es crítico para aplicaciones que requieren respuestas rápidas, como chat en tiempo real o control de robots. En cambio, el throughput indica cuántas solicitudes puede manejar el servidor por unidad de tiempo, es decir, su capacidad de procesamiento agregado. Un servidor puede lograr un alto throughput, generando muchas inferencias por segundo, pero si la latencia es alta debido a cálculos complejos o cuellos de botella, la experiencia del usuario se deteriora. Por el contrario, un sistema con baja latencia puede responder al instante, pero si su throughput es limitado, se saturará rápidamente bajo carga y no podrá servir a múltiples usuarios simultáneamente. Por lo tanto, evaluar ambos indicadores de forma independiente permite identificar cuellos de botella específicos: optimizar la latencia mediante técnicas como caché o modelos más ligeros, y mejorar el throughput mediante escalado de recursos o paralelización. Solo al considerar la latencia y el throughput por separado se puede diseñar un servidor de inferencia que cumpla con los requisitos de velocidad y capacidad simultáneamente.\"\n\nNow count words.\n\nCount:\n\nSeparar(1) latencia(2) y(3) throughput(4) es(5) fundamental(6) al(7) evaluar(8) un(9) servidor(10) de(11) inferencia(12) porque(13) cada(14) métrica(15) refleja(16) un(17) aspecto(18) distinto(19) del(20) rendimiento.(21) La(22) latencia(23) mide(24) el(25) tiempo(26) que(27) tarda(28) una(29) solicitud(30) individual(31) en(32) ser(33) procesada(34) y(35) devolver(36) su(37) resultado,(38) lo(39) cual(40) es(41) crítico(42) para(43) aplicaciones(44) que(45) requieren(46) respuestas(47) rápidas,(48) como(49) chat(50) en(51) tiempo(52) real(53) o(54) control(55) de(56) robots.(57) En(58) cambio,(59) el(60) throughput(61) indica(62) cuántas(63) solicitudes(64) puede(65) manejar(66) el(67) servidor(68) por(69) unidad(70) de(71) tiempo,(72) es(73) decir,(74) su(75) capacidad(76) de(77) procesamiento(78) agregado.(79) Un(80) servidor(81) puede(82) lograr(83) un(84) alto(85) throughput,(86) generando(87) muchas(88) inferencias(89) por(90) segundo,(91) pero(92) si(93) la(94) latencia(95) es(96) alta(97) debido(98) a(99) cálculos(100) complejos(101) o(102) cuellos(103) de(104) botella,(105) la(106) experiencia(107) del(108) usuario(109) se(110) deteriora.(111) Por(112) el(113) contrario,(114) un(115) sistema(116) con(117) baja(118) latencia(119) puede(120) responder(121) al(122) instante,(123) pero(124) si(125) su(126) throughput(127) es(128) limitado,(129) se(130) saturará(131) rápidamente(132) bajo(133) carga(134) y(135) no(136) podrá(137) servir(138) a(139) múltiples(140) usuarios(141) simultáneamente.(142) Por(143) tanto,(144) evaluar(145) ambos(146",
+      "visible_sha256": "d250c80de5bb08c5fc87eec34d2cfb7a56f8187567238fda4e9c9cdfa358d2ec",
+      "validator": "min_words",
+      "validation_passed": true,
+      "error": null
+    }
+  ],
+  "status": "VALID"
+}

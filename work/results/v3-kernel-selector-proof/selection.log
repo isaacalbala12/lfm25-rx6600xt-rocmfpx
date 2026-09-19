@@ -1,0 +1,22 @@
+ggml_vulkan: Found 1 Vulkan devices:
+ggml_vulkan: 0 = AMD Radeon RX 6600 XT (RADV NAVI23) (radv) | uma: 0 | fp16: 1 | bf16: 0 | fp4: 0 | warp size: 32 | shared memory: 65536 | int dot: 1 | matrix cores: none
+VKSEL event=backend source=rocmfpx-vulkan-plugin
+ggml_vulkan: Found 1 Vulkan devices:
+ggml_vulkan: 0 = AMD Radeon RX 6600 XT (RADV NAVI23) (radv) | uma: 0 | fp16: 1 | bf16: 0 | warp size: 32 | shared memory: 65536 | int dot: 1 | matrix cores: none
+load_backend: loaded ROCmFPXVulkan backend from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libggml-rocmfpx-vulkan.so
+VKSEL event=dmmv_selector m=10752 n=2 k=2048 reduction=subgroup
+VKSEL event=mul_mat_vec tensor=a src0_type=q4_0_rocmfp4_fast src1_type=f32 m=10752 n=2 k=2048 src0_ne=2048,10752,1,1 src1_ne=2048,2,1,1 src0_nb=17,1088,11698176,11698176 src1_nb=4,8192,16384,16384 src0_contig=1 src1_contig=1 batch_n=1 quantize_rhs=1 x_convert=0 y_convert=0 pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32
+VKSEL event=dispatch pipeline=quantize_q8_1_x4 elements=4096,1,1 workgroups=16,1,1 wg_denoms=256,1,1 registers=0
+VKSEL event=dispatch pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 elements=10752,1,1 workgroups=5376,1,1 wg_denoms=2,1,1 registers=0
+VKSEL event=dmmv_selector m=2048 n=2 k=10752 reduction=large_hybrid
+VKSEL event=mul_mat_vec tensor=a src0_type=q4_0_rocmfp4_fast src1_type=f32 m=2048 n=2 k=10752 src0_ne=10752,2048,1,1 src1_ne=10752,2,1,1 src0_nb=17,5712,11698176,11698176 src1_nb=4,43008,86016,86016 src0_contig=1 src1_contig=1 batch_n=1 quantize_rhs=1 x_convert=0 y_convert=0 pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32
+VKSEL event=dispatch pipeline=quantize_q8_1_x4 elements=21504,1,1 workgroups=84,1,1 wg_denoms=256,1,1 registers=0
+VKSEL event=dispatch pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 elements=2048,1,1 workgroups=1024,1,1 wg_denoms=2,1,1 registers=0
+VKSEL event=dmmv_selector m=10752 n=4 k=2048 reduction=large_hybrid
+VKSEL event=mul_mat_vec tensor=a src0_type=q4_0_rocmfp4_fast src1_type=f32 m=10752 n=4 k=2048 src0_ne=2048,10752,1,1 src1_ne=2048,4,1,1 src0_nb=17,1088,11698176,11698176 src1_nb=4,8192,32768,32768 src0_contig=1 src1_contig=1 batch_n=1 quantize_rhs=1 x_convert=0 y_convert=0 pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32
+VKSEL event=dispatch pipeline=quantize_q8_1_x4 elements=8192,1,1 workgroups=32,1,1 wg_denoms=256,1,1 registers=0
+VKSEL event=dispatch pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 elements=10752,1,1 workgroups=5376,1,1 wg_denoms=2,1,1 registers=0
+VKSEL event=dmmv_selector m=2048 n=4 k=10752 reduction=large_hybrid
+VKSEL event=mul_mat_vec tensor=a src0_type=q4_0_rocmfp4_fast src1_type=f32 m=2048 n=4 k=10752 src0_ne=10752,2048,1,1 src1_ne=10752,4,1,1 src0_nb=17,5712,11698176,11698176 src1_nb=4,43008,172032,172032 src0_contig=1 src1_contig=1 batch_n=1 quantize_rhs=1 x_convert=0 y_convert=0 pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32
+VKSEL event=dispatch pipeline=quantize_q8_1_x4 elements=43008,1,1 workgroups=168,1,1 wg_denoms=256,1,1 registers=0
+VKSEL event=dispatch pipeline=mul_mat_vec_rocmfp4_fast_q8_1_f32 elements=2048,1,1 workgroups=1024,1,1 wg_denoms=2,1,1 registers=0

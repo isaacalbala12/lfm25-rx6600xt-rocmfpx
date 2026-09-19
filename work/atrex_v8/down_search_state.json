@@ -1,0 +1,188 @@
+{
+  "attempts": [
+    {
+      "ci_percent": [
+        -1.3134689025519175,
+        0.02532212666905842
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.6144498280712729,
+      "evidence_level": "formal_micro",
+      "fingerprint": "4bbe8a5065b0ea669beb9718143259d473eab4cbfca74047cb90e3ac75fbbc43",
+      "gate": "PASS",
+      "id": "down-b-first",
+      "mutation": "stage down Q8 blocks before FP4 blocks while retaining BM64 BN64 BK32 BK_STEP4",
+      "parent": "down-bm64-bn64-bk32-bk4",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-b-first/result.json"
+    },
+    {
+      "ci_percent": [
+        -1.366361749557976,
+        0.02539260879756977
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.33178306641500344,
+      "evidence_level": "formal_micro",
+      "fingerprint": "caae43d5fe30bf92d92de25e5ca8edfe9b1aa8742c232e74d06315f851db233c",
+      "gate": "PASS",
+      "id": "down-hoist-strides",
+      "mutation": "hoist invariant down stride-to-block conversions outside the K loop while retaining BM64 BN64 BK32 BK_STEP4",
+      "parent": "down-bm64-bn64-bk32-bk4",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-hoist-strides/result.json"
+    },
+    {
+      "ci_percent": [
+        -1.4068600247295948,
+        -0.3690363722248513
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.944541236810692,
+      "evidence_level": "formal_micro",
+      "fingerprint": "6a45ff6a3546e1a917f8289a53980b8a08e4de176054008e259d3b4b27c20ceb",
+      "gate": "PASS",
+      "id": "down-notail",
+      "mutation": "specialize exact down K=10752 to remove generic K-tail predicates while retaining BM64 BN64 BK32 BK_STEP4",
+      "parent": "down-bm64-bn64-bk32-bk4",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-notail/result.json"
+    },
+    {
+      "ci_percent": [
+        -2.3803046789989124,
+        -1.1936118754100389
+      ],
+      "decision": "REVIEW_LEVERAGE",
+      "delta_percent": -2.1606653601271564,
+      "evidence_level": "formal_micro",
+      "fingerprint": "7a9d0c488d7e7dd74bf4abe08865b288b37a54a6c95e79cf74b6ae0f3bb50ee8",
+      "gate": "PASS",
+      "id": "down-exact",
+      "mutation": "compose exact down no-tail, one-K-partition and no-output-bound predicates while retaining BM64 BN64 BK32 BK_STEP4",
+      "parent": "down-notail",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-exact/result.json"
+    },
+    {
+      "ci_percent": [
+        -0.5621877413740872,
+        0.3979078066187691
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.24914265615382236,
+      "evidence_level": "formal_micro",
+      "fingerprint": "f2feffb841ba43cbc60a16dc6b6edcab7c30e6dc41d1df2f5601c4bf1b8fccdd",
+      "gate": "PASS",
+      "id": "down-nobounds",
+      "mutation": "specialize exact down M=2048 N=128 to remove output boundary predicates while retaining BM64 BN64 BK32 BK_STEP4",
+      "parent": "down-bm64-bn64-bk32-bk4",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-nobounds/result.json"
+    },
+    {
+      "ci_percent": [
+        -0.22733953944144014,
+        0.7593268351217874
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": 0.041153473059174495,
+      "evidence_level": "formal_micro",
+      "fingerprint": "3d485878ff338f198399a4b6d2d8192451910c96ad806e12ac8c6824d7f21900",
+      "gate": "PASS",
+      "id": "down-nosplit",
+      "mutation": "specialize exact down to one K partition while retaining BM64 BN64 BK32 BK_STEP4",
+      "parent": "down-bm64-bn64-bk32-bk4",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-nosplit/result.json"
+    },
+    {
+      "ci_percent": [
+        -2.554452742624269,
+        -1.2948862799037286
+      ],
+      "decision": "REVIEW_LEVERAGE",
+      "delta_percent": -1.7102310036948731,
+      "evidence_level": "formal_micro",
+      "fingerprint": "003d9614594d5fa258a3c15df3731870a88410ab21604b58085aea65b77838ac",
+      "gate": "PASS",
+      "id": "down-exact-q8group4",
+      "mutation": "compose exact down specialization with aligned four-block Q8 address consumption",
+      "parent": "down-exact",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-exact-q8group4/result.json"
+    },
+    {
+      "ci_percent": [
+        -1.700690093263646,
+        0.20520171623252814
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.3997609272885838,
+      "evidence_level": "formal_micro",
+      "fingerprint": "75ca6968784d5647e9db7651c7ae0eaacf72ccf6ec0ebc05f4cd7403c4155e8e",
+      "gate": "PASS",
+      "id": "down-nosplit-nobounds",
+      "mutation": "compose one-K-partition and exact M/N output-bound removal without no-tail",
+      "parent": "down-bm64-bn64-bk32-bk4",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-nosplit-nobounds/result.json"
+    },
+    {
+      "ci_percent": [
+        -1.670018361458414,
+        -0.2577117547916674
+      ],
+      "decision": "REVIEW_LEVERAGE",
+      "delta_percent": -1.6147242607696954,
+      "evidence_level": "formal_micro",
+      "fingerprint": "991f8ceaad456a336124f3ef71da0045f82cf3c14a2e922ee81a554456530608",
+      "gate": "PASS",
+      "id": "down-notail-nobounds",
+      "mutation": "compose down no-tail with exact M/N output-bound removal",
+      "parent": "down-notail",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-notail-nobounds/result.json"
+    },
+    {
+      "ci_percent": [
+        -1.4220183486238436,
+        -0.05695991200674877
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.8210565367229972,
+      "evidence_level": "formal_micro",
+      "fingerprint": "c2e4259554e4676aea9bf60f9b104bd9ca975869ed0882a88b1d8b700e3dbd43",
+      "gate": "PASS",
+      "id": "down-notail-nosplit",
+      "mutation": "compose down no-tail with one-K-partition specialization",
+      "parent": "down-notail",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-notail-nosplit/result.json"
+    },
+    {
+      "ci_percent": [
+        -2.3369168653013417,
+        -0.19444553560906686
+      ],
+      "decision": "REVIEW_LEVERAGE",
+      "delta_percent": -1.793451860487727,
+      "evidence_level": "formal_micro",
+      "fingerprint": "2e92ac2ff32b35702220ec4239de38baffc26f49e54c872e3518109003c4fa54",
+      "gate": "PASS",
+      "id": "down-q8group4",
+      "mutation": "consume each aligned group of four Q8 blocks from one outer address while retaining BM64 BN64 BK32 BK_STEP4",
+      "parent": "down-bm64-bn64-bk32-bk4",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-down-search/down-q8group4/result.json"
+    }
+  ],
+  "baseline_candidate": "down-bm64-bn64-bk32-bk4",
+  "best_candidate": "down-exact",
+  "best_delta_percent": -2.1606653601271564,
+  "consecutive_without_improvement": 7,
+  "schema_version": 2,
+  "stop_reason": "candidate queue exhausted",
+  "total_attempts": 11,
+  "valid_candidates": 11
+}

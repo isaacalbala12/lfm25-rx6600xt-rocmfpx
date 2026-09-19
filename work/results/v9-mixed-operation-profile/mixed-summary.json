@@ -1,0 +1,197 @@
+{
+  "schema_version": 2,
+  "filter": {
+    "prompt_tokens": 128,
+    "decode_tokens": 3
+  },
+  "valid_batches": 63,
+  "graph_count_histogram": {
+    "2": 63
+  },
+  "instrumented_wall_ms": {
+    "median": 91.501,
+    "p95": 111.5885
+  },
+  "profiled_gpu_groups": {
+    "down": {
+      "total_us": 1105045.0000000005,
+      "share": 0.22243738925799153
+    },
+    "flash_attention": {
+      "total_us": 713010.0,
+      "share": 0.1435236419465637
+    },
+    "gate_up": {
+      "total_us": 1465622.2000000002,
+      "share": 0.2950189139868094
+    },
+    "misc": {
+      "total_us": 1058577.17,
+      "share": 0.2130837586007022
+    },
+    "projection_2048": {
+      "total_us": 266448.36,
+      "share": 0.053634085101035185
+    },
+    "short_conv": {
+      "total_us": 359189.6,
+      "share": 0.07230221110689812
+    }
+  },
+  "profiled_gpu_total_us": 4967892.33,
+  "profiled_gpu_by_graph_index": {
+    "0": {
+      "total_us": 820295.1000000001,
+      "groups": {
+        "flash_attention": {
+          "total_us": 141350.15999999995,
+          "share_within_graph": 0.17231623107342703,
+          "share_of_all_graphs": 0.02845274225176292
+        },
+        "misc": {
+          "total_us": 678944.9400000002,
+          "share_within_graph": 0.827683768926573,
+          "share_of_all_graphs": 0.1366665972005879
+        }
+      }
+    },
+    "1": {
+      "total_us": 4147597.2300000004,
+      "groups": {
+        "down": {
+          "total_us": 1105045.0000000005,
+          "share_within_graph": 0.2664301615419876,
+          "share_of_all_graphs": 0.22243738925799153
+        },
+        "flash_attention": {
+          "total_us": 571659.84,
+          "share_within_graph": 0.13782915946252572,
+          "share_of_all_graphs": 0.11507089969480075
+        },
+        "gate_up": {
+          "total_us": 1465622.2000000002,
+          "share_within_graph": 0.35336656833479463,
+          "share_of_all_graphs": 0.2950189139868094
+        },
+        "misc": {
+          "total_us": 379632.23,
+          "share_within_graph": 0.09153064025939663,
+          "share_of_all_graphs": 0.07641716140011431
+        },
+        "projection_2048": {
+          "total_us": 266448.36,
+          "share_within_graph": 0.06424161875525217,
+          "share_of_all_graphs": 0.053634085101035185
+        },
+        "short_conv": {
+          "total_us": 359189.6,
+          "share_within_graph": 0.08660185164604325,
+          "share_of_all_graphs": 0.07230221110689812
+        }
+      }
+    }
+  },
+  "top_timing_groups": [
+    {
+      "description": "MUL_MAT q4_0_rocmfp4_fast m=10752 n=127 k=2048, MUL_MAT q4_0_rocmfp4_fast m=10752 n=127 k=2048",
+      "total_us": 1465622.2000000002,
+      "share": 0.2950189139868094
+    },
+    {
+      "description": "MUL_MAT q4_0_rocmfp4_fast m=2048 n=127 k=10752",
+      "total_us": 1105045.0000000005,
+      "share": 0.22243738925799153
+    },
+    {
+      "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048",
+      "total_us": 250255.76,
+      "share": 0.05037463442771514
+    },
+    {
+      "description": "MUL_MAT q4_0_rocmfp4_fast m=2048 n=127 k=2048",
+      "total_us": 185980.72,
+      "share": 0.03743654404039791
+    },
+    {
+      "description": "MUL_MAT q4_0_rocmfp4_fast m=6144 n=127 k=2048, CPY",
+      "total_us": 183954.2,
+      "share": 0.03702862054580801
+    },
+    {
+      "description": "MUL_MAT q4_0_rocmfp4_fast m=6144 n=127 k=2048",
+      "total_us": 175235.40000000002,
+      "share": 0.035273590561090126
+    },
+    {
+      "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=10752",
+      "total_us": 128742.07000000002,
+      "share": 0.02591482694231419
+    },
+    {
+      "description": "FLASH_ATTN_EXT dst(64,32,1,4),  q(64,1,32,4),  k(64,8448,8,4),  v(64,8448,8,4),  m(8448,1,1,4), SCALE, GET_ROWS, GET_ROWS, CPY",
+      "total_us": 124104.80000000003,
+      "share": 0.024981378773158723
+    },
+    {
+      "description": "MUL_MAT q4_0_rocmfp4_fast m=2048 n=127 k=2048, MUL_MAT q4_0_rocmfp4_fast m=512 n=127 k=2048, MUL_MAT q4_0_rocmfp4_fast m=512 n=127 k=2048",
+      "total_us": 80467.64000000001,
+      "share": 0.01619754106063728
+    },
+    {
+      "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=1 k=2048 batch=4, CPY",
+      "total_us": 72018.04,
+      "share": 0.014496699045810437
+    },
+    {
+      "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=1 k=2048 batch=4",
+      "total_us": 56748.23999999999,
+      "share": 0.011423001190527008
+    },
+    {
+      "description": "RMS_NORM_MUL_ROPE RMS_NORM(64,32,127,1)",
+      "total_us": 55394.64000000001,
+      "share": 0.011150531517256134
+    },
+    {
+      "description": "ADD",
+      "total_us": 53350.959999999985,
+      "share": 0.010739153841524577
+    },
+    {
+      "description": "GLU",
+      "total_us": 51387.19999999999,
+      "share": 0.010343863470970192
+    },
+    {
+      "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=2048 batch=4",
+      "total_us": 47888.00000000001,
+      "share": 0.009639500379429521
+    },
+    {
+      "description": "CPY, SSM_CONV",
+      "total_us": 46160.68,
+      "share": 0.009291803632950313
+    },
+    {
+      "description": "CONCAT",
+      "total_us": 46071.67999999999,
+      "share": 0.009273888590898666
+    },
+    {
+      "description": "RMS_NORM_MUL RMS_NORM(2048,127,1,1)",
+      "total_us": 44665.759999999995,
+      "share": 0.008990887288412708
+    },
+    {
+      "description": "MUL",
+      "total_us": 41663.24000000001,
+      "share": 0.008386502209076663
+    },
+    {
+      "description": "GLU, SCALE, GET_ROWS, GET_ROWS",
+      "total_us": 37527.83999999999,
+      "share": 0.007554076760757814
+    }
+  ],
+  "warning": "GGML_VK_PERF_LOGGER fences every graph. Shares are diagnostic; instrumented wall time is not a service throughput result."
+}

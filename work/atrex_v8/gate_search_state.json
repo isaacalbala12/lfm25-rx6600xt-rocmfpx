@@ -1,0 +1,92 @@
+{
+  "attempts": [
+    {
+      "ci_percent": [
+        -1.522781194015399,
+        -0.7160253287871399
+      ],
+      "decision": "REVIEW_LEVERAGE",
+      "delta_percent": -1.152849898456787,
+      "evidence_level": "formal_micro",
+      "fingerprint": "9f64f0da2f8a1450404a7f688b43a2a1a3ee014d600400ca2cff54ee9f46bf4c",
+      "gate": "PASS",
+      "id": "gateup-bk3-exact",
+      "mutation": "combine single-partition and exact-output-grid simplifications in gate/up BK3",
+      "parent": "gateup-selective-bkstep3",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-gate-search/gateup-bk3-exact/result.json"
+    },
+    {
+      "ci_percent": [
+        -1.6998095145654646,
+        -0.43253328810110014
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.7341469019484403,
+      "evidence_level": "formal_micro",
+      "fingerprint": "6d587ca69da1ce71f1a128470a431d0836ee289411967e1c08847c6cc494a833",
+      "gate": "PASS",
+      "id": "gateup-bk3-nobounds",
+      "mutation": "remove output-bound checks from the exact gate/up BK3 pipeline",
+      "parent": "gateup-selective-bkstep3",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-gate-search/gateup-bk3-nobounds/result.json"
+    },
+    {
+      "ci_percent": [
+        -0.6355932203389814,
+        0.593237816787795
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.3240251938690042,
+      "evidence_level": "formal_micro",
+      "fingerprint": "4aaf6e53649ccaa82a13da3d9ff52771506d6812311290bae44e7b36f02ecf2b",
+      "gate": "PASS",
+      "id": "gateup-bk3-nosplit",
+      "mutation": "remove split-K indexing and reduction branches from the exact gate/up BK3 pipeline",
+      "parent": "gateup-selective-bkstep3",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-gate-search/gateup-bk3-nosplit/result.json"
+    },
+    {
+      "ci_percent": [
+        -0.5926678520023709,
+        1.1819694596711061
+      ],
+      "decision": "REJECT_MICRO",
+      "delta_percent": -0.14298350842754104,
+      "evidence_level": "formal_micro",
+      "fingerprint": "0366ed9b63afad67aa1b8396f70540b7e474e4f51fbbc371efe936908d664ce1",
+      "gate": "PASS",
+      "id": "gateup-bk3-k2048",
+      "mutation": "specialize the gate/up BK3 pipeline for one K partition and compile-time K=2048",
+      "parent": "gateup-selective-bkstep3",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-gate-search/gateup-bk3-k2048/result.json"
+    },
+    {
+      "ci_percent": [
+        -1.4473620464124815,
+        -0.42030547850626654
+      ],
+      "decision": "REVIEW_LEVERAGE",
+      "delta_percent": -1.3163317252915085,
+      "evidence_level": "formal_micro",
+      "fingerprint": "6c6c7ee5323ad4f94dc0c6dbaca663c7f5093dd21b654b7994900c218051c67d",
+      "gate": "PASS",
+      "id": "gateup-bk3-shape",
+      "mutation": "specialize gate/up BK3 for the exact M=10752 N=128 K=2048 grid",
+      "parent": "gateup-selective-bkstep3",
+      "reason": "all build, correctness, route and timing gates passed",
+      "result": "work/results/v8-gate-search/gateup-bk3-shape/result.json"
+    }
+  ],
+  "baseline_candidate": "gateup-selective-bkstep3",
+  "best_candidate": "gateup-bk3-shape",
+  "best_delta_percent": -1.3163317252915085,
+  "consecutive_without_improvement": 0,
+  "schema_version": 2,
+  "stop_reason": "candidate queue exhausted",
+  "total_attempts": 5,
+  "valid_candidates": 5
+}

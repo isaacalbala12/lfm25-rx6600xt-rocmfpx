@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "gateup-bk3-exact",
+  "parent": "gateup-selective-bkstep3",
+  "mutation": "combine single-partition and exact-output-grid simplifications in gate/up BK3",
+  "hypothesis": "the independent split-K and output-bound overheads may compose without changing arithmetic or memory values",
+  "expected_mechanism": "remove both split-K indexing/reduction branches and output-bound control work",
+  "affected_resource": "instruction count, address arithmetic, and control flow",
+  "expected_local_gain": "2-4%",
+  "expected_global_leverage": "gate/up is 32.79% of the N128 prefill tile; 2.29% local reaches the 0.75% server gate",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp"
+  ],
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOSPLIT": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOBOUNDS": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_EXACT": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOSPLIT": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOBOUNDS": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_EXACT": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_exact_m"
+}

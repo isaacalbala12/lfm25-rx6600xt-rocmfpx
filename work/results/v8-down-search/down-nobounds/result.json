@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 510.719,
+    "median_us": 510.43,
+    "p5_us": 507.75750000000005,
+    "p95_us": 514.483,
+    "samples_us": [
+      512.57,
+      508.39,
+      512.8,
+      509.18,
+      507.24,
+      509.8,
+      511.63,
+      508.66,
+      515.86,
+      511.06
+    ],
+    "stdev_us": 2.5844210613253833
+  },
+  "candidate_id": "down-nobounds",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_nobounds_m",
+  "control": {
+    "mean_us": 511.735,
+    "median_us": 511.565,
+    "p5_us": 509.78850000000006,
+    "p95_us": 514.2275,
+    "samples_us": [
+      513.65,
+      509.86,
+      513.16,
+      509.73,
+      512.52,
+      510.27,
+      510.61,
+      514.7,
+      509.92,
+      512.93
+    ],
+    "stdev_us": 1.8491754919422807
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "decision": "REJECT_MICRO",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789762391.7988982,
+  "gate": "PASS",
+  "mutation": "specialize exact down M=2048 N=128 to remove output boundary predicates while retaining BM64 BN64 BK32 BK_STEP4",
+  "paired_bootstrap_95ci_percent": [
+    -0.5621877413740872,
+    0.3979078066187691
+  ],
+  "paired_delta_median_percent": -0.24914265615382236,
+  "paired_delta_percent": [
+    -0.24914265615382236,
+    -0.0889636226769186,
+    -0.5621877413740872,
+    -0.4896080209887743,
+    0.3979078066187691
+  ],
+  "pairs": 5,
+  "parent": "down-bm64-bn64-bk32-bk4",
+  "provenance": {
+    "candidate_backend_sha256": "2193adb632855d4fb736347b3edf8bd3529b83a7bf4aadb461b76cd70d240bf4",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "2193adb632855d4fb736347b3edf8bd3529b83a7bf4aadb461b76cd70d240bf4",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=2048,n=128,k=10752",
+    "manifest_sha256": "da05ac8afe96cfaa496d7992b6b8af1eaca4e92d84969a20ae6b20036b715050",
+    "problem": {
+      "family": "down",
+      "k": 10752,
+      "m": 2048,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "ec12c3e8f96cb1424aed467009eeb31d16f50f4719aa9c99d76009ce5c63539f",
+    "source_head": "8ffcc916ec96c24d691caff4ac3da5e8be284a42",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789762341.4066107
+}

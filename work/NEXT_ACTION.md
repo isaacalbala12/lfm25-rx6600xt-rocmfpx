@@ -1,59 +1,89 @@
 # Próxima acción
 
-## Checkpoint actual
+## Estado de producción tras V11
 
-El ganador contemporáneo para 128/64 y 512/128 es ROCmFPX
-`ROCmFPXVulkan0` con FP4_FAST, KV q8, `b512/ub128`, `-np 4 -cb` y
-`LLAMA_SERVER_COMPACT_SLOTS=1`. En 200 peticiones 128/64 C4 da 233,99 tok/s
-frente a 226,65 upstream, sin fallos, y usa ~153 MiB menos de VRAM. El IC95%
-emparejado del delta es +2,77 a +3,84%.
+Dos perfiles, separados por forma de carga. No hay ganador universal.
 
-Para 2048/256 y 7680/512 gana llama.cpp upstream Q4_0. Con b4096/u128,
-2048/256 C4 da 101,66 frente a 99,98 tok/s; la pantalla 7680/512 da 92,40
-frente a 88,58. No declarar un único ganador sin especificar la forma de carga.
+| Perfil | Formato | Batch | Scheduler | Gana en |
+| --- | --- | --- | --- | --- |
+| `production-throughput` | FP4_FAST | `b512/ub128` + slots compactos | chunk128 fijo | 128/64 y 512/128; decode residente en reposo |
+| `production-interactive` | Q4_0 | `b4096/ub128` | chunk128 fijo | 8K mixto con cuatro slots |
 
-## Siguiente experimento de mayor valor
+- Scheduler fijo chunk128 **KEEP**; runtime R0; R1 sigue STAGE.
+- Selective gate/up BK3 sigue **KEEP** en el perfil 8K.
+- Todos los selectores de búsqueda V8--V10 siguen desactivados por defecto.
+- El árbol ROCmFPX anidado queda en `8634463`.
 
-La criba contemporánea de formatos ya está cerrada: FP4_FAST conserva el mejor
-C4; Q2 gana C1 bruto pero queda rechazado por calidad. El siguiente paso es una
-evaluación formal de calidad/perplexity de FP4_FAST frente al checkpoint BF16 y
-Q4_0/Q4_K_M, con un corpus reservado y hashes de cada artefacto.
+## Resultado que cierra V11
 
-Después, perfilar trace-only el prefill largo 2048/256 de ambos finalistas para
-localizar el cruce (matmul/dequant/attention/SSM) y decidir si algún kernel del
-plugin puede corregirse o portarse. Los perfiles 512/128, 2048/256 y la
-pantalla 7680/512 ya están ejecutados. No usar contadores PMC.
+**La elección de formato estaba mal muestreada.** La criba de formatos se hizo
+una sola vez, en 128/64 y 512/128, formas donde el decode domina. Cuando V4--V9
+cambiaron el objetivo a una carga 8K dominada por prefill (83,49% del par
+mixto), nadie volvió a cribar.
 
-## Bloqueos y límites
+En la forma de prefill real:
 
-- No cambiar perfiles de energía, drivers, firmware ni servicios sin permiso.
-- El perfil COMPUTE podría aclarar el cliff u512, pero no está autorizado y no
-  es necesario para la configuración ganadora.
-- La calidad FP4_FAST solo tiene smoke funcional; falta una evaluación formal
-  contra BF16/perplexity antes de un despliegue que exija equivalencia de calidad.
-- No publicar ni hacer push. El árbol ROCmFPX contiene cambios locales que deben
-  revisarse y separarse antes de un commit.
+| Modelo | bpw | pp128 | pp512 | pp2048 | tg128 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ROCmFP4_FAST | 4,25 | 2271,27 | 2459,04 | 2389,32 | **132,74** |
+| Q8_0 | 8,50 | 1907,07 | 2205,66 | 2174,76 | 76,03 |
+| Q4_0 | 4,70 | **2621,13** | **2738,75** | **2668,87** | 123,87 |
 
-## Comando de producción actual
+Y en el A/B de servicio a 8K, tres pares emparejados, Q4_0 contra FP4_FAST:
 
-```bash
-source /home/isaac/vllm-challenge/env.sh
-unset HSA_OVERRIDE_GFX_VERSION
-export LD_PRELOAD=/home/isaac/vllm-challenge/toolchain/lib/libstdc++.so.6:/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1
-export ROCMFPX_PLUGIN_PATH=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-cm1/bin/rocmfpx-vulkan-plugin.so
-export LLAMA_SERVER_COMPACT_SLOTS=1
-/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-cm1/bin/llama-server \
-  -m /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf \
-  -dev ROCmFPXVulkan0 -ngl 99 -fa on -np 4 -cb -c 4096 -b 512 -ub 128 \
-  -ctk q8_0 -ctv q8_0 --no-cache-prompt --cache-reuse 0
-```
+| Métrica | FP4_FAST | Q4_0 | Delta emparejado | IC95% |
+| --- | ---: | ---: | ---: | --- |
+| TTFT de usuario nuevo | 5197,42 ms | 4847,29 ms | **−6,982%** | [−7,056, −6,410] |
+| ITL p95 residente durante prefill | 88,53 ms | 82,97 ms | **−7,164%** | [−8,548, −3,799] |
+| Retención de decode | 15,96% | 17,82% | **+11,612%** | [+11,320, +12,138] |
+| Agregado residente sin prefill | 238,94 tok/s | 229,48 tok/s | −3,96% | — |
 
-Commit: no creado. El cambio de scheduler se aisló correctamente, pero Git
-rechazó el commit porque el repositorio no tiene `user.name`/`user.email`.
-No se inventó ni cambió la identidad del usuario; tampoco quedó nada staged.
-Cuando exista identidad, el commit aislado se obtiene con:
+La hipótesis que motivó la criba (que Q8_0, sin desempaquetado FP4, sería más
+rápido en prefill) queda **refutada**: Q8_0 es 16,0% más lento en pp128. El
+formato de más bits no compra nada aquí. Lo que sí aparece es que el ranking de
+formatos se invierte con la forma.
 
-```bash
-git -C work/sources/ROCmFPX add -- tools/server/server-context.cpp
-git -C work/sources/ROCmFPX commit -m "server: add opt-in compact slot scheduling"
-```
+El objetivo de interactividad **sigue sin alcanzarse**: ITL p95 82,97 ms contra
+≤70 ms, un 18,5% por encima. TTFT sí queda cómodo (4847 ms contra 5500 ms).
+
+## Control de regresión que faltaba
+
+La métrica primaria del README (128/64, C=4) no se había vuelto a medir desde
+V2, pese a que V3 detectó 229,27 frente a los 233,99 publicados y lo dejó como
+"estado de artefacto distinto" sin resolverlo. Medida ahora sobre el binario de
+producción actual:
+
+| Concurrency | V2 publicado | V11 medido | Delta |
+| ---: | ---: | ---: | ---: |
+| 1 | 108,01 | 107,96 | −0,04% |
+| 2 | 169,12 | 167,72 | −0,83% |
+| 3 | 207,71 | 206,28 | −0,69% |
+| 4 | 233,99 | 230,82 | −1,36% |
+
+Las cuatro celdas son `VALID`. El titular publicado aguanta dentro del 1,4%. El
+residuo es el coste conjunto de todo lo que cambió después de V2, medido en la
+propia métrica que el repositorio anuncia, y no se puede atribuir a un solo
+cambio desde esta medida.
+
+## Siguiente experimento exacto
+
+1. **Extender la criba de formatos a todas las formas** ya registradas en
+   `BASELINES.json`: 512/128, 2048/256, 7680/512, con y sin slots compactos. La
+   tabla de V2 sugiere que Q4_0 ya ganaba en 2048/256 y 7680/512; hay que
+   confirmarlo con el arnés actual y decidir el formato por forma, no una vez.
+2. **Re-medir la métrica primaria 128/64 en cada promoción futura.** Añadirla
+   como puerta obligatoria junto a las de 8K: ningún cambio de kernel se
+   promueve ya con evidencia de un solo perfil.
+3. **Evaluación formal de calidad** de FP4_FAST y Q4_0 contra el checkpoint
+   BF16 con `llama-perplexity`, que ya está construido. Sigue pendiente desde el
+   17 de septiembre y es lo único que bloquea una afirmación de despliegue.
+
+No reabrir: familia de layouts FP4 (padding/planar/group4), BK_STEP, BM32,
+B-first, Q8-group4, bpair, barridos de chunk o target, EWMA 65/68. V10 cerró el
+layout y V11 explica por qué no podía pagar: el cuello no está ahí.
+
+## Límites
+
+- No cambiar perfiles de energía, drivers, firmware ni servicios.
+- No usar contadores PMC.
+- Las medidas de V11 son de servicio sin instrumentar salvo donde se indique.

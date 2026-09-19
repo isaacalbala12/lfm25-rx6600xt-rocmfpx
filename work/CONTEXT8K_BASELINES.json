@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "status": "capacity_validated_baselines_pending",
+  "context": {
+    "global_configured": 34816,
+    "per_slot_reported": [8704, 8704, 8704, 8704],
+    "minimum_required_per_slot": 8192,
+    "profile_prompt_tokens": 8192,
+    "profile_output_headroom": 512,
+    "capacity_evidence": "work/results/v4-context8k-capacity-fpx"
+  },
+  "weights": {
+    "rocmfp4_fast": {
+      "bytes": 1442031616,
+      "tensor_elements": 2697198592,
+      "artifact_bpw": 4.277124036108054,
+      "sha256": "d56f602eb9bcad2cafbe2a52cef2fa14ba09e6290679a2aee164db22815f0933",
+      "eligible": true
+    },
+    "q4_0": {
+      "bytes": 1593894912,
+      "tensor_elements": 2697198592,
+      "artifact_bpw": 4.727556707845115,
+      "sha256": "a71d1b80e0f5914e899d366a0ef82c8f1ccecd40f1f4dc1329e1c8eeb7357fd7",
+      "eligible": true
+    }
+  },
+  "resident_decode": {
+    "protocol": "prime each slot, require >=8188 cached tokens, then measure 256 output tokens",
+    "rocmfpx_vulkan_fp4_fast_q8": {
+      "result_dir": "work/results/v4-profile-a-fpx-q8",
+      "status": "VALID",
+      "median_tok_s": {"c1": 113.1328068914737, "c2": 184.86494251126862, "c3": 225.5551361910709, "c4": 265.79069411578814},
+      "scaling": {"c2_over_c1": 1.6340524697544743, "c3_over_c1": 1.9937199684919151, "c4_over_c1": 2.349368864954941},
+      "parallel_efficiency_c4": 0.5873422162387353,
+      "c4_per_user_p5_tok_s": 65.11336610392732,
+      "c4_per_user_p50_tok_s": 66.51533468120809,
+      "c4_itl_p95_ms": 15.33303649989648,
+      "c4_ttft_p95_ms": 285.82573695034625,
+      "global_vram_peak_bytes": 2207555584
+    },
+    "upstream_vulkan_q4_0_q8": {
+      "result_dir": "work/results/v4-profile-a-upstream-q40-q8",
+      "status": "VALID",
+      "median_tok_s": {"c1": 109.48123057887283, "c2": 179.49533649311383, "c3": 220.6335881834151, "c4": 250.7862862144049},
+      "scaling": {"c2_over_c1": 1.6395078457197392, "c3_over_c1": 2.0152640504389066, "c4_over_c1": 2.290678364578051},
+      "parallel_efficiency_c4": 0.5726695911445128,
+      "c4_per_user_p5_tok_s": 62.17837402092978,
+      "c4_per_user_p50_tok_s": 62.739514494030175,
+      "c4_itl_p95_ms": 16.026857499764446,
+      "c4_ttft_p95_ms": 272.6761732000796,
+      "global_vram_peak_bytes": 2401218560
+    },
+    "fpx_c4_delta_percent_vs_upstream": 5.982946253690284
+  },
+  "prefill_c4": {
+    "protocol": "four simultaneous 8192-token uncached prompts plus 256 output tokens",
+    "rocmfpx_vulkan_fp4_fast_q8": {
+      "result_dir": "work/results/v4-profile-b-fpx-q8",
+      "status": "VALID",
+      "aggregate_output_tok_s": 48.81791206696078,
+      "aggregate_input_tok_s": 1562.173186142745,
+      "wall_s": 20.975907338999605,
+      "ttft_p95_ms": 17371.920051199777,
+      "e2e_p95_ms": 20972.647008449665,
+      "global_vram_peak_bytes": 2207715328
+    },
+    "upstream_vulkan_q4_0_q8": {
+      "result_dir": "work/results/v4-profile-b-upstream-q40-q8",
+      "status": "VALID",
+      "aggregate_output_tok_s": 52.117160070872316,
+      "aggregate_input_tok_s": 1667.7491222679141,
+      "wall_s": 19.648039121999318,
+      "ttft_p95_ms": 15818.225229049904,
+      "e2e_p95_ms": 19644.532559699383,
+      "global_vram_peak_bytes": 2401402880
+    },
+    "fpx_output_delta_percent_vs_upstream": -6.330438870898538,
+    "decision": "upstream wins simultaneous long-prefill; FPX remains resident-decode winner"
+  },
+  "interference": {
+    "protocol": "prime resident 8192-token contexts, measure 768-token decode control, then repeat decode while a fresh slot prefills an uncached 8192-token prompt",
+    "result_dir": "work/results/v4-profile-c-fpx-q8",
+    "status": "VALID",
+    "rocmfpx_vulkan_fp4_fast_q8": {
+      "one_decode_plus_one_prefill": {
+        "baseline_aggregate_event_tok_s": 115.29085694859144,
+        "during_prefill_aggregate_event_tok_s": 1.1647921244963617,
+        "retention": 0.010103074565711193,
+        "decoder_itl_p95_ms": 2144.9533704998885,
+        "prefill_ttft_ms": 4292.61144100019
+      },
+      "two_decode_plus_one_prefill": {
+        "baseline_aggregate_event_tok_s": 189.78069537545502,
+        "during_prefill_aggregate_event_tok_s": 2.326609367117509,
+        "retention": 0.012259462757867086,
+        "decoder_itl_p95_ms": 2184.648791149766,
+        "prefill_ttft_ms": 4298.100119999617
+      },
+      "three_decode_plus_one_prefill": {
+        "baseline_aggregate_event_tok_s": 239.97532597903916,
+        "during_prefill_aggregate_event_tok_s": 3.4846538158597182,
+        "retention": 0.014520883768542471,
+        "decoder_itl_p95_ms": 2188.54251245034,
+        "prefill_ttft_ms": 4304.588287000115
+      }
+    },
+    "chunk128": {
+      "result_dir": "work/results/v4-profile-c-fpx-q8-chunk128",
+      "status": "VALID",
+      "one_decode_plus_one_prefill": {
+        "retention": 0.11278494717097064,
+        "decoder_itl_p95_ms": 85.23776479996741,
+        "prefill_ttft_ms": 5061.951038999723
+      },
+      "two_decode_plus_one_prefill": {
+        "retention": 0.13353283315553252,
+        "decoder_itl_p95_ms": 87.7217320503405,
+        "prefill_ttft_ms": 5158.565488000022
+      },
+      "three_decode_plus_one_prefill": {
+        "retention": 0.15634545409786973,
+        "decoder_itl_p95_ms": 89.60389269977895,
+        "prefill_ttft_ms": 5271.760454999821
+      },
+      "paired_confirmation": {
+        "result_dir": "work/results/v4-profile-c-chunk128-paired10-r2",
+        "valid_pairs": 10,
+        "excluded_pairs": 0,
+        "three_decode_plus_one_prefill": {
+          "control_retention_median": 0.014549313049816187,
+          "chunk128_retention_median": 0.1570166969180176,
+          "retention_paired_delta_percent_median": 977.758148970919,
+          "retention_paired_delta_percent_bootstrap_95ci": [973.0929935382026, 984.93049641781],
+          "control_itl_p95_ms_median": 2188.737029449976,
+          "chunk128_itl_p95_ms_median": 89.2261256501115,
+          "itl_p95_paired_delta_percent_median": -95.92280340974341,
+          "itl_p95_paired_delta_percent_bootstrap_95ci": [-95.93206408277655, -95.89995742492547],
+          "control_prefill_ttft_ms_median": 4308.793108999453,
+          "chunk128_prefill_ttft_ms_median": 5268.14332900085,
+          "prefill_ttft_paired_delta_percent_median": 22.44274281886642,
+          "prefill_ttft_paired_delta_percent_bootstrap_95ci": [21.991860509625617, 23.145593453311598]
+        }
+      },
+      "controlled_output_equivalence": {
+        "result_dir": "work/results/v4-profile-c-chunk128-output-equivalence",
+        "corresponding_outputs": 10,
+        "identical_outputs": 10,
+        "resident_decode_outputs": 6,
+        "resident_decode_tokens_each": 768,
+        "all_retokenized_ids_equal": true,
+        "scope": "greedy controlled_fixed_output; not service-EOS quality or direct logits equivalence"
+      },
+      "decision": "KEEP engineering; production default pending deterministic equivalence and reserved quality validation"
+    },
+    "chunk256": {
+      "result_dir": "work/results/v4-profile-c-fpx-q8-chunk256",
+      "status": "VALID",
+      "one_decode_plus_one_prefill": {
+        "retention": 0.06756386196372803,
+        "decoder_itl_p95_ms": 156.2042480000855,
+        "prefill_ttft_ms": 4617.566461999559
+      },
+      "two_decode_plus_one_prefill": {
+        "retention": 0.07758215155568658,
+        "decoder_itl_p95_ms": 158.98413474978952,
+        "prefill_ttft_ms": 4699.307363000116
+      },
+      "three_decode_plus_one_prefill": {
+        "retention": 0.09195362387022385,
+        "decoder_itl_p95_ms": 161.10004479974123,
+        "prefill_ttft_ms": 4767.349063999973
+      },
+      "decision": "REJECT versus chunk128 for interactive service"
+    },
+    "chunk128_resident_c4_guardrail": {
+      "result_dir": "work/results/v4-profile-a-fpx-q8-chunk128",
+      "status": "VALID",
+      "aggregate_output_tok_s_repetitions": [264.0123740557889, 263.3158275940062, 274.02076363380354],
+      "median_aggregate_output_tok_s": 264.0123740557889,
+      "control_median_aggregate_output_tok_s": 265.79069411578814,
+      "delta_percent": -0.6690678414890461
+    },
+    "chunk128_simultaneous_prefill_c4_guardrail": {
+      "result_dir": "work/results/v4-profile-b-fpx-q8-chunk128",
+      "status": "VALID",
+      "aggregate_output_tok_s_repetitions": [48.63206213500409, 48.029849688545035, 48.12509124060858],
+      "median_aggregate_output_tok_s": 48.12509124060858,
+      "control_median_aggregate_output_tok_s": 48.81791206696078,
+      "aggregate_delta_percent": -1.4191938921965686,
+      "ttft_p95_ms": 17686.550157499914,
+      "control_ttft_p95_ms": 17371.920051199777,
+      "ttft_delta_percent": 1.8111418045491545,
+      "wall_s": 21.277881736999916,
+      "control_wall_s": 20.975907338999605,
+      "wall_delta_percent": 1.4396249617238954
+    },
+    "excluded_setup_attempts": [
+      "work/results/v4-profile-a-fpx-q8-chunk128-invalid-cache-off",
+      "work/results/v4-profile-a-fpx-q8-chunk128-invalid-slot-auto"
+    ],
+    "decision": "unlimited scheduling rejected; chunk256 rejected versus chunk128; chunk128 KEEP engineering after 10 valid pairs, production pending equivalence and quality"
+  },
+  "decode_phase_profile": {
+    "protocol": "paired internal Vulkan timestamps; final seven resident decode graphs only; profiler wall throughput excluded",
+    "rocmfpx_checkpoint": "c800bd8360f40aa6044173578e9fbed055e74951",
+    "c1": {
+      "result_dir": "work/results/v4-phase-resident8k-c1-shapes",
+      "quantize_q8_1_gpu_ns": 5055840,
+      "fp4_fast_mmv_gpu_ns": 72456720,
+      "quantize_share": 0.06522607432911517
+    },
+    "c4": {
+      "result_dir": "work/results/v4-phase-resident8k-c4-shapes",
+      "quantize_q8_1_gpu_ns": 1202800,
+      "fp4_fast_mmv_gpu_ns": 57660600,
+      "quantize_share": 0.02043375000424712,
+      "dominant_mmv_shapes_gpu_ns": {
+        "m10752_k2048_n4": 22833360,
+        "m2048_k10752_n4": 12153360,
+        "m6144_k2048_n1": 11945760
+      }
+    },
+    "gate_up_reuse": "420 MMV dispatches consume 210 Q8 preparations; existing graph-local reuse confirmed",
+    "decision": "KEEP profile evidence; target shape-specific MMV and do not duplicate Q8 reuse"
+  },
+  "dynamic_service": {}
+}

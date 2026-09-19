@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "down-notail-nosplit",
+  "parent": "down-notail",
+  "mutation": "compose down no-tail with one-K-partition specialization",
+  "hypothesis": "removing generic split-K setup may only matter after the repeated tail-control path is removed",
+  "expected_mechanism": "shorten K-loop control and its setup together",
+  "affected_resource": "control-flow and integer address setup",
+  "expected_local_gain": "1-3%",
+  "expected_global_leverage": "0.23-0.70%",
+  "control_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL_NOSPLIT": "0"},
+  "candidate_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL_NOSPLIT": "1"},
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_notail_nosplit_m"
+}

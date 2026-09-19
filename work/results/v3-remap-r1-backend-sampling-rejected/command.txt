@@ -1,0 +1,10 @@
+policy=r1
+lowest_slot_first=1
+dense_sequences=1
+mode=forced
+backend_sampling=on
+server=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/llama-server
+model=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf
+tokenizer=/home/isaac/vllm-challenge/models/LFM2.5-2.6B
+port=18164
+server_args=-ngl 99 -fa on -np 4 -cb --no-cache-prompt --cache-reuse 0 -b 4096 -ub 128 -ctk q8_0 -ctv q8_0

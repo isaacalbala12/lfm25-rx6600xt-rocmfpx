@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 412.222,
+    "median_us": 412.72,
+    "p5_us": 409.7950000000001,
+    "p95_us": 414.033,
+    "samples_us": [
+      412.39,
+      409.48,
+      413.05,
+      413.89,
+      414.15,
+      410.18,
+      413.41,
+      410.68,
+      413.63,
+      411.36
+    ],
+    "stdev_us": 1.680481412505878
+  },
+  "candidate_id": "gateup-bk3-k2048",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_k2048_m",
+  "control": {
+    "mean_us": 411.971,
+    "median_us": 412.385,
+    "p5_us": 408.615,
+    "p95_us": 414.687,
+    "samples_us": [
+      413.51,
+      413.26,
+      408.89,
+      408.39,
+      415.65,
+      411.4,
+      411.91,
+      413.36,
+      410.48,
+      412.86
+    ],
+    "stdev_us": 2.2398831814777007
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "decision": "REJECT_MICRO",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789764654.7264652,
+  "gate": "PASS",
+  "mutation": "specialize the gate/up BK3 pipeline for one K partition and compile-time K=2048",
+  "paired_bootstrap_95ci_percent": [
+    -0.5926678520023709,
+    1.1819694596711061
+  ],
+  "paired_delta_median_percent": -0.14298350842754104,
+  "paired_delta_percent": [
+    -0.5926678520023709,
+    1.1819694596711061,
+    -0.32887975334018327,
+    -0.14298350842754104,
+    0.20040323560133189
+  ],
+  "pairs": 5,
+  "parent": "gateup-selective-bkstep3",
+  "provenance": {
+    "candidate_backend_sha256": "3fd66d51fba2d2f1e4ae0e2957d119a05df96ec7022db5364bb6907652bd68dd",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "3fd66d51fba2d2f1e4ae0e2957d119a05df96ec7022db5364bb6907652bd68dd",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048",
+    "manifest_sha256": "d39f8813610c393511eedc32d2508588fb779c156867ac258246925b35d907f2",
+    "problem": {
+      "family": "gateup",
+      "k": 2048,
+      "m": 10752,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "2aa481b40f70c17920dcf4ea235a18b6ad7dddfb0064052d634def0acca4583b",
+    "source_head": "91655b27a2b1eaf3d1a1ffcaf294e68d035e5437",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789764603.9211755
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "gateup-selective-bkstep3",
+  "parent": "gateup-bkstep3",
+  "mutation": "compile BK_STEP=3 as an opt-in gate/up-only pipeline and preserve down BK_STEP=4",
+  "patch": "patches/v6-auto/gateup-selective-bkstep3.patch",
+  "control_env": {},
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m"
+}

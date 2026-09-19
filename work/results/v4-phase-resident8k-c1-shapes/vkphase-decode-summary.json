@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "source": "work/results/v4-phase-resident8k-c1-shapes/server.log",
+  "total_graphs_in_log": 75,
+  "selected_tail_graphs": 7,
+  "pipelines": {
+    "mul_mat_vec_rocmfp4_fast_q8_1_f32": {
+      "calls": 1169,
+      "total_gpu_ns": 72456720,
+      "dispatch_gpu_ns_p50": 61800.0,
+      "dispatch_gpu_ns_p95": 104400.0,
+      "per_graph_gpu_ns_p50": 10276120,
+      "elements": {
+        "10752x1x1": 420,
+        "128000x1x1": 7,
+        "2048x1x1": 476,
+        "512x1x1": 112,
+        "6144x1x1": 154
+      },
+      "shapes": {
+        "m=10752,k=2048,n=1": {
+          "calls": 420,
+          "total_gpu_ns": 36175680
+        },
+        "m=128000,k=2048,n=1": {
+          "calls": 7,
+          "total_gpu_ns": 4056480
+        },
+        "m=2048,k=10752,n=1": {
+          "calls": 210,
+          "total_gpu_ns": 17533840
+        },
+        "m=2048,k=2048,n=1": {
+          "calls": 266,
+          "total_gpu_ns": 6279360
+        },
+        "m=512,k=2048,n=1": {
+          "calls": 112,
+          "total_gpu_ns": 98600
+        },
+        "m=6144,k=2048,n=1": {
+          "calls": 154,
+          "total_gpu_ns": 8312760
+        }
+      }
+    },
+    "quantize_q8_1_x4": {
+      "calls": 847,
+      "total_gpu_ns": 5055840,
+      "dispatch_gpu_ns_p50": 7640.0,
+      "dispatch_gpu_ns_p95": 7880.0,
+      "per_graph_gpu_ns_p50": 721760,
+      "elements": {
+        "10752x1x1": 210,
+        "2048x1x1": 637
+      },
+      "shapes": {
+        "m=10752,k=2048,n=1": {
+          "calls": 210,
+          "total_gpu_ns": 1268720
+        },
+        "m=128000,k=2048,n=1": {
+          "calls": 7,
+          "total_gpu_ns": 13800
+        },
+        "m=2048,k=10752,n=1": {
+          "calls": 210,
+          "total_gpu_ns": 1245800
+        },
+        "m=2048,k=2048,n=1": {
+          "calls": 266,
+          "total_gpu_ns": 1594360
+        },
+        "m=6144,k=2048,n=1": {
+          "calls": 154,
+          "total_gpu_ns": 933160
+        }
+      }
+    }
+  },
+  "quantize_plus_mmv_gpu_ns": 77512560,
+  "quantize_share_of_quantize_plus_mmv": 0.06522607432911517,
+  "per_graph": [
+    {
+      "absolute_graph_index": 69,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 807560,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 11117400
+      }
+    },
+    {
+      "absolute_graph_index": 70,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 653600,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 9887560
+      }
+    },
+    {
+      "absolute_graph_index": 71,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 675160,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 9980800
+      }
+    },
+    {
+      "absolute_graph_index": 72,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 721760,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 10276120
+      }
+    },
+    {
+      "absolute_graph_index": 73,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 662960,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 9856080
+      }
+    },
+    {
+      "absolute_graph_index": 74,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 792640,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 10830880
+      }
+    },
+    {
+      "absolute_graph_index": 75,
+      "calls": {
+        "quantize_q8_1_x4": 121,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 167
+      },
+      "gpu_ns": {
+        "quantize_q8_1_x4": 742160,
+        "mul_mat_vec_rocmfp4_fast_q8_1_f32": 10507880
+      }
+    }
+  ],
+  "warning": "profiling-only fenced execution; do not use wall throughput as service throughput"
+}

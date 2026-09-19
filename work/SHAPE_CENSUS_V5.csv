@@ -1,0 +1,8 @@
+profile,backend,http_c,effective_context,operation,m,k,n_matrix,n_batch_planes,calls,wall_ms_median,wall_ms_p95,pipeline,evidence
+INTERFERENCE_CHUNK128,ROCmFPXVulkan0,4,8192,prompt_plus_decode_batch,,,,,63,79.961,87.554,llama_decode mixed batch,work/results/v5-chunk128-light-timeline/server.log
+INTERFERENCE_CHUNK128,ROCmFPXVulkan0,3,8192,decode_only_batch,,,,,1469,11.561,12.111,llama_decode decode batch,work/results/v5-chunk128-light-timeline/server.log
+DECODE8K,ROCmFPXVulkan0,4,8192,shortconv_in_proj,6144,2048,1,4,154,,,mul_mat_vec_rocmfp4_fast_q8_1_f32,work/results/v4-phase-resident8k-c4-shapes/vkphase-decode-summary.json
+PREFILL8K_FENCED,ROCmFPXVulkan0,4,8192,gate_up,10752,2048,128,1,58,23.500,,matmul_rocmfp4_fast_q8_1,work/results/v5-prefill8k-operation-profile/server.log
+PREFILL8K_FENCED,ROCmFPXVulkan0,4,8192,down,2048,10752,128,1,29,16.684,,matmul_rocmfp4_fast_q8_1,work/results/v5-prefill8k-operation-profile/server.log
+PREFILL8K_FENCED,ROCmFPXVulkan0,4,8192,flash_attention,,,,,8,16.566,,flash_attn_ext,work/results/v5-prefill8k-operation-profile/server.log
+PREFILL8K_FENCED,ROCmFPXVulkan0,4,8192,shortconv_in_proj,6144,2048,128,1,22,5.390,,matmul_rocmfp4_fast_q8_1,work/results/v5-prefill8k-operation-profile/server.log

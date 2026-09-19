@@ -1,0 +1,93 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+0.00.075.433 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.075.908 W srv  llama_server: -----------------
+0.00.075.911 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.075.911 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.075.912 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.075.912 W srv  llama_server: -----------------
+0.00.077.194 I srv    load_model: loading model 'work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf'
+0.02.039.215 I cmn          init: llama threadpool init, n_threads = 4
+0.02.135.834 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 131072, kv_unified = 'false'
+0.02.135.890 W srv    load_model: LLAMA_SERVER_COMPACT_SLOTS = 1
+0.02.140.763 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.02.140.798 I srv  llama_server: model loaded
+0.02.140.803 I srv  llama_server: listening on http://127.0.0.1:18144
+0.17.190.245 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.17.190.282 I slot launch_slot_: id  0 | task 1 | processing task, is_child = 0
+0.17.831.497 I slot print_timing: id  0 | task 1 | prompt eval time =     101.49 ms /   128 tokens (    0.79 ms per token,  1261.20 tokens per second)
+0.17.831.501 I slot print_timing: id  0 | task 1 |        eval time =     539.69 ms /    64 tokens (    8.57 ms per token,   116.73 tokens per second)
+0.17.831.502 I slot print_timing: id  0 | task 1 |       total time =     641.18 ms /   192 tokens
+0.17.831.507 I slot print_timing: id  0 | task 1 |    graphs reused =         63
+0.17.831.544 I slot      release: id  0 | task 1 | stop processing: n_tokens = 191, truncated = 0
+0.17.838.632 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.17.838.664 I slot launch_slot_: id  0 | task 67 | processing task, is_child = 0
+0.17.903.229 I slot get_availabl: id  3 | task -1 | selected slot by id (3)
+0.17.903.399 W srv  assign_compa: SEQCOMPACT event=assign logical=3 physical=1 swapped_logical=1 swapped_physical=3
+0.17.903.424 I slot launch_slot_: id  3 | task 69 | processing task, is_child = 0
+0.17.903.426 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.17.903.579 W srv  assign_compa: SEQCOMPACT event=assign logical=1 physical=2 swapped_logical=2 swapped_physical=3
+0.17.903.589 I slot launch_slot_: id  1 | task 70 | processing task, is_child = 0
+0.18.846.557 I slot print_timing: id  0 | task 67 | prompt eval time =     244.94 ms /   128 tokens (    1.91 ms per token,   522.57 tokens per second)
+0.18.846.567 I slot print_timing: id  0 | task 67 |        eval time =     762.91 ms /    64 tokens (   12.11 ms per token,    82.58 tokens per second)
+0.18.846.570 I slot print_timing: id  0 | task 67 |       total time =    1007.85 ms /   192 tokens
+0.18.846.572 I slot print_timing: id  0 | task 67 |    graphs reused =        124
+0.18.846.653 I slot      release: id  0 | task 67 | stop processing: n_tokens = 191, truncated = 0
+0.18.849.402 W srv  compact_acti: SEQCOMPACT event=move logical=1 physical_from=2 physical_to=0 freed_logical=0
+0.18.919.808 I slot print_timing: id  1 | task 70 | prompt eval time =     225.01 ms /   128 tokens (    1.76 ms per token,   568.85 tokens per second)
+0.18.919.814 I slot print_timing: id  1 | task 70 |        eval time =     780.81 ms /    64 tokens (   12.39 ms per token,    80.69 tokens per second)
+0.18.919.816 I slot print_timing: id  1 | task 70 |       total time =    1005.82 ms /   192 tokens
+0.18.919.818 I slot print_timing: id  1 | task 70 |    graphs reused =        124
+0.18.919.867 I slot      release: id  1 | task 70 | stop processing: n_tokens = 191, truncated = 0
+0.18.921.357 W srv  compact_acti: SEQCOMPACT event=move logical=3 physical_from=1 physical_to=0 freed_logical=1
+0.18.921.642 I slot print_timing: id  3 | task 69 | prompt eval time =     227.33 ms /   128 tokens (    1.78 ms per token,   563.05 tokens per second)
+0.18.921.645 I slot print_timing: id  3 | task 69 |        eval time =     780.49 ms /    64 tokens (   12.39 ms per token,    80.72 tokens per second)
+0.18.921.646 I slot print_timing: id  3 | task 69 |       total time =    1007.82 ms /   192 tokens
+0.18.921.648 I slot print_timing: id  3 | task 69 |    graphs reused =        124
+0.18.921.685 I slot      release: id  3 | task 69 | stop processing: n_tokens = 191, truncated = 0
+0.18.925.147 I slot get_availabl: id  3 | task -1 | selected slot by id (3)
+0.18.925.175 I slot launch_slot_: id  3 | task 136 | processing task, is_child = 0
+0.19.194.875 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.19.194.909 I slot launch_slot_: id  1 | task 137 | processing task, is_child = 0
+0.19.194.911 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.19.194.922 I slot launch_slot_: id  0 | task 139 | processing task, is_child = 0
+0.20.903.696 I slot print_timing: id  3 | task 136 | prompt eval time =     894.85 ms /   128 tokens (    6.99 ms per token,   143.04 tokens per second)
+0.20.903.705 I slot print_timing: id  3 | task 136 |        eval time =    1083.65 ms /    64 tokens (   17.20 ms per token,    58.14 tokens per second)
+0.20.903.706 I slot print_timing: id  3 | task 136 |       total time =    1978.50 ms /   192 tokens
+0.20.903.708 I slot print_timing: id  3 | task 136 |    graphs reused =        185
+0.20.903.748 I slot      release: id  3 | task 136 | stop processing: n_tokens = 191, truncated = 0
+0.20.905.576 W srv  compact_acti: SEQCOMPACT event=move logical=0 physical_from=2 physical_to=0 freed_logical=3
+0.20.957.048 I slot print_timing: id  0 | task 139 | prompt eval time =     627.39 ms /   128 tokens (    4.90 ms per token,   204.02 tokens per second)
+0.20.957.053 I slot print_timing: id  0 | task 139 |        eval time =    1090.10 ms /    64 tokens (   17.30 ms per token,    57.79 tokens per second)
+0.20.957.054 I slot print_timing: id  0 | task 139 |       total time =    1717.50 ms /   192 tokens
+0.20.957.055 I slot print_timing: id  0 | task 139 |    graphs reused =        185
+0.20.957.096 I slot      release: id  0 | task 139 | stop processing: n_tokens = 191, truncated = 0
+0.20.958.743 W srv  compact_acti: SEQCOMPACT event=move logical=1 physical_from=1 physical_to=0 freed_logical=0
+0.20.959.190 E slot      iterate: id  1 | task 137 | got exception: vector::_M_range_check: __n (which is 18446744073709551615) >= this->size() (which is 128000)
+0.20.959.197 E srv    send_error: task id = 137, error: got exception: vector::_M_range_check: __n (which is 18446744073709551615) >= this->size() (which is 128000)
+0.20.959.203 I slot      release: id  1 | task 137 | stop processing: n_tokens = 191, truncated = 0
+0.20.959.260 W srv          stop: cancel task, id_task = 137
+0.20.965.488 I slot get_availabl: id  3 | task -1 | selected slot by id (3)
+0.20.965.708 W srv  assign_compa: SEQCOMPACT event=assign logical=3 physical=0 swapped_logical=1 swapped_physical=2
+0.20.965.749 I slot launch_slot_: id  3 | task 206 | processing task, is_child = 0
+0.20.965.754 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.20.965.958 W srv  assign_compa: SEQCOMPACT event=assign logical=1 physical=1 swapped_logical=0 swapped_physical=2
+0.20.965.980 I slot launch_slot_: id  1 | task 207 | processing task, is_child = 0
+0.20.965.983 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.20.965.998 I slot launch_slot_: id  0 | task 208 | processing task, is_child = 0
+0.21.965.910 I slot print_timing: id  0 | task 208 | prompt eval time =     288.84 ms /   128 tokens (    2.26 ms per token,   443.16 tokens per second)
+0.21.965.919 I slot print_timing: id  0 | task 208 |        eval time =     710.83 ms /    64 tokens (   11.28 ms per token,    88.63 tokens per second)
+0.21.965.919 I slot print_timing: id  0 | task 208 |       total time =     999.67 ms /   192 tokens
+0.21.965.920 I slot print_timing: id  0 | task 208 |    graphs reused =        247
+0.21.965.948 I slot      release: id  0 | task 208 | stop processing: n_tokens = 191, truncated = 0
+0.21.966.433 I slot print_timing: id  1 | task 207 | prompt eval time =     289.62 ms /   128 tokens (    2.26 ms per token,   441.95 tokens per second)
+0.21.966.437 I slot print_timing: id  1 | task 207 |        eval time =     710.68 ms /    64 tokens (   11.28 ms per token,    88.65 tokens per second)
+0.21.966.438 I slot print_timing: id  1 | task 207 |       total time =    1000.30 ms /   192 tokens
+0.21.966.439 I slot print_timing: id  1 | task 207 |    graphs reused =        247
+0.21.966.462 I slot      release: id  1 | task 207 | stop processing: n_tokens = 191, truncated = 0
+0.21.966.936 I slot print_timing: id  3 | task 206 | prompt eval time =     290.45 ms /   128 tokens (    2.27 ms per token,   440.70 tokens per second)
+0.21.966.941 I slot print_timing: id  3 | task 206 |        eval time =     710.47 ms /    64 tokens (   11.28 ms per token,    88.67 tokens per second)
+0.21.966.942 I slot print_timing: id  3 | task 206 |       total time =    1000.92 ms /   192 tokens
+0.21.966.943 I slot print_timing: id  3 | task 206 |    graphs reused =        247
+0.21.966.963 I slot      release: id  3 | task 206 | stop processing: n_tokens = 191, truncated = 0
+0.23.017.773 I srv    operator(): operator(): cleaning up before exit...

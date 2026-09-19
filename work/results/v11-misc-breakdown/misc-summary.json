@@ -1,0 +1,2233 @@
+{
+  "schema_version": 1,
+  "source": "reused GGML_VK_PERF_LOGGER capture; no new profile run",
+  "valid_batches": 63,
+  "graphs_per_batch": 2,
+  "parse_error_us": 3.930000000018481,
+  "profiled_gpu_total_us": 4967892.33,
+  "instrumented_wall_ms": {
+    "median": 91.501,
+    "p95": 111.5885
+  },
+  "by_graph": [
+    {
+      "graph_index": 0,
+      "total_us": 820295.1,
+      "share_of_pair": 0.1651193394523508,
+      "families": {
+        "down": {
+          "total_us": 133091.87000000002,
+          "share_within_graph": 0.16224876876626476,
+          "share_of_pair": 0.026790409525642843
+        },
+        "flash_attention": {
+          "total_us": 141350.16000000003,
+          "share_within_graph": 0.17231623107342717,
+          "share_of_pair": 0.02845274225176294
+        },
+        "gate_up": {
+          "total_us": 256988.44,
+          "share_within_graph": 0.31328779118636696,
+          "share_of_pair": 0.05172987313917892
+        },
+        "misc": {
+          "total_us": 89383.15000000002,
+          "share_within_graph": 0.10896462748588895,
+          "share_of_pair": 0.017992167314141452
+        },
+        "projection_2048": {
+          "total_us": 70715.20000000001,
+          "share_within_graph": 0.08620702476462436,
+          "share_of_pair": 0.014234446985287221
+        },
+        "short_conv": {
+          "total_us": 128766.27999999998,
+          "share_within_graph": 0.15697555672342794,
+          "share_of_pair": 0.025919700236337447
+        }
+      },
+      "groups": [
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=4 k=2048",
+          "total_us": 250255.76,
+          "calls": 1827,
+          "per_call_us": 136.97633278598795,
+          "share_within_graph": 0.3050801595669656,
+          "share_of_pair": 0.05037463442771514,
+          "ops": [
+            "MUL_MAT_VEC",
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=10752",
+          "total_us": 128742.07000000002,
+          "calls": 1815,
+          "per_call_us": 70.9322699724518,
+          "share_within_graph": 0.15694604295454162,
+          "share_of_pair": 0.02591482694231419,
+          "ops": [
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,1,4),  q(64,1,32,4),  k(64,8448,8,4),  v(64,8448,8,4),  m(8448,1,1,4), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 124104.80000000003,
+          "calls": 434,
+          "per_call_us": 285.9557603686637,
+          "share_within_graph": 0.15129287009028827,
+          "share_of_pair": 0.024981378773158723,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,1,32,4)",
+            "k(64,8448,8,4)",
+            "v(64,8448,8,4)",
+            "m(8448,1,1,4)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=1 k=2048 batch=4, CPY",
+          "total_us": 72018.04,
+          "calls": 756,
+          "per_call_us": 95.26195767195766,
+          "share_within_graph": 0.08779528245383886,
+          "share_of_pair": 0.014496699045810437,
+          "ops": [
+            "MUL_MAT_VEC",
+            "CPY"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=1 k=2048 batch=4",
+          "total_us": 56748.23999999999,
+          "calls": 630,
+          "per_call_us": 90.07657142857141,
+          "share_within_graph": 0.06918027426958907,
+          "share_of_pair": 0.011423001190527008,
+          "ops": [
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=2048 batch=4",
+          "total_us": 47888.00000000001,
+          "calls": 1386,
+          "per_call_us": 34.551226551226556,
+          "share_within_graph": 0.05837899068274333,
+          "share_of_pair": 0.009639500379429521,
+          "ops": [
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "RMS_NORM_MUL RMS_NORM(2048,4,1,1)",
+          "total_us": 20860.320000000003,
+          "calls": 3591,
+          "per_call_us": 5.8090559732665,
+          "share_within_graph": 0.025430262840775233,
+          "share_of_pair": 0.004199028202368469,
+          "ops": [
+            "RMS_NORM_MUL"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,1,4),  q(64,1,32,4),  k(64,8448,8,4),  v(64,8448,8,4),  m(8448,1,1,4), SCALE",
+          "total_us": 17245.36,
+          "calls": 70,
+          "per_call_us": 246.36228571428572,
+          "share_within_graph": 0.021023360983138874,
+          "share_of_pair": 0.003471363478604215,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,1,32,4)",
+            "k(64,8448,8,4)",
+            "v(64,8448,8,4)",
+            "m(8448,1,1,4)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=4 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=4 k=2048",
+          "total_us": 12192.159999999998,
+          "calls": 504,
+          "per_call_us": 24.190793650793648,
+          "share_within_graph": 0.014863138887456476,
+          "share_of_pair": 0.0024541916752853616,
+          "ops": [
+            "MUL_MAT_VEC",
+            "MUL_MAT_VEC",
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=2048",
+          "total_us": 10635.04,
+          "calls": 504,
+          "per_call_us": 21.101269841269843,
+          "share_within_graph": 0.012964895194424545,
+          "share_of_pair": 0.002140754930572338,
+          "ops": [
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "CPY, SSM_CONV",
+          "total_us": 8887.120000000004,
+          "calls": 1386,
+          "per_call_us": 6.412063492063496,
+          "share_within_graph": 0.0108340522819166,
+          "share_of_pair": 0.0017889115563823027,
+          "ops": [
+            "CPY",
+            "SSM_CONV"
+          ]
+        },
+        {
+          "description": "ADD",
+          "total_us": 8864.120000000003,
+          "calls": 3780,
+          "per_call_us": 2.345005291005292,
+          "share_within_graph": 0.010806013591937832,
+          "share_of_pair": 0.0017842818264138995,
+          "ops": [
+            "ADD"
+          ]
+        },
+        {
+          "description": "MUL",
+          "total_us": 8765.6,
+          "calls": 2709,
+          "per_call_us": 3.235732742709487,
+          "share_within_graph": 0.010685910472950528,
+          "share_of_pair": 0.0017644504787405488,
+          "ops": [
+            "MUL"
+          ]
+        },
+        {
+          "description": "MUL_MAT f32 m=64 n=32 k=64, RMS_NORM_MUL_ROPE RMS_NORM(64,8,4,1), MUL_MAT f32 m=64 n=128 k=64",
+          "total_us": 8107.429999999998,
+          "calls": 504,
+          "per_call_us": 16.08617063492063,
+          "share_within_graph": 0.009883552882371232,
+          "share_of_pair": 0.0016319657233795156,
+          "ops": [
+            "MUL_MAT",
+            "RMS_NORM_MUL_ROPE",
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=3 k=2048, MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=3 k=2048",
+          "total_us": 6732.680000000001,
+          "calls": 63,
+          "per_call_us": 106.86793650793653,
+          "share_within_graph": 0.008207631619401362,
+          "share_of_pair": 0.001355238711463781,
+          "ops": [
+            "MUL_MAT_VEC",
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "GLU, SCALE, GET_ROWS, GET_ROWS",
+          "total_us": 6402.600000000002,
+          "calls": 744,
+          "per_call_us": 8.605645161290326,
+          "share_within_graph": 0.007805239846001765,
+          "share_of_pair": 0.0012887960476389798,
+          "ops": [
+            "GLU",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS"
+          ]
+        },
+        {
+          "description": "GLU",
+          "total_us": 5872.5199999999995,
+          "calls": 1134,
+          "per_call_us": 5.178589065255731,
+          "share_within_graph": 0.007159033377134643,
+          "share_of_pair": 0.0011820948623498045,
+          "ops": [
+            "GLU"
+          ]
+        },
+        {
+          "description": "RMS_NORM_MUL_ROPE RMS_NORM(64,32,4,1)",
+          "total_us": 4876.88,
+          "calls": 504,
+          "per_call_us": 9.676349206349206,
+          "share_within_graph": 0.005945275060158229,
+          "share_of_pair": 0.0009816798907958618,
+          "ops": [
+            "RMS_NORM_MUL_ROPE"
+          ]
+        },
+        {
+          "description": "CONCAT",
+          "total_us": 4291.88,
+          "calls": 1323,
+          "per_call_us": 3.244051398337113,
+          "share_within_graph": 0.005232117075915728,
+          "share_of_pair": 0.0008639237155125703,
+          "ops": [
+            "CONCAT"
+          ]
+        },
+        {
+          "description": "MUL_MAT f32 m=64 n=128 k=64",
+          "total_us": 4257.4400000000005,
+          "calls": 434,
+          "per_call_us": 9.809769585253457,
+          "share_within_graph": 0.005190132185356222,
+          "share_of_pair": 0.0008569911981164053,
+          "ops": [
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=3 k=10752",
+          "total_us": 3615.8400000000006,
+          "calls": 63,
+          "per_call_us": 57.39428571428572,
+          "share_within_graph": 0.004407974642296413,
+          "share_of_pair": 0.0007278418612586961,
+          "ops": [
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "MUL_MAT f32 m=64 n=32 k=64",
+          "total_us": 2906.9599999999996,
+          "calls": 504,
+          "per_call_us": 5.767777777777777,
+          "share_within_graph": 0.0035437978356813293,
+          "share_of_pair": 0.0005851495577803716,
+          "ops": [
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "SET_ROWS, SET_ROWS",
+          "total_us": 2342.1599999999994,
+          "calls": 504,
+          "per_call_us": 4.647142857142856,
+          "share_within_graph": 0.002855265135681049,
+          "share_of_pair": 0.0004714594931649816,
+          "ops": [
+            "SET_ROWS",
+            "SET_ROWS"
+          ]
+        },
+        {
+          "description": "GET_ROWS, GET_ROWS, MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=4 k=10752",
+          "total_us": 733.96,
+          "calls": 12,
+          "per_call_us": 61.163333333333334,
+          "share_within_graph": 0.00089475116942671,
+          "share_of_pair": 0.00014774072206995677,
+          "ops": [
+            "GET_ROWS",
+            "GET_ROWS",
+            "MUL_MAT_VEC"
+          ]
+        },
+        {
+          "description": "GET_ROWS, GET_ROWS, CPY, MUL_MAT f32 m=64 n=128 k=64",
+          "total_us": 680.76,
+          "calls": 70,
+          "per_call_us": 9.725142857142856,
+          "share_within_graph": 0.0008298964604323493,
+          "share_of_pair": 0.0001370319553604335,
+          "ops": [
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY",
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "RMS_NORM_MUL RMS_NORM(2048,3,1,1)",
+          "total_us": 619.0799999999999,
+          "calls": 126,
+          "per_call_us": 4.913333333333333,
+          "share_within_graph": 0.0007547040083501656,
+          "share_of_pair": 0.00012461622734082078,
+          "ops": [
+            "RMS_NORM_MUL"
+          ]
+        },
+        {
+          "description": "SCALE, GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,4,1,1), CPY",
+          "total_us": 544.68,
+          "calls": 62,
+          "per_call_us": 8.78516129032258,
+          "share_within_graph": 0.0006640049416362476,
+          "share_of_pair": 0.00010964005735607397,
+          "ops": [
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "RMS_NORM_MUL",
+            "CPY"
+          ]
+        },
+        {
+          "description": "RMS_NORM_MUL RMS_NORM(2048,4,1,1), GET_ROWS",
+          "total_us": 342.0,
+          "calls": 63,
+          "per_call_us": 5.428571428571429,
+          "share_within_graph": 0.0004169231292494616,
+          "share_of_pair": 6.884207170407817e-05,
+          "ops": [
+            "RMS_NORM_MUL",
+            "GET_ROWS"
+          ]
+        },
+        {
+          "description": "MUL, SCALE, GET_ROWS, GET_ROWS",
+          "total_us": 320.32000000000005,
+          "calls": 62,
+          "per_call_us": 5.166451612903226,
+          "share_within_graph": 0.0003904936162607823,
+          "share_of_pair": 6.447804797734013e-05,
+          "ops": [
+            "MUL",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS"
+          ]
+        },
+        {
+          "description": "GET_ROWS",
+          "total_us": 169.36000000000013,
+          "calls": 63,
+          "per_call_us": 2.6882539682539703,
+          "share_within_graph": 0.00020646228412189726,
+          "share_of_pair": 3.409091597603125e-05,
+          "ops": [
+            "GET_ROWS"
+          ]
+        },
+        {
+          "description": "CONCAT, CPY",
+          "total_us": 168.48,
+          "calls": 62,
+          "per_call_us": 2.7174193548387096,
+          "share_within_graph": 0.00020538949946184002,
+          "share_of_pair": 3.391377848158798e-05,
+          "ops": [
+            "CONCAT",
+            "CPY"
+          ]
+        },
+        {
+          "description": "GLU, SCALE",
+          "total_us": 81.28,
+          "calls": 12,
+          "per_call_us": 6.773333333333333,
+          "share_within_graph": 9.908629223800069e-05,
+          "share_of_pair": 1.636106312312127e-05,
+          "ops": [
+            "GLU",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,4,1,1), CPY",
+          "total_us": 6.88,
+          "calls": 1,
+          "per_call_us": 6.88,
+          "share_within_graph": 8.387225524082735e-06,
+          "share_of_pair": 1.384893138374438e-06,
+          "ops": [
+            "GET_ROWS",
+            "GET_ROWS",
+            "RMS_NORM_MUL",
+            "CPY"
+          ]
+        },
+        {
+          "description": "SCALE",
+          "total_us": 5.92,
+          "calls": 1,
+          "per_call_us": 5.92,
+          "share_within_graph": 7.216914985838633e-06,
+          "share_of_pair": 1.1916522353454467e-06,
+          "ops": [
+            "SCALE"
+          ]
+        },
+        {
+          "description": "MUL, SCALE",
+          "total_us": 4.72,
+          "calls": 1,
+          "per_call_us": 4.72,
+          "share_within_graph": 5.7540268130335044e-06,
+          "share_of_pair": 9.501011065592076e-07,
+          "ops": [
+            "MUL",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "GET_ROWS, GET_ROWS, CONCAT, CPY",
+          "total_us": 4.64,
+          "calls": 1,
+          "per_call_us": 4.64,
+          "share_within_graph": 5.656500934846496e-06,
+          "share_of_pair": 9.339976979734582e-07,
+          "ops": [
+            "GET_ROWS",
+            "GET_ROWS",
+            "CONCAT",
+            "CPY"
+          ]
+        }
+      ]
+    },
+    {
+      "graph_index": 1,
+      "total_us": 4147597.23,
+      "share_of_pair": 0.8348806605476492,
+      "families": {
+        "down": {
+          "total_us": 1105045.0000000005,
+          "share_within_graph": 0.2664301615419876,
+          "share_of_pair": 0.22243738925799153
+        },
+        "flash_attention": {
+          "total_us": 571659.8400000001,
+          "share_within_graph": 0.13782915946252575,
+          "share_of_pair": 0.11507089969480076
+        },
+        "gate_up": {
+          "total_us": 1465622.2000000002,
+          "share_within_graph": 0.3533665683347947,
+          "share_of_pair": 0.2950189139868094
+        },
+        "misc": {
+          "total_us": 379632.23000000004,
+          "share_within_graph": 0.09153064025939665,
+          "share_of_pair": 0.07641716140011433
+        },
+        "projection_2048": {
+          "total_us": 266448.36,
+          "share_within_graph": 0.06424161875525218,
+          "share_of_pair": 0.053634085101035185
+        },
+        "short_conv": {
+          "total_us": 359189.60000000003,
+          "share_within_graph": 0.08660185164604328,
+          "share_of_pair": 0.07230221110689813
+        }
+      },
+      "groups": [
+        {
+          "description": "MUL_MAT q4_0_rocmfp4_fast m=10752 n=127 k=2048, MUL_MAT q4_0_rocmfp4_fast m=10752 n=127 k=2048",
+          "total_us": 1465622.2000000002,
+          "calls": 1827,
+          "per_call_us": 802.2015325670499,
+          "share_within_graph": 0.3533665683347947,
+          "share_of_pair": 0.2950189139868094,
+          "ops": [
+            "MUL_MAT",
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "MUL_MAT q4_0_rocmfp4_fast m=2048 n=127 k=10752",
+          "total_us": 1105045.0000000005,
+          "calls": 1827,
+          "per_call_us": 604.8412698412701,
+          "share_within_graph": 0.2664301615419876,
+          "share_of_pair": 0.22243738925799153,
+          "ops": [
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "MUL_MAT q4_0_rocmfp4_fast m=2048 n=127 k=2048",
+          "total_us": 185980.72,
+          "calls": 1827,
+          "per_call_us": 101.79568691844554,
+          "share_within_graph": 0.04484059316434638,
+          "share_of_pair": 0.03743654404039791,
+          "ops": [
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "MUL_MAT q4_0_rocmfp4_fast m=6144 n=127 k=2048, CPY",
+          "total_us": 183954.2,
+          "calls": 756,
+          "per_call_us": 243.32566137566138,
+          "share_within_graph": 0.044351992201518566,
+          "share_of_pair": 0.03702862054580801,
+          "ops": [
+            "MUL_MAT",
+            "CPY"
+          ]
+        },
+        {
+          "description": "MUL_MAT q4_0_rocmfp4_fast m=6144 n=127 k=2048",
+          "total_us": 175235.40000000002,
+          "calls": 630,
+          "per_call_us": 278.1514285714286,
+          "share_within_graph": 0.04224985944452471,
+          "share_of_pair": 0.035273590561090126,
+          "ops": [
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "MUL_MAT q4_0_rocmfp4_fast m=2048 n=127 k=2048, MUL_MAT q4_0_rocmfp4_fast m=512 n=127 k=2048, MUL_MAT q4_0_rocmfp4_fast m=512 n=127 k=2048",
+          "total_us": 80467.64000000001,
+          "calls": 504,
+          "per_call_us": 159.6580158730159,
+          "share_within_graph": 0.019401025590905802,
+          "share_of_pair": 0.01619754106063728,
+          "ops": [
+            "MUL_MAT",
+            "MUL_MAT",
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "RMS_NORM_MUL_ROPE RMS_NORM(64,32,127,1)",
+          "total_us": 55394.64000000001,
+          "calls": 504,
+          "per_call_us": 109.91000000000001,
+          "share_within_graph": 0.01335583879729807,
+          "share_of_pair": 0.011150531517256134,
+          "ops": [
+            "RMS_NORM_MUL_ROPE"
+          ]
+        },
+        {
+          "description": "GLU",
+          "total_us": 45514.68,
+          "calls": 1071,
+          "per_call_us": 42.49736694677871,
+          "share_within_graph": 0.010973746358683917,
+          "share_of_pair": 0.00916176860862039,
+          "ops": [
+            "GLU"
+          ]
+        },
+        {
+          "description": "RMS_NORM_MUL RMS_NORM(2048,127,1,1)",
+          "total_us": 44665.759999999995,
+          "calls": 3591,
+          "per_call_us": 12.43825118351434,
+          "share_within_graph": 0.010769068818188982,
+          "share_of_pair": 0.008990887288412708,
+          "ops": [
+            "RMS_NORM_MUL"
+          ]
+        },
+        {
+          "description": "ADD",
+          "total_us": 44486.840000000004,
+          "calls": 3654,
+          "per_call_us": 12.174833059660648,
+          "share_within_graph": 0.0107259305889738,
+          "share_of_pair": 0.008954872015110683,
+          "ops": [
+            "ADD"
+          ]
+        },
+        {
+          "description": "CONCAT",
+          "total_us": 41779.799999999996,
+          "calls": 1323,
+          "per_call_us": 31.57959183673469,
+          "share_within_graph": 0.010073253906575687,
+          "share_of_pair": 0.008409964875386096,
+          "ops": [
+            "CONCAT"
+          ]
+        },
+        {
+          "description": "CPY, SSM_CONV",
+          "total_us": 37273.56000000003,
+          "calls": 1386,
+          "per_call_us": 26.89290043290045,
+          "share_within_graph": 0.008986783897529034,
+          "share_of_pair": 0.007502892076568017,
+          "ops": [
+            "CPY",
+            "SSM_CONV"
+          ]
+        },
+        {
+          "description": "MUL",
+          "total_us": 32897.64,
+          "calls": 2709,
+          "per_call_us": 12.143831672203765,
+          "share_within_graph": 0.007931734490043528,
+          "share_of_pair": 0.006622051730336112,
+          "ops": [
+            "MUL"
+          ]
+        },
+        {
+          "description": "GLU, SCALE, GET_ROWS, GET_ROWS",
+          "total_us": 31125.24,
+          "calls": 756,
+          "per_call_us": 41.170952380952386,
+          "share_within_graph": 0.007504402735846172,
+          "share_of_pair": 0.006265280713118837,
+          "ops": [
+            "GLU",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7936,8,1),  v(64,7936,8,1),  m(7936,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 29725.7,
+          "calls": 14,
+          "per_call_us": 2123.264285714286,
+          "share_within_graph": 0.007166968813893243,
+          "share_of_pair": 0.005983563657467592,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7936,8,1)",
+            "v(64,7936,8,1)",
+            "m(7936,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7424,8,1),  v(64,7424,8,1),  m(7424,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 29310.800000000003,
+          "calls": 14,
+          "per_call_us": 2093.628571428572,
+          "share_within_graph": 0.007066934992624634,
+          "share_of_pair": 0.005900047354689751,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7424,8,1)",
+            "v(64,7424,8,1)",
+            "m(7424,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7680,8,1),  v(64,7680,8,1),  m(7680,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 29056.7,
+          "calls": 14,
+          "per_call_us": 2075.4785714285713,
+          "share_within_graph": 0.007005670606063164,
+          "share_of_pair": 0.005848898903169264,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7680,8,1)",
+            "v(64,7680,8,1)",
+            "m(7680,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6912,8,1),  v(64,6912,8,1),  m(6912,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 27355.6,
+          "calls": 14,
+          "per_call_us": 1953.9714285714285,
+          "share_within_graph": 0.006595529527827368,
+          "share_of_pair": 0.005506480048854037,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6912,8,1)",
+            "v(64,6912,8,1)",
+            "m(6912,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7168,8,1),  v(64,7168,8,1),  m(7168,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 26248.2,
+          "calls": 14,
+          "per_call_us": 1874.8714285714286,
+          "share_within_graph": 0.006328531567661405,
+          "share_of_pair": 0.005283568615505803,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7168,8,1)",
+            "v(64,7168,8,1)",
+            "m(7168,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6656,8,1),  v(64,6656,8,1),  m(6656,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 24458.800000000003,
+          "calls": 14,
+          "per_call_us": 1747.0571428571432,
+          "share_within_graph": 0.005897101054819637,
+          "share_of_pair": 0.004923375623964057,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6656,8,1)",
+            "v(64,6656,8,1)",
+            "m(6656,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6400,8,1),  v(64,6400,8,1),  m(6400,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 24079.699999999997,
+          "calls": 14,
+          "per_call_us": 1719.9785714285713,
+          "share_within_graph": 0.005805698737049257,
+          "share_of_pair": 0.0048470655965283365,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6400,8,1)",
+            "v(64,6400,8,1)",
+            "m(6400,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6144,8,1),  v(64,6144,8,1),  m(6144,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 22375.0,
+          "calls": 14,
+          "per_call_us": 1598.2142857142858,
+          "share_within_graph": 0.005394689686394645,
+          "share_of_pair": 0.004503922088826752,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6144,8,1)",
+            "v(64,6144,8,1)",
+            "m(6144,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5632,8,1),  v(64,5632,8,1),  m(5632,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 21323.32,
+          "calls": 14,
+          "per_call_us": 1523.0942857142857,
+          "share_within_graph": 0.005141126010444365,
+          "share_of_pair": 0.004292226679558492,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5632,8,1)",
+            "v(64,5632,8,1)",
+            "m(5632,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5888,8,1),  v(64,5888,8,1),  m(5888,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 20923.1,
+          "calls": 14,
+          "per_call_us": 1494.5071428571428,
+          "share_within_graph": 0.00504463158781693,
+          "share_of_pair": 0.004211665352256135,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5888,8,1)",
+            "v(64,5888,8,1)",
+            "m(5888,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5376,8,1),  v(64,5376,8,1),  m(5376,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 20323.96,
+          "calls": 14,
+          "per_call_us": 1451.7114285714285,
+          "share_within_graph": 0.0049001768669808855,
+          "share_of_pair": 0.004091062899505312,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5376,8,1)",
+            "v(64,5376,8,1)",
+            "m(5376,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4864,8,1),  v(64,4864,8,1),  m(4864,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 19903.260000000002,
+          "calls": 14,
+          "per_call_us": 1421.6614285714288,
+          "share_within_graph": 0.0047987446457041835,
+          "share_of_pair": 0.004006379099605003,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4864,8,1)",
+            "v(64,4864,8,1)",
+            "m(4864,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5120,8,1),  v(64,5120,8,1),  m(5120,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 18449.88,
+          "calls": 14,
+          "per_call_us": 1317.8485714285714,
+          "share_within_graph": 0.004448329714020954,
+          "share_of_pair": 0.0037138244499755496,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5120,8,1)",
+            "v(64,5120,8,1)",
+            "m(5120,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "MUL_MAT f32 m=64 n=4064 k=64",
+          "total_us": 17858.28,
+          "calls": 945,
+          "per_call_us": 18.897650793650794,
+          "share_within_graph": 0.004305692913195431,
+          "share_of_pair": 0.0035947397434839333,
+          "ops": [
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4608,8,1),  v(64,4608,8,1),  m(4608,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 17609.84,
+          "calls": 14,
+          "per_call_us": 1257.8457142857144,
+          "share_within_graph": 0.004245793172159101,
+          "share_of_pair": 0.003544730608120889,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4608,8,1)",
+            "v(64,4608,8,1)",
+            "m(4608,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4352,8,1),  v(64,4352,8,1),  m(4352,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 17034.76,
+          "calls": 14,
+          "per_call_us": 1216.7685714285712,
+          "share_within_graph": 0.004107139400322147,
+          "share_of_pair": 0.00342897125550223,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4352,8,1)",
+            "v(64,4352,8,1)",
+            "m(4352,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "MUL_MAT f32 m=64 n=1016 k=64, RMS_NORM_MUL_ROPE RMS_NORM(64,8,127,1)",
+          "total_us": 16909.789999999997,
+          "calls": 504,
+          "per_call_us": 33.55117063492063,
+          "share_within_graph": 0.004077008702216728,
+          "share_of_pair": 0.003403815718365216,
+          "ops": [
+            "MUL_MAT",
+            "RMS_NORM_MUL_ROPE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4096,8,1),  v(64,4096,8,1),  m(4096,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 16610.12,
+          "calls": 14,
+          "per_call_us": 1186.4371428571428,
+          "share_within_graph": 0.004004757231453739,
+          "share_of_pair": 0.0033434943627290727,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4096,8,1)",
+            "v(64,4096,8,1)",
+            "m(4096,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3840,8,1),  v(64,3840,8,1),  m(3840,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 15794.84,
+          "calls": 14,
+          "per_call_us": 1128.202857142857,
+          "share_within_graph": 0.0038081904110057476,
+          "share_of_pair": 0.0031793845258317023,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3840,8,1)",
+            "v(64,3840,8,1)",
+            "m(3840,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,8192,8,1),  v(64,8192,8,1),  m(8192,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 14817.9,
+          "calls": 7,
+          "per_call_us": 2116.842857142857,
+          "share_within_graph": 0.003572646806883898,
+          "share_of_pair": 0.002982733726034678,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,8192,8,1)",
+            "v(64,8192,8,1)",
+            "m(8192,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3584,8,1),  v(64,3584,8,1),  m(3584,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 13882.84,
+          "calls": 14,
+          "per_call_us": 991.6314285714286,
+          "share_within_graph": 0.0033472006152342813,
+          "share_of_pair": 0.0027945130606322945,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3584,8,1)",
+            "v(64,3584,8,1)",
+            "m(3584,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3328,8,1),  v(64,3328,8,1),  m(3328,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 12697.6,
+          "calls": 14,
+          "per_call_us": 906.9714285714286,
+          "share_within_graph": 0.0030614351625459064,
+          "share_of_pair": 0.002555933010730126,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3328,8,1)",
+            "v(64,3328,8,1)",
+            "m(3328,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3072,8,1),  v(64,3072,8,1),  m(3072,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 12205.119999999999,
+          "calls": 14,
+          "per_call_us": 871.7942857142856,
+          "share_within_graph": 0.0029426965356517992,
+          "share_of_pair": 0.002456800427476253,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3072,8,1)",
+            "v(64,3072,8,1)",
+            "m(3072,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2816,8,1),  v(64,2816,8,1),  m(2816,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 10482.52,
+          "calls": 14,
+          "per_call_us": 748.7514285714286,
+          "share_within_graph": 0.0025273717332480717,
+          "share_of_pair": 0.002110053782103607,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2816,8,1)",
+            "v(64,2816,8,1)",
+            "m(2816,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2560,8,1),  v(64,2560,8,1),  m(2560,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 10037.32,
+          "calls": 14,
+          "per_call_us": 716.9514285714286,
+          "share_within_graph": 0.0024200324774544223,
+          "share_of_pair": 0.0020204383133239122,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2560,8,1)",
+            "v(64,2560,8,1)",
+            "m(2560,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2304,8,1),  v(64,2304,8,1),  m(2304,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 9539.36,
+          "calls": 14,
+          "per_call_us": 681.3828571428572,
+          "share_within_graph": 0.0022999726036561177,
+          "share_of_pair": 0.0019202026465819158,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2304,8,1)",
+            "v(64,2304,8,1)",
+            "m(2304,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2048,8,1),  v(64,2048,8,1),  m(2048,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 7658.28,
+          "calls": 14,
+          "per_call_us": 547.02,
+          "share_within_graph": 0.0018464377265484863,
+          "share_of_pair": 0.0015415551488009,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2048,8,1)",
+            "v(64,2048,8,1)",
+            "m(2048,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1792,8,1),  v(64,1792,8,1),  m(1792,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 7231.88,
+          "calls": 14,
+          "per_call_us": 516.5628571428572,
+          "share_within_graph": 0.0017436312156086575,
+          "share_of_pair": 0.0014557239810388564,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1792,8,1)",
+            "v(64,1792,8,1)",
+            "m(1792,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1536,8,1),  v(64,1536,8,1),  m(1536,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 5759.2,
+          "calls": 14,
+          "per_call_us": 411.37142857142857,
+          "share_within_graph": 0.0013885629873467728,
+          "share_of_pair": 0.0011592843840880908,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1536,8,1)",
+            "v(64,1536,8,1)",
+            "m(1536,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1280,8,1),  v(64,1280,8,1),  m(1280,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 5255.84,
+          "calls": 14,
+          "per_call_us": 375.4171428571429,
+          "share_within_graph": 0.0012672011549202428,
+          "share_of_pair": 0.0010579617372665562,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1280,8,1)",
+            "v(64,1280,8,1)",
+            "m(1280,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1024,8,1),  v(64,1024,8,1),  m(1024,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 4367.4,
+          "calls": 14,
+          "per_call_us": 311.95714285714286,
+          "share_within_graph": 0.0010529952060943004,
+          "share_of_pair": 0.0008791253332175175,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1024,8,1)",
+            "v(64,1024,8,1)",
+            "m(1024,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,768,8,1),  v(64,768,8,1),  m(768,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 4264.5599999999995,
+          "calls": 14,
+          "per_call_us": 304.6114285714285,
+          "share_within_graph": 0.0010282001273301071,
+          "share_of_pair": 0.0008584244014805369,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,768,8,1)",
+            "v(64,768,8,1)",
+            "m(768,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7936,8,1),  v(64,7936,8,1),  m(7936,127,1,1), SCALE",
+          "total_us": 4026.08,
+          "calls": 2,
+          "per_call_us": 2013.04,
+          "share_within_graph": 0.000970701776652503,
+          "share_of_pair": 0.0008104201404864182,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7936,8,1)",
+            "v(64,7936,8,1)",
+            "m(7936,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7680,8,1),  v(64,7680,8,1),  m(7680,127,1,1), SCALE",
+          "total_us": 3947.84,
+          "calls": 2,
+          "per_call_us": 1973.92,
+          "share_within_graph": 0.0009518378427502229,
+          "share_of_pair": 0.0007946710068895555,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7680,8,1)",
+            "v(64,7680,8,1)",
+            "m(7680,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7424,8,1),  v(64,7424,8,1),  m(7424,127,1,1), SCALE",
+          "total_us": 3872.84,
+          "calls": 2,
+          "per_call_us": 1936.42,
+          "share_within_graph": 0.0009337550840248777,
+          "share_of_pair": 0.0007795740613404156,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7424,8,1)",
+            "v(64,7424,8,1)",
+            "m(7424,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,7168,8,1),  v(64,7168,8,1),  m(7168,127,1,1), SCALE",
+          "total_us": 3661.64,
+          "calls": 2,
+          "per_call_us": 1830.82,
+          "share_within_graph": 0.0008828340354543056,
+          "share_of_pair": 0.0007370610626740374,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,7168,8,1)",
+            "v(64,7168,8,1)",
+            "m(7168,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6912,8,1),  v(64,6912,8,1),  m(6912,127,1,1), SCALE",
+          "total_us": 3651.48,
+          "calls": 2,
+          "per_call_us": 1825.74,
+          "share_within_graph": 0.0008803844244056456,
+          "share_of_pair": 0.0007350159297836473,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6912,8,1)",
+            "v(64,6912,8,1)",
+            "m(6912,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6656,8,1),  v(64,6656,8,1),  m(6656,127,1,1), SCALE",
+          "total_us": 3402.88,
+          "calls": 2,
+          "per_call_us": 1701.44,
+          "share_within_graph": 0.0008204461068173682,
+          "share_of_pair": 0.0006849745876034314,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6656,8,1)",
+            "v(64,6656,8,1)",
+            "m(6656,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6400,8,1),  v(64,6400,8,1),  m(6400,127,1,1), SCALE",
+          "total_us": 3244.76,
+          "calls": 2,
+          "per_call_us": 1622.38,
+          "share_within_graph": 0.0007823228293553471,
+          "share_of_pair": 0.000653146200533698,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6400,8,1)",
+            "v(64,6400,8,1)",
+            "m(6400,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,6144,8,1),  v(64,6144,8,1),  m(6144,127,1,1), SCALE",
+          "total_us": 3137.88,
+          "calls": 2,
+          "per_call_us": 1568.94,
+          "share_within_graph": 0.0007565536926544818,
+          "share_of_pair": 0.0006316320466631369,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,6144,8,1)",
+            "v(64,6144,8,1)",
+            "m(6144,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "SET_ROWS, SET_ROWS",
+          "total_us": 3038.359999999999,
+          "calls": 504,
+          "per_call_us": 6.028492063492062,
+          "share_within_graph": 0.0007325590773431969,
+          "share_of_pair": 0.0006115994063824647,
+          "ops": [
+            "SET_ROWS",
+            "SET_ROWS"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5888,8,1),  v(64,5888,8,1),  m(5888,127,1,1), SCALE",
+          "total_us": 2984.6000000000004,
+          "calls": 2,
+          "per_call_us": 1492.3000000000002,
+          "share_within_graph": 0.0007195973558888698,
+          "share_of_pair": 0.0006007779158128414,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5888,8,1)",
+            "v(64,5888,8,1)",
+            "m(5888,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,512,8,1),  v(64,512,8,1),  m(512,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 2948.24,
+          "calls": 14,
+          "per_call_us": 210.5885714285714,
+          "share_within_graph": 0.0007108308344588223,
+          "share_of_pair": 0.0005934589166106182,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,512,8,1)",
+            "v(64,512,8,1)",
+            "m(512,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5632,8,1),  v(64,5632,8,1),  m(5632,127,1,1), SCALE",
+          "total_us": 2910.84,
+          "calls": 2,
+          "per_call_us": 1455.42,
+          "share_within_graph": 0.0007018135654411169,
+          "share_of_pair": 0.0005859305730967804,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5632,8,1)",
+            "v(64,5632,8,1)",
+            "m(5632,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "CONCAT, CPY",
+          "total_us": 2787.9199999999996,
+          "calls": 63,
+          "per_call_us": 44.25269841269841,
+          "share_within_graph": 0.0006721771294075243,
+          "share_of_pair": 0.0005611876858047766,
+          "ops": [
+            "CONCAT",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5376,8,1),  v(64,5376,8,1),  m(5376,127,1,1), SCALE",
+          "total_us": 2757.96,
+          "calls": 2,
+          "per_call_us": 1378.98,
+          "share_within_graph": 0.0006649536700553733,
+          "share_of_pair": 0.0005551569592894135,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5376,8,1)",
+            "v(64,5376,8,1)",
+            "m(5376,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,5120,8,1),  v(64,5120,8,1),  m(5120,127,1,1), SCALE",
+          "total_us": 2617.4399999999996,
+          "calls": 2,
+          "per_call_us": 1308.7199999999998,
+          "share_within_graph": 0.0006310738133075664,
+          "share_of_pair": 0.0005268713221085449,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,5120,8,1)",
+            "v(64,5120,8,1)",
+            "m(5120,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4864,8,1),  v(64,4864,8,1),  m(4864,127,1,1), SCALE",
+          "total_us": 2470.6400000000003,
+          "calls": 2,
+          "per_call_us": 1235.3200000000002,
+          "share_within_graph": 0.0005956798268958243,
+          "share_of_pair": 0.0004973215673536951,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4864,8,1)",
+            "v(64,4864,8,1)",
+            "m(4864,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4608,8,1),  v(64,4608,8,1),  m(4608,127,1,1), SCALE",
+          "total_us": 2396.2799999999997,
+          "calls": 2,
+          "per_call_us": 1198.1399999999999,
+          "share_within_graph": 0.0005777513743782686,
+          "share_of_pair": 0.00048235344907324103,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4608,8,1)",
+            "v(64,4608,8,1)",
+            "m(4608,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4352,8,1),  v(64,4352,8,1),  m(4352,127,1,1), SCALE",
+          "total_us": 2215.7200000000003,
+          "calls": 2,
+          "per_call_us": 1107.8600000000001,
+          "share_within_graph": 0.0005342177355056243,
+          "share_of_pair": 0.000446008055895205,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4352,8,1)",
+            "v(64,4352,8,1)",
+            "m(4352,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,8192,8,1),  v(64,8192,8,1),  m(8192,127,1,1), SCALE",
+          "total_us": 2110.68,
+          "calls": 1,
+          "per_call_us": 2110.68,
+          "share_within_graph": 0.0005088922291521541,
+          "share_of_pair": 0.0004248642804221161,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,8192,8,1)",
+            "v(64,8192,8,1)",
+            "m(8192,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,4096,8,1),  v(64,4096,8,1),  m(4096,127,1,1), SCALE",
+          "total_us": 2099.48,
+          "calls": 2,
+          "per_call_us": 1049.74,
+          "share_within_graph": 0.000506191870515836,
+          "share_of_pair": 0.00042260980322011125,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,4096,8,1)",
+            "v(64,4096,8,1)",
+            "m(4096,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3840,8,1),  v(64,3840,8,1),  m(3840,127,1,1), SCALE",
+          "total_us": 1962.2800000000002,
+          "calls": 2,
+          "per_call_us": 981.1400000000001,
+          "share_within_graph": 0.00047311247722093793,
+          "share_of_pair": 0.00039499245749555125,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3840,8,1)",
+            "v(64,3840,8,1)",
+            "m(3840,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,127,1,1), SCALE, GET_ROWS, GET_ROWS, CPY",
+          "total_us": 1942.28,
+          "calls": 14,
+          "per_call_us": 138.7342857142857,
+          "share_within_graph": 0.0004682904082275125,
+          "share_of_pair": 0.0003909666053491139,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,256,8,1)",
+            "v(64,256,8,1)",
+            "m(256,127,1,1)",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3584,8,1),  v(64,3584,8,1),  m(3584,127,1,1), SCALE",
+          "total_us": 1841.6,
+          "calls": 2,
+          "per_call_us": 920.8,
+          "share_within_graph": 0.00044401611291460907,
+          "share_of_pair": 0.00037070046564394843,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3584,8,1)",
+            "v(64,3584,8,1)",
+            "m(3584,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3328,8,1),  v(64,3328,8,1),  m(3328,127,1,1), SCALE",
+          "total_us": 1726.52,
+          "calls": 2,
+          "per_call_us": 863.26,
+          "share_within_graph": 0.00041626992792643944,
+          "share_of_pair": 0.0003475357123933481,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3328,8,1)",
+            "v(64,3328,8,1)",
+            "m(3328,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,3072,8,1),  v(64,3072,8,1),  m(3072,127,1,1), SCALE",
+          "total_us": 1588.6399999999999,
+          "calls": 2,
+          "per_call_us": 794.3199999999999,
+          "share_within_graph": 0.00038302658428576486,
+          "share_of_pair": 0.0003197814876958092,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,3072,8,1)",
+            "v(64,3072,8,1)",
+            "m(3072,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "MUL_MAT f32 m=64 n=1016 k=64",
+          "total_us": 1583.8,
+          "calls": 504,
+          "per_call_us": 3.1424603174603174,
+          "share_within_graph": 0.0003818596435893559,
+          "share_of_pair": 0.0003188072314763714,
+          "ops": [
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2816,8,1),  v(64,2816,8,1),  m(2816,127,1,1), SCALE",
+          "total_us": 1450.8,
+          "calls": 2,
+          "per_call_us": 725.4,
+          "share_within_graph": 0.0003497928847830772,
+          "share_of_pair": 0.0002920353147025632,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2816,8,1)",
+            "v(64,2816,8,1)",
+            "m(2816,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2560,8,1),  v(64,2560,8,1),  m(2560,127,1,1), SCALE",
+          "total_us": 1331.56,
+          "calls": 2,
+          "per_call_us": 665.78,
+          "share_within_graph": 0.00032104370944427505,
+          "share_of_pair": 0.0002680331842055039,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2560,8,1)",
+            "v(64,2560,8,1)",
+            "m(2560,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "SCALE, GET_ROWS, GET_ROWS, RMS_NORM_MUL RMS_NORM(2048,127,1,1), CPY",
+          "total_us": 1235.24,
+          "calls": 63,
+          "per_call_us": 19.606984126984127,
+          "share_within_graph": 0.00029782062517193843,
+          "share_of_pair": 0.00024864468026826177,
+          "ops": [
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS",
+            "RMS_NORM_MUL",
+            "CPY"
+          ]
+        },
+        {
+          "description": "GET_ROWS, GET_ROWS, CPY, MUL_MAT f32 m=64 n=4064 k=64",
+          "total_us": 1199.9199999999994,
+          "calls": 63,
+          "per_call_us": 19.0463492063492,
+          "share_within_graph": 0.00028930485132954906,
+          "share_of_pair": 0.00024153502537765335,
+          "ops": [
+            "GET_ROWS",
+            "GET_ROWS",
+            "CPY",
+            "MUL_MAT"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2304,8,1),  v(64,2304,8,1),  m(2304,127,1,1), SCALE",
+          "total_us": 1198.6,
+          "calls": 2,
+          "per_call_us": 599.3,
+          "share_within_graph": 0.0002889865947759831,
+          "share_of_pair": 0.0002412693191359886,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2304,8,1)",
+            "v(64,2304,8,1)",
+            "m(2304,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "MUL, SCALE, GET_ROWS, GET_ROWS",
+          "total_us": 1080.8800000000003,
+          "calls": 63,
+          "per_call_us": 17.1568253968254,
+          "share_within_graph": 0.0002606038966806814,
+          "share_of_pair": 0.0002175731534020586,
+          "ops": [
+            "MUL",
+            "SCALE",
+            "GET_ROWS",
+            "GET_ROWS"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,2048,8,1),  v(64,2048,8,1),  m(2048,127,1,1), SCALE",
+          "total_us": 1076.96,
+          "calls": 2,
+          "per_call_us": 538.48,
+          "share_within_graph": 0.00025965877115796996,
+          "share_of_pair": 0.00021678408638135682,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,2048,8,1)",
+            "v(64,2048,8,1)",
+            "m(2048,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1792,8,1),  v(64,1792,8,1),  m(1792,127,1,1), SCALE",
+          "total_us": 947.0799999999999,
+          "calls": 2,
+          "per_call_us": 473.53999999999996,
+          "share_within_graph": 0.00022834425511466548,
+          "share_of_pair": 0.00019064020254239286,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1792,8,1)",
+            "v(64,1792,8,1)",
+            "m(1792,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1536,8,1),  v(64,1536,8,1),  m(1536,127,1,1), SCALE",
+          "total_us": 824.08,
+          "calls": 2,
+          "per_call_us": 412.04,
+          "share_within_graph": 0.00019868853080509942,
+          "share_of_pair": 0.00016588121184180334,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1536,8,1)",
+            "v(64,1536,8,1)",
+            "m(1536,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "RMS_NORM_MUL RMS_NORM(2048,127,1,1), GET_ROWS",
+          "total_us": 799.8799999999998,
+          "calls": 63,
+          "per_call_us": 12.696507936507933,
+          "share_within_graph": 0.00019285382732305465,
+          "share_of_pair": 0.00016100993074461413,
+          "ops": [
+            "RMS_NORM_MUL",
+            "GET_ROWS"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1280,8,1),  v(64,1280,8,1),  m(1280,127,1,1), SCALE",
+          "total_us": 724.28,
+          "calls": 2,
+          "per_call_us": 362.14,
+          "share_within_graph": 0.00017462640652790676,
+          "share_of_pair": 0.0001457922096310811,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1280,8,1)",
+            "v(64,1280,8,1)",
+            "m(1280,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,1024,8,1),  v(64,1024,8,1),  m(1024,127,1,1), SCALE",
+          "total_us": 570.0799999999999,
+          "calls": 2,
+          "per_call_us": 285.03999999999996,
+          "share_within_graph": 0.00013744825458859706,
+          "share_of_pair": 0.00011475288958204936,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,1024,8,1)",
+            "v(64,1024,8,1)",
+            "m(1024,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,768,8,1),  v(64,768,8,1),  m(768,127,1,1), SCALE",
+          "total_us": 567.5999999999999,
+          "calls": 2,
+          "per_call_us": 283.79999999999995,
+          "share_within_graph": 0.00013685031803341231,
+          "share_of_pair": 0.00011425368391589113,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,768,8,1)",
+            "v(64,768,8,1)",
+            "m(768,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,512,8,1),  v(64,512,8,1),  m(512,127,1,1), SCALE",
+          "total_us": 391.12,
+          "calls": 2,
+          "per_call_us": 195.56,
+          "share_within_graph": 9.430038123542676e-05,
+          "share_of_pair": 7.872956457572823e-05,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,512,8,1)",
+            "v(64,512,8,1)",
+            "m(512,127,1,1)",
+            "SCALE"
+          ]
+        },
+        {
+          "description": "FLASH_ATTN_EXT dst(64,32,127,1),  q(64,127,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,127,1,1), SCALE",
+          "total_us": 275.68,
+          "calls": 2,
+          "per_call_us": 137.84,
+          "share_within_graph": 6.646739900537546e-05,
+          "share_of_pair": 5.549234598649202e-05,
+          "ops": [
+            "FLASH_ATTN_EXT",
+            "q(64,127,32,1)",
+            "k(64,256,8,1)",
+            "v(64,256,8,1)",
+            "m(256,127,1,1)",
+            "SCALE"
+          ]
+        }
+      ]
+    }
+  ],
+  "misc_rollup": [
+    {
+      "graph_index": 0,
+      "misc_total_us": 89383.15000000001,
+      "misc_share_within_graph": 0.10896462748588893,
+      "misc_share_of_pair": 0.01799216731414145,
+      "exclusive_ops": [
+        {
+          "op": "RMS_NORM_MUL",
+          "exclusive_us": 21479.4,
+          "exclusive_share_within_graph": 0.026184966849125395,
+          "exclusive_share_of_pair": 0.004323644429709289,
+          "groups": 3717
+        },
+        {
+          "op": "ADD",
+          "exclusive_us": 8864.120000000003,
+          "exclusive_share_within_graph": 0.010806013591937832,
+          "exclusive_share_of_pair": 0.0017842818264138995,
+          "groups": 3780
+        },
+        {
+          "op": "MUL",
+          "exclusive_us": 8765.6,
+          "exclusive_share_within_graph": 0.010685910472950528,
+          "exclusive_share_of_pair": 0.0017644504787405488,
+          "groups": 2709
+        },
+        {
+          "op": "MUL_MAT",
+          "exclusive_us": 7164.4,
+          "exclusive_share_within_graph": 0.008733930021037551,
+          "exclusive_share_of_pair": 0.0014421407558967768,
+          "groups": 938
+        },
+        {
+          "op": "GLU",
+          "exclusive_us": 5872.5199999999995,
+          "exclusive_share_within_graph": 0.007159033377134643,
+          "exclusive_share_of_pair": 0.0011820948623498045,
+          "groups": 1134
+        },
+        {
+          "op": "RMS_NORM_MUL_ROPE",
+          "exclusive_us": 4876.88,
+          "exclusive_share_within_graph": 0.005945275060158229,
+          "exclusive_share_of_pair": 0.0009816798907958618,
+          "groups": 504
+        },
+        {
+          "op": "CONCAT",
+          "exclusive_us": 4291.88,
+          "exclusive_share_within_graph": 0.005232117075915728,
+          "exclusive_share_of_pair": 0.0008639237155125703,
+          "groups": 1323
+        },
+        {
+          "op": "GET_ROWS",
+          "exclusive_us": 169.36000000000013,
+          "exclusive_share_within_graph": 0.00020646228412189726,
+          "exclusive_share_of_pair": 3.409091597603125e-05,
+          "groups": 63
+        },
+        {
+          "op": "SCALE",
+          "exclusive_us": 5.92,
+          "exclusive_share_within_graph": 7.216914985838633e-06,
+          "exclusive_share_of_pair": 1.1916522353454467e-06,
+          "groups": 1
+        }
+      ],
+      "inclusive_ops": [
+        {
+          "op": "MUL_MAT",
+          "inclusive_us": 24060.019999999993,
+          "inclusive_share_within_graph": 0.02933093224621236,
+          "inclusive_share_of_pair": 0.004843104158016242,
+          "groups": 2016
+        },
+        {
+          "op": "RMS_NORM_MUL",
+          "inclusive_us": 22372.960000000003,
+          "inclusive_share_within_graph": 0.027274282145535192,
+          "inclusive_share_of_pair": 0.004503511451907816,
+          "groups": 3843
+        },
+        {
+          "op": "GET_ROWS",
+          "inclusive_us": 16431.120000000006,
+          "inclusive_share_within_graph": 0.02003074259495151,
+          "inclusive_share_of_pair": 0.00330746298601846,
+          "groups": 2006
+        },
+        {
+          "op": "RMS_NORM_MUL_ROPE",
+          "inclusive_us": 12984.309999999998,
+          "inclusive_share_within_graph": 0.01582882794252946,
+          "inclusive_share_of_pair": 0.0026136456141753776,
+          "groups": 1008
+        },
+        {
+          "op": "GLU",
+          "inclusive_us": 12356.400000000003,
+          "inclusive_share_within_graph": 0.01506335951537441,
+          "inclusive_share_of_pair": 0.002487251973111906,
+          "groups": 1890
+        },
+        {
+          "op": "CPY",
+          "inclusive_us": 10292.560000000003,
+          "inclusive_share_within_graph": 0.012547386909905964,
+          "inclusive_share_of_pair": 0.0020718162384167457,
+          "groups": 1582
+        },
+        {
+          "op": "MUL",
+          "inclusive_us": 9090.64,
+          "inclusive_share_within_graph": 0.011082158116024343,
+          "inclusive_share_of_pair": 0.0018298786278244479,
+          "groups": 2772
+        },
+        {
+          "op": "SSM_CONV",
+          "inclusive_us": 8887.120000000004,
+          "inclusive_share_within_graph": 0.0108340522819166,
+          "inclusive_share_of_pair": 0.0017889115563823027,
+          "groups": 1386
+        },
+        {
+          "op": "ADD",
+          "inclusive_us": 8864.120000000003,
+          "inclusive_share_within_graph": 0.010806013591937832,
+          "inclusive_share_of_pair": 0.0017842818264138995,
+          "groups": 3780
+        },
+        {
+          "op": "SCALE",
+          "inclusive_us": 7359.520000000002,
+          "inclusive_share_within_graph": 0.008971795637935667,
+          "inclusive_share_of_pair": 0.0014814169694374198,
+          "groups": 882
+        },
+        {
+          "op": "SET_ROWS",
+          "inclusive_us": 4684.319999999999,
+          "inclusive_share_within_graph": 0.005710530271362098,
+          "inclusive_share_of_pair": 0.0009429189863299632,
+          "groups": 1008
+        },
+        {
+          "op": "CONCAT",
+          "inclusive_us": 4465.0,
+          "inclusive_share_within_graph": 0.005443163076312415,
+          "inclusive_share_of_pair": 0.0008987714916921317,
+          "groups": 1386
+        }
+      ]
+    },
+    {
+      "graph_index": 1,
+      "misc_total_us": 379632.23000000004,
+      "misc_share_within_graph": 0.09153064025939665,
+      "misc_share_of_pair": 0.07641716140011433,
+      "exclusive_ops": [
+        {
+          "op": "RMS_NORM_MUL_ROPE",
+          "exclusive_us": 55394.64000000001,
+          "exclusive_share_within_graph": 0.01335583879729807,
+          "exclusive_share_of_pair": 0.011150531517256134,
+          "groups": 504
+        },
+        {
+          "op": "GLU",
+          "exclusive_us": 45514.68,
+          "exclusive_share_within_graph": 0.010973746358683917,
+          "exclusive_share_of_pair": 0.00916176860862039,
+          "groups": 1071
+        },
+        {
+          "op": "RMS_NORM_MUL",
+          "exclusive_us": 44665.759999999995,
+          "exclusive_share_within_graph": 0.010769068818188982,
+          "exclusive_share_of_pair": 0.008990887288412708,
+          "groups": 3591
+        },
+        {
+          "op": "ADD",
+          "exclusive_us": 44486.840000000004,
+          "exclusive_share_within_graph": 0.0107259305889738,
+          "exclusive_share_of_pair": 0.008954872015110683,
+          "groups": 3654
+        },
+        {
+          "op": "CONCAT",
+          "exclusive_us": 41779.799999999996,
+          "exclusive_share_within_graph": 0.010073253906575687,
+          "exclusive_share_of_pair": 0.008409964875386096,
+          "groups": 1323
+        },
+        {
+          "op": "MUL",
+          "exclusive_us": 32897.64,
+          "exclusive_share_within_graph": 0.007931734490043528,
+          "exclusive_share_of_pair": 0.006622051730336112,
+          "groups": 2709
+        },
+        {
+          "op": "MUL_MAT",
+          "exclusive_us": 19442.079999999998,
+          "exclusive_share_within_graph": 0.004687552556784787,
+          "exclusive_share_of_pair": 0.003913546974960305,
+          "groups": 1449
+        }
+      ],
+      "inclusive_ops": [
+        {
+          "op": "GLU",
+          "inclusive_us": 76639.92,
+          "inclusive_share_within_graph": 0.018478149094530088,
+          "inclusive_share_of_pair": 0.015427049321739226,
+          "groups": 1827
+        },
+        {
+          "op": "RMS_NORM_MUL_ROPE",
+          "inclusive_us": 72304.43000000001,
+          "inclusive_share_within_graph": 0.0174328474995148,
+          "inclusive_share_of_pair": 0.01455434723562135,
+          "groups": 1008
+        },
+        {
+          "op": "GET_ROWS",
+          "inclusive_us": 70082.44000000002,
+          "inclusive_share_within_graph": 0.016897118045379737,
+          "inclusive_share_of_pair": 0.014107077075078238,
+          "groups": 1953
+        },
+        {
+          "op": "RMS_NORM_MUL",
+          "inclusive_us": 46700.87999999999,
+          "inclusive_share_within_graph": 0.011259743270683974,
+          "inclusive_share_of_pair": 0.009400541899425584,
+          "groups": 3717
+        },
+        {
+          "op": "CONCAT",
+          "inclusive_us": 44567.719999999994,
+          "inclusive_share_within_graph": 0.010745431035983211,
+          "inclusive_share_of_pair": 0.008971152561190873,
+          "groups": 1386
+        },
+        {
+          "op": "ADD",
+          "inclusive_us": 44486.840000000004,
+          "inclusive_share_within_graph": 0.0107259305889738,
+          "inclusive_share_of_pair": 0.008954872015110683,
+          "groups": 3654
+        },
+        {
+          "op": "CPY",
+          "inclusive_us": 42496.64000000002,
+          "inclusive_share_within_graph": 0.010246086503438044,
+          "inclusive_share_of_pair": 0.008554259468018709,
+          "groups": 1575
+        },
+        {
+          "op": "MUL_MAT",
+          "inclusive_us": 37551.78999999999,
+          "inclusive_share_within_graph": 0.009053866110331064,
+          "inclusive_share_of_pair": 0.0075588977187031735,
+          "groups": 2016
+        },
+        {
+          "op": "SSM_CONV",
+          "inclusive_us": 37273.56000000003,
+          "inclusive_share_within_graph": 0.008986783897529034,
+          "inclusive_share_of_pair": 0.007502892076568017,
+          "groups": 1386
+        },
+        {
+          "op": "MUL",
+          "inclusive_us": 33978.52,
+          "inclusive_share_within_graph": 0.008192338386724209,
+          "inclusive_share_of_pair": 0.00683962488373817,
+          "groups": 2772
+        },
+        {
+          "op": "SCALE",
+          "inclusive_us": 33441.36,
+          "inclusive_share_within_graph": 0.008062827257698791,
+          "inclusive_share_of_pair": 0.006731498546789157,
+          "groups": 882
+        },
+        {
+          "op": "SET_ROWS",
+          "inclusive_us": 6076.719999999998,
+          "inclusive_share_within_graph": 0.0014651181546863937,
+          "inclusive_share_of_pair": 0.0012231988127649294,
+          "groups": 1008
+        }
+      ]
+    }
+  ],
+  "warning": "GGML_VK_PERF_LOGGER fences every graph. Shares are diagnostic; instrumented wall time is not a service throughput result. Fused groups charge the same interval to every op they name."
+}

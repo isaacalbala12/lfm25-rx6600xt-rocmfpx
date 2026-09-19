@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "id": "gateup-bk3-shape",
+  "parent": "gateup-selective-bkstep3",
+  "mutation": "specialize gate/up BK3 for the exact M=10752 N=128 K=2048 grid",
+  "hypothesis": "the full production tile has compile-time exact row, column, and K extents, allowing output bounds, split-K indexing, and uniform shape arithmetic to disappear together",
+  "expected_mechanism": "remove shape-dependent control flow and reduce address arithmetic throughout setup, K-loop, and output",
+  "affected_resource": "instruction count, address arithmetic, and control flow",
+  "expected_local_gain": "2-4%",
+  "expected_global_leverage": "gate/up is 32.79% of the N128 prefill tile; 2.29% local reaches the 0.75% server gate",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp"
+  ],
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOSPLIT": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOBOUNDS": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_EXACT": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_K2048": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_SHAPE": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOSPLIT": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOBOUNDS": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_EXACT": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_K2048": "0",
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_SHAPE": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_shape_m"
+}

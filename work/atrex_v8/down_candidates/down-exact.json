@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "id": "down-exact",
+  "parent": "down-notail",
+  "mutation": "compose exact down no-tail, one-K-partition and no-output-bound predicates while retaining BM64 BN64 BK32 BK_STEP4",
+  "hypothesis": "the individually safe exact-shape simplifications may compose by shortening both the repeated K loop and output epilogue",
+  "expected_mechanism": "remove generic tail, split-K and output-bound control from the exact production hot shape",
+  "affected_resource": "control-flow, integer and address instruction overhead",
+  "expected_local_gain": "2-7%",
+  "expected_global_leverage": "0.47-1.63% from the 23.28% down share",
+  "changed_files": ["extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp", "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp", "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp"],
+  "control_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT": "0", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOBOUNDS": "0", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT": "0"},
+  "candidate_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT": "0", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOBOUNDS": "0", "GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT": "1"},
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_exact_m"
+}

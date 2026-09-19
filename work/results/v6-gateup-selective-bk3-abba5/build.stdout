@@ -1,0 +1,328 @@
+[0/2] Re-checking globbed directories...
+[1/2] Re-running CMake...
+-- llama.cpp version: 0.3.0-dev
+-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -march=native 
+-- Vulkan found
+-- GL_KHR_cooperative_matrix supported by glslc
+-- GL_NV_cooperative_matrix2 supported by glslc
+-- GL_NV_cooperative_matrix_decode_vector supported by glslc
+-- GL_EXT_integer_dot_product supported by glslc
+-- GL_EXT_bfloat16 supported by glslc
+-- GL_EXT_float_e2m1 supported by glslc
+-- GL_EXT_float_e4m3 supported by glslc
+-- Including Vulkan backend
+-- ggml version: 0.22.0
+-- ggml commit:  7c4b5c0
+-- Vulkan found for ROCmFPX Charlie backend
+-- GL_KHR_cooperative_matrix supported by glslc
+-- GL_NV_cooperative_matrix2 supported by glslc
+-- GL_NV_cooperative_matrix_decode_vector supported by glslc
+-- GL_EXT_integer_dot_product supported by glslc
+-- GL_EXT_bfloat16 supported by glslc
+-- OpenSSL found: 3.6.4
+-- Generating embedded license file for target: llama-app
+-- Configuring done (2.3s)
+-- Generating done (0.3s)
+-- Build files have been written to: /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented
+[0/4] Re-checking globbed directories...
+[1/286] Performing build step for 'vulkan-shaders-gen'
+ninja: no work to do.
+[2/286] Performing install step for 'vulkan-shaders-gen'
+-- Installing: /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/Release/vulkan-shaders-gen
+[3/286] Completed 'vulkan-shaders-gen'
+[4/286] Performing build step for 'rocmfpx-vulkan-shaders-gen'
+[1/2] Building CXX object CMakeFiles/rocmfpx-vulkan-shaders-gen.dir/vulkan-shaders-gen.cpp.o
+[2/2] Linking CXX executable rocmfpx-vulkan-shaders-gen
+[5/286] Performing install step for 'rocmfpx-vulkan-shaders-gen'
+-- Installing: /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/Release/rocmfpx-vulkan-shaders-gen
+[6/286] Completed 'rocmfpx-vulkan-shaders-gen'
+[7/286] Generate vulkan shaders header
+[8/286] Generate vulkan shaders for acc.comp
+[9/286] Generate vulkan shaders for add1.comp
+[10/286] Generate vulkan shaders for add.comp
+[11/286] Generate vulkan shaders for add_id.comp
+[12/286] Generate vulkan shaders for arange.comp
+[13/286] Generate vulkan shaders for argmax.comp
+[14/286] Generate vulkan shaders for argsort.comp
+[15/286] Generate vulkan shaders for argsort_large.comp
+[16/286] Generate vulkan shaders for concat.comp
+[17/286] Generate vulkan shaders for conv2d_dw.comp
+[18/286] Generate vulkan shaders for contig_copy.comp
+[19/286] Generate vulkan shaders for conv_transpose_1d.comp
+[20/286] Generate vulkan shaders for conv2d_mm.comp
+[21/286] Generate vulkan shaders for copy.comp
+[22/286] Generate vulkan shaders for copy_quant_same.comp
+[23/286] Generate vulkan shaders for copy_from_quant.comp
+[24/286] Generate vulkan shaders for copy_transpose.comp
+[25/286] Generate vulkan shaders for count_equal.comp
+[26/286] Generate vulkan shaders for count_experts.comp
+[27/286] Generate vulkan shaders for cumsum.comp
+[28/286] Generate vulkan shaders for cumsum_multipass1.comp
+[29/286] Generate vulkan shaders for cumsum_multipass2.comp
+[30/286] Generate vulkan shaders for dequant_f32.comp
+[31/286] Generate vulkan shaders for copy_to_quant.comp
+[32/286] Generate vulkan shaders for dequant_iq1_m.comp
+[33/286] Generate vulkan shaders for dequant_iq1_s.comp
+[34/286] Generate vulkan shaders for dequant_iq2_s.comp
+[35/286] Generate vulkan shaders for dequant_iq2_xs.comp
+[36/286] Generate vulkan shaders for dequant_iq2_xxs.comp
+[37/286] Generate vulkan shaders for dequant_iq3_s.comp
+[38/286] Generate vulkan shaders for dequant_iq3_xxs.comp
+[39/286] Generate vulkan shaders for dequant_iq4_nl.comp
+[40/286] Generate vulkan shaders for dequant_iq4_xs.comp
+[41/286] Generate vulkan shaders for dequant_mxfp4.comp
+[42/286] Generate vulkan shaders for dequant_nvfp4.comp
+[43/286] Generate vulkan shaders for dequant_q1_0.comp
+[44/286] Generate vulkan shaders for dequant_q2_k.comp
+[45/286] Generate vulkan shaders for dequant_q3_k.comp
+[46/286] Generate vulkan shaders for dequant_q4_0.comp
+[47/286] Generate vulkan shaders for dequant_q4_1.comp
+[48/286] Generate vulkan shaders for dequant_q4_k.comp
+[49/286] Generate vulkan shaders for dequant_q5_0.comp
+[50/286] Generate vulkan shaders for dequant_q5_1.comp
+[51/286] Generate vulkan shaders for dequant_q5_k.comp
+[52/286] Generate vulkan shaders for dequant_q6_k.comp
+[53/286] Generate vulkan shaders for dequant_q8_0.comp
+[54/286] Generate vulkan shaders for dequant_rocmfp4.comp
+[55/286] Generate vulkan shaders for dequant_rocmfp4_fast.comp
+[56/286] Generate vulkan shaders for dequant_rocmfpx_fp2.comp
+[57/286] Generate vulkan shaders for dequant_rocmfpx_fp3.comp
+[58/286] Generate vulkan shaders for dequant_rocmfpx_fp6.comp
+[59/286] Generate vulkan shaders for dequant_rocmfpx_fp8.comp
+[60/286] Generate vulkan shaders for dequant_turbo3_0.comp
+[61/286] Generate vulkan shaders for dequant_turbo4_0.comp
+[62/286] Generate vulkan shaders for diag.comp
+[63/286] Generate vulkan shaders for diag_mask_inf.comp
+[64/286] Generate vulkan shaders for fill.comp
+[65/286] Generate vulkan shaders for div.comp
+[66/286] Generate vulkan shaders for flash_attn_cm1.comp
+[67/286] Generate vulkan shaders for flash_attn_cm2.comp
+[68/286] Generate vulkan shaders for flash_attn_mask_opt.comp
+[69/286] Generate vulkan shaders for flash_attn_split_k_reduce.comp
+[70/286] Generate vulkan shaders for gated_delta_net.comp
+[71/286] Generate vulkan shaders for geglu.comp
+[72/286] Generate vulkan shaders for flash_attn.comp
+[73/286] Generate vulkan shaders for geglu_erf.comp
+[74/286] Generate vulkan shaders for geglu_quick.comp
+[75/286] Generate vulkan shaders for get_rows.comp
+[76/286] Generate vulkan shaders for group_norm.comp
+[77/286] Generate vulkan shaders for im2col.comp
+[78/286] Generate vulkan shaders for im2col_3d.comp
+[79/286] Generate vulkan shaders for l2_norm.comp
+[80/286] Generate vulkan shaders for log.comp
+[81/286] Generate vulkan shaders for get_rows_quant.comp
+[82/286] Generate vulkan shaders for mul.comp
+[83/286] Generate vulkan shaders for mul_mat_split_k_reduce.comp
+[84/286] Generate vulkan shaders for mul_mat_vec_iq1_m.comp
+[85/286] Generate vulkan shaders for mul_mat_vec_iq1_s.comp
+[86/286] Generate vulkan shaders for mul_mat_vec_iq2_s.comp
+[87/286] Generate vulkan shaders for mul_mat_vec_iq2_xs.comp
+[88/286] Generate vulkan shaders for mul_mat_vec_iq2_xxs.comp
+[89/286] Generate vulkan shaders for mul_mat_vec_iq3_s.comp
+[90/286] Generate vulkan shaders for mul_mat_vec_iq3_xxs.comp
+[91/286] Generate vulkan shaders for mul_mat_vec_nc.comp
+[92/286] Generate vulkan shaders for mul_mat_vec_p021.comp
+[93/286] Generate vulkan shaders for mul_mat_vec_q2_k.comp
+[94/286] Generate vulkan shaders for mul_mat_vec_q3_k.comp
+[95/286] Generate vulkan shaders for mul_mat_vec_q4_k.comp
+[96/286] Generate vulkan shaders for mul_mat_vec_q5_k.comp
+[97/286] Generate vulkan shaders for mul_mat_vec.comp
+[98/286] Generate vulkan shaders for mul_mat_vec_q6_k.comp
+[99/286] Generate vulkan shaders for mul_mat_vecq.comp
+[100/286] Generate vulkan shaders for mul_mm_cm2.comp
+[101/286] Generate vulkan shaders for mul_mmq.comp
+[102/286] Generate vulkan shaders for multi_add.comp
+[103/286] Generate vulkan shaders for norm.comp
+[104/286] Generate vulkan shaders for opt_step_adamw.comp
+[105/286] Generate vulkan shaders for opt_step_sgd.comp
+[106/286] Generate vulkan shaders for pad.comp
+[107/286] Generate vulkan shaders for pool2d.comp
+[108/286] Generate vulkan shaders for quantize_q8_1.comp
+[109/286] Generate vulkan shaders for reglu.comp
+[110/286] Generate vulkan shaders for repeat.comp
+[111/286] Generate vulkan shaders for repeat_back.comp
+[112/286] Generate vulkan shaders for rms_norm.comp
+[113/286] Generate vulkan shaders for rms_norm_back.comp
+[114/286] Generate vulkan shaders for rms_norm_partials.comp
+[115/286] Generate vulkan shaders for roll.comp
+[116/286] Generate vulkan shaders for rope_multi.comp
+[117/286] Generate vulkan shaders for rope_neox.comp
+[118/286] Generate vulkan shaders for rope_norm.comp
+[119/286] Generate vulkan shaders for rope_vision.comp
+[120/286] Generate vulkan shaders for scale.comp
+[121/286] Generate vulkan shaders for set_rows_turbo.comp
+[122/286] Generate vulkan shaders for silu_back.comp
+[123/286] Generate vulkan shaders for soft_max.comp
+[124/286] Generate vulkan shaders for soft_max_back.comp
+[125/286] Generate vulkan shaders for soft_max_large1.comp
+[126/286] Generate vulkan shaders for soft_max_large2.comp
+[127/286] Generate vulkan shaders for soft_max_large3.comp
+[128/286] Generate vulkan shaders for solve_tri.comp
+[129/286] Generate vulkan shaders for ssm_conv.comp
+[130/286] Generate vulkan shaders for ssm_scan.comp
+[131/286] Generate vulkan shaders for sub.comp
+[132/286] Generate vulkan shaders for sum_rows.comp
+[133/286] Generate vulkan shaders for swiglu.comp
+[134/286] Generate vulkan shaders for swiglu_oai.comp
+[135/286] Generate vulkan shaders for timestep_embedding.comp
+[136/286] Generate vulkan shaders for topk_argsort.comp
+[137/286] Generate vulkan shaders for topk_moe.comp
+[138/286] Generate vulkan shaders for topk_nary_search.comp
+[139/286] Generate vulkan shaders for tri.comp
+[140/286] Generate vulkan shaders for unary.comp
+[141/286] Generate vulkan shaders for upscale.comp
+[142/286] Generate vulkan shaders for wkv6.comp
+[143/286] Generate vulkan shaders for wkv7.comp
+[144/286] Generate vulkan shaders for mul_mm.comp
+[145/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/acc.comp.cpp.o
+[146/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/add.comp.cpp.o
+[147/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/add1.comp.cpp.o
+[148/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/add_id.comp.cpp.o
+[149/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/arange.comp.cpp.o
+[150/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/argmax.comp.cpp.o
+[151/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/argsort.comp.cpp.o
+[152/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/argsort_large.comp.cpp.o
+[153/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/concat.comp.cpp.o
+[154/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/contig_copy.comp.cpp.o
+[155/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/conv2d_dw.comp.cpp.o
+[156/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/conv2d_mm.comp.cpp.o
+[157/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/conv_transpose_1d.comp.cpp.o
+[158/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/copy.comp.cpp.o
+[159/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/copy_from_quant.comp.cpp.o
+[160/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/copy_quant_same.comp.cpp.o
+[161/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/copy_to_quant.comp.cpp.o
+[162/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/copy_transpose.comp.cpp.o
+[163/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/count_equal.comp.cpp.o
+[164/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/count_experts.comp.cpp.o
+[165/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/cumsum.comp.cpp.o
+[166/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/cumsum_multipass1.comp.cpp.o
+[167/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/cumsum_multipass2.comp.cpp.o
+[168/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_f32.comp.cpp.o
+[169/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq1_m.comp.cpp.o
+[170/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq1_s.comp.cpp.o
+[171/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq2_s.comp.cpp.o
+[172/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq2_xs.comp.cpp.o
+[173/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq2_xxs.comp.cpp.o
+[174/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq3_s.comp.cpp.o
+[175/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq3_xxs.comp.cpp.o
+[176/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq4_nl.comp.cpp.o
+[177/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_iq4_xs.comp.cpp.o
+[178/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_mxfp4.comp.cpp.o
+[179/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_nvfp4.comp.cpp.o
+[180/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q1_0.comp.cpp.o
+[181/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q2_k.comp.cpp.o
+[182/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q3_k.comp.cpp.o
+[183/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q4_0.comp.cpp.o
+[184/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q4_1.comp.cpp.o
+[185/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q4_k.comp.cpp.o
+[186/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q5_0.comp.cpp.o
+[187/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q5_1.comp.cpp.o
+[188/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q5_k.comp.cpp.o
+[189/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q6_k.comp.cpp.o
+[190/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_q8_0.comp.cpp.o
+[191/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_rocmfp4.comp.cpp.o
+[192/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_rocmfp4_fast.comp.cpp.o
+[193/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_rocmfpx_fp2.comp.cpp.o
+[194/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_rocmfpx_fp3.comp.cpp.o
+[195/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_rocmfpx_fp6.comp.cpp.o
+[196/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_rocmfpx_fp8.comp.cpp.o
+[197/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_turbo3_0.comp.cpp.o
+[198/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/dequant_turbo4_0.comp.cpp.o
+[199/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/diag.comp.cpp.o
+[200/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/diag_mask_inf.comp.cpp.o
+[201/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/div.comp.cpp.o
+[202/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/fill.comp.cpp.o
+[203/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/flash_attn.comp.cpp.o
+[204/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/flash_attn_cm1.comp.cpp.o
+[205/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/flash_attn_cm2.comp.cpp.o
+[206/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/flash_attn_mask_opt.comp.cpp.o
+[207/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/flash_attn_split_k_reduce.comp.cpp.o
+[208/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/gated_delta_net.comp.cpp.o
+[209/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/geglu.comp.cpp.o
+[210/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/geglu_erf.comp.cpp.o
+[211/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/geglu_quick.comp.cpp.o
+[212/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/get_rows.comp.cpp.o
+[213/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/get_rows_quant.comp.cpp.o
+[214/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/group_norm.comp.cpp.o
+[215/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/im2col.comp.cpp.o
+[216/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/im2col_3d.comp.cpp.o
+[217/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/l2_norm.comp.cpp.o
+[218/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/log.comp.cpp.o
+[219/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul.comp.cpp.o
+[220/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_split_k_reduce.comp.cpp.o
+[221/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec.comp.cpp.o
+[222/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_iq1_m.comp.cpp.o
+[223/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_iq1_s.comp.cpp.o
+[224/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_iq2_s.comp.cpp.o
+[225/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_iq2_xs.comp.cpp.o
+[226/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_iq2_xxs.comp.cpp.o
+[227/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_iq3_s.comp.cpp.o
+[228/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_iq3_xxs.comp.cpp.o
+[229/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_nc.comp.cpp.o
+[230/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_p021.comp.cpp.o
+[231/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_q2_k.comp.cpp.o
+[232/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_q3_k.comp.cpp.o
+[233/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_q4_k.comp.cpp.o
+[234/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_q5_k.comp.cpp.o
+[235/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vec_q6_k.comp.cpp.o
+[236/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mat_vecq.comp.cpp.o
+[237/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mm.comp.cpp.o
+[238/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mm_cm2.comp.cpp.o
+[239/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/mul_mmq.comp.cpp.o
+[240/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/multi_add.comp.cpp.o
+[241/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/norm.comp.cpp.o
+[242/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/opt_step_adamw.comp.cpp.o
+[243/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/opt_step_sgd.comp.cpp.o
+[244/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/pad.comp.cpp.o
+[245/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/pool2d.comp.cpp.o
+[246/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/quantize_q8_1.comp.cpp.o
+[247/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/reglu.comp.cpp.o
+[248/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/repeat.comp.cpp.o
+[249/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/repeat_back.comp.cpp.o
+[250/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/rms_norm.comp.cpp.o
+[251/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/rms_norm_back.comp.cpp.o
+[252/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/rms_norm_partials.comp.cpp.o
+[253/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/roll.comp.cpp.o
+[254/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/rope_multi.comp.cpp.o
+[255/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/rope_neox.comp.cpp.o
+[256/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/rope_norm.comp.cpp.o
+[257/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/rope_vision.comp.cpp.o
+[258/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/scale.comp.cpp.o
+[259/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/set_rows_turbo.comp.cpp.o
+[260/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/silu_back.comp.cpp.o
+[261/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/soft_max.comp.cpp.o
+[262/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/soft_max_back.comp.cpp.o
+[263/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/soft_max_large1.comp.cpp.o
+[264/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/soft_max_large2.comp.cpp.o
+[265/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/soft_max_large3.comp.cpp.o
+[266/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/solve_tri.comp.cpp.o
+[267/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/ssm_conv.comp.cpp.o
+[268/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/ssm_scan.comp.cpp.o
+[269/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/sub.comp.cpp.o
+[270/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/sum_rows.comp.cpp.o
+[271/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/swiglu.comp.cpp.o
+[272/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/swiglu_oai.comp.cpp.o
+[273/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/timestep_embedding.comp.cpp.o
+[274/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/topk_argsort.comp.cpp.o
+[275/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/topk_moe.comp.cpp.o
+[276/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/topk_nary_search.comp.cpp.o
+[277/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/tri.comp.cpp.o
+[278/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/unary.comp.cpp.o
+[279/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/upscale.comp.cpp.o
+[280/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/wkv6.comp.cpp.o
+[281/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/wkv7.comp.cpp.o
+[282/286] Building CXX object extensions/rocmfpx-vulkan/backend/CMakeFiles/ggml-rocmfpx-vulkan.dir/ggml-vulkan.cpp.o
+/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/sources/ROCmFPX/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp: In function 'void ggml_vk_load_shaders(vk_device&, vk_pipeline)':
+/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/sources/ROCmFPX/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp:5260:224: warning: bitwise operation between different enumeration types 'ggml_scale_mode' and 'ggml_scale_flag' is deprecated [-Wdeprecated-enum-enum-conversion]
+ 5260 |     ggml_vk_create_pipeline(device, device->pipeline_upscale_bilinear_antialias_f32, "upscale_f32", upscale_f32_len, upscale_f32_data, "main", 2, sizeof(vk_op_upscale_push_constants), {512, 1, 1}, {GGML_SCALE_MODE_BILINEAR | GGML_SCALE_FLAG_ANTIALIAS}, 1);
+      |                                                                                                                                                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/sources/ROCmFPX/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp: In function 'vk_pipeline ggml_vk_op_get_pipeline(ggml_backend_vk_context*, const ggml_tensor*, const ggml_tensor*, const ggml_tensor*, const ggml_tensor*, ggml_op)':
+/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/sources/ROCmFPX/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp:10921:47: warning: bitwise operation between different enumeration types 'ggml_scale_mode' and 'ggml_scale_flag' is deprecated [-Wdeprecated-enum-enum-conversion]
+10921 |                 case GGML_SCALE_MODE_BILINEAR | GGML_SCALE_FLAG_ANTIALIAS:
+      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[283/286] Linking CXX shared module bin/libggml-rocmfpx-vulkan.so

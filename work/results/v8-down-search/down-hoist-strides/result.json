@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 511.603,
+    "median_us": 511.31499999999994,
+    "p5_us": 508.26500000000004,
+    "p95_us": 515.484,
+    "samples_us": [
+      513.07,
+      509.09,
+      512.05,
+      514.45,
+      510.28,
+      508.54,
+      508.04,
+      516.33,
+      510.58,
+      513.6
+    ],
+    "stdev_us": 2.7483087728840077
+  },
+  "candidate_id": "down-hoist-strides",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_hoist_m",
+  "control": {
+    "mean_us": 514.347,
+    "median_us": 514.48,
+    "p5_us": 509.658,
+    "p95_us": 520.641,
+    "samples_us": [
+      514.41,
+      514.55,
+      517.55,
+      523.17,
+      510.78,
+      511.31,
+      514.84,
+      512.94,
+      508.74,
+      515.18
+    ],
+    "stdev_us": 4.0062674509933505
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "decision": "REJECT_MICRO",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789761651.984231,
+  "gate": "PASS",
+  "mutation": "hoist invariant down stride-to-block conversions outside the K loop while retaining BM64 BN64 BK32 BK_STEP4",
+  "paired_bootstrap_95ci_percent": [
+    -1.366361749557976,
+    0.02539260879756977
+  ],
+  "paired_delta_median_percent": -0.33178306641500344,
+  "paired_delta_percent": [
+    -0.6608614523402223,
+    -1.366361749557976,
+    -0.3199326869453789,
+    -0.33178306641500344,
+    0.02539260879756977
+  ],
+  "pairs": 5,
+  "parent": "down-bm64-bn64-bk32-bk4",
+  "provenance": {
+    "candidate_backend_sha256": "89265c7cacfb550b8965035a7a084684ae3bf7605d47d30d5742c02e122c84f9",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "89265c7cacfb550b8965035a7a084684ae3bf7605d47d30d5742c02e122c84f9",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=2048,n=128,k=10752",
+    "manifest_sha256": "ff257c066bd0800f07585a7a069010dfa45406b2a4987ce894e149af10257666",
+    "problem": {
+      "family": "down",
+      "k": 10752,
+      "m": 2048,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "ec12c3e8f96cb1424aed467009eeb31d16f50f4719aa9c99d76009ce5c63539f",
+    "source_head": "4756266d02af819746b214013c9d43b8f753bef6",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789761601.5497537
+}

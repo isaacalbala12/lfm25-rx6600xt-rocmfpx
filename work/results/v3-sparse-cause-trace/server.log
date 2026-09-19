@@ -1,0 +1,137 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+0.00.069.677 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.070.108 W srv  llama_server: -----------------
+0.00.070.111 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.070.111 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.070.111 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.070.112 W srv  llama_server: -----------------
+0.00.071.372 I srv    load_model: loading model 'work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf'
+0.01.994.095 I cmn          init: llama threadpool init, n_threads = 4
+0.01.994.182 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=0 used=0
+0.01.994.190 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.01.994.219 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.01.994.220 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.020.781 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.02.020.786 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.020.800 W RSTRACE event=find_begin ids=[0] n_seqs=1 n_seq_tokens=2 head=0 n=1 used=0
+0.02.020.801 W RSTRACE event=find_end head=0 n=1 used=1 min=0 max=0 tails=[0] rs_z=0
+0.02.029.378 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 1024, kv_unified = 'false'
+0.02.029.426 W srv    load_model: LLAMA_SERVER_COMPACT_SLOTS = 1
+0.02.029.428 W srv    load_model: LLAMA_SERVER_BATCH_TRACE = 1
+0.02.034.202 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.02.034.237 I srv  llama_server: model loaded
+0.02.034.242 I srv  llama_server: listening on http://127.0.0.1:18136
+0.18.381.467 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.18.381.503 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.18.381.506 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.18.381.517 I slot launch_slot_: id  1 | task 1 | processing task, is_child = 0
+0.18.381.518 I slot get_availabl: id  2 | task -1 | selected slot by id (2)
+0.18.381.528 I slot launch_slot_: id  2 | task 2 | processing task, is_child = 0
+0.18.381.619 W srv        decode: BATCHTRACE off=0 tokens=36 prompt_tokens=36 decode_tokens=0 active_ids=[0,1,2] has_output=0
+0.18.381.676 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=12 head=0 n=1 used=0
+0.18.381.681 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=0
+0.18.381.735 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=12 head=0 n=3 used=0
+0.18.381.739 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=0
+0.18.443.270 W srv        decode: BATCHTRACE off=0 tokens=12 prompt_tokens=12 decode_tokens=0 active_ids=[0,1,2] has_output=1
+0.18.443.349 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=4 head=0 n=3 used=3
+0.18.443.356 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.443.436 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=4 head=0 n=3 used=3
+0.18.443.445 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.492.801 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 active_ids=[0,1,2] has_output=1
+0.18.492.854 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.492.857 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.492.891 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.492.892 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.505.511 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 active_ids=[0,1,2] has_output=1
+0.18.505.561 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.505.566 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.505.606 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.505.609 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.516.338 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 active_ids=[0,1,2] has_output=1
+0.18.516.386 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.516.390 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.516.431 W RSTRACE event=find_begin ids=[0,1,2] n_seqs=3 n_seq_tokens=1 head=0 n=3 used=3
+0.18.516.433 W RSTRACE event=find_end head=0 n=3 used=3 min=0 max=2 tails=[0,1,2] rs_z=-1
+0.18.526.666 I slot print_timing: id  0 | task 0 | prompt eval time =     110.42 ms /    16 tokens (    6.90 ms per token,   144.89 tokens per second)
+0.18.526.671 I slot print_timing: id  0 | task 0 |        eval time =      34.68 ms /     4 tokens (   11.56 ms per token,    86.52 tokens per second)
+0.18.526.673 I slot print_timing: id  0 | task 0 |       total time =     145.10 ms /    20 tokens
+0.18.526.679 I slot print_timing: id  0 | task 0 |    graphs reused =          3
+0.18.526.708 I slot      release: id  0 | task 0 | stop processing: n_tokens = 19, truncated = 0
+0.18.526.988 I slot print_timing: id  1 | task 1 | prompt eval time =     110.76 ms /    16 tokens (    6.92 ms per token,   144.46 tokens per second)
+0.18.526.991 I slot print_timing: id  1 | task 1 |        eval time =      34.65 ms /     4 tokens (   11.55 ms per token,    86.58 tokens per second)
+0.18.526.992 I slot print_timing: id  1 | task 1 |       total time =     145.41 ms /    20 tokens
+0.18.526.993 I slot print_timing: id  1 | task 1 |    graphs reused =          3
+0.18.527.012 I slot      release: id  1 | task 1 | stop processing: n_tokens = 19, truncated = 0
+0.18.527.271 I slot print_timing: id  2 | task 2 | prompt eval time =     111.17 ms /    16 tokens (    6.95 ms per token,   143.92 tokens per second)
+0.18.527.275 I slot print_timing: id  2 | task 2 |        eval time =      34.52 ms /     4 tokens (   11.51 ms per token,    86.91 tokens per second)
+0.18.527.276 I slot print_timing: id  2 | task 2 |       total time =     145.69 ms /    20 tokens
+0.18.527.276 I slot print_timing: id  2 | task 2 |    graphs reused =          3
+0.18.527.286 I slot      release: id  2 | task 2 | stop processing: n_tokens = 19, truncated = 0
+0.26.045.602 I slot get_availabl: id  3 | task -1 | selected slot by id (3)
+0.26.045.643 I slot launch_slot_: id  3 | task 8 | processing task, is_child = 0
+0.26.055.826 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.26.055.858 I slot launch_slot_: id  1 | task 9 | processing task, is_child = 0
+0.26.055.876 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.26.055.885 I slot launch_slot_: id  0 | task 10 | processing task, is_child = 0
+0.26.055.952 W srv        decode: BATCHTRACE off=0 tokens=36 prompt_tokens=36 decode_tokens=0 active_ids=[0,1,3] has_output=0
+0.26.056.001 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=12 head=0 n=3 used=1
+0.26.056.006 W RSTRACE event=find_end head=0 n=2 used=3 min=0 max=1 tails=[0,1] rs_z=0
+0.26.056.007 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=12 head=0 n=2 used=3
+0.26.056.009 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=3
+0.26.056.063 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=12 head=0 n=1 used=1
+0.26.056.067 W RSTRACE event=find_end head=0 n=2 used=3 min=0 max=1 tails=[0,1] rs_z=0
+0.26.059.538 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=12 head=0 n=2 used=3
+0.26.059.544 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=3
+0.26.139.167 W srv        decode: BATCHTRACE off=0 tokens=12 prompt_tokens=12 decode_tokens=0 active_ids=[0,1,3] has_output=1
+0.26.139.231 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=4 head=3 n=1 used=4
+0.26.139.235 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.139.238 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=4 head=0 n=2 used=4
+0.26.139.240 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.139.292 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=4 head=3 n=1 used=4
+0.26.139.294 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.147.599 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=4 head=0 n=2 used=4
+0.26.147.612 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.181.002 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 active_ids=[0,1,3] has_output=1
+0.26.181.058 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=3 n=1 used=4
+0.26.181.061 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.181.063 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=2 used=4
+0.26.181.064 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.181.104 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=3 n=1 used=4
+0.26.181.106 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.184.311 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=2 used=4
+0.26.184.317 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.200.809 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 active_ids=[0,1,3] has_output=1
+0.26.200.857 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=3 n=1 used=4
+0.26.200.860 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.200.862 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=2 used=4
+0.26.200.863 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.200.896 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=3 n=1 used=4
+0.26.200.898 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.203.871 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=2 used=4
+0.26.203.876 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.219.870 W srv        decode: BATCHTRACE off=0 tokens=3 prompt_tokens=0 decode_tokens=3 active_ids=[0,1,3] has_output=1
+0.26.219.924 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=3 n=1 used=4
+0.26.219.927 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.219.929 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=2 used=4
+0.26.219.930 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.219.962 W RSTRACE event=find_begin ids=[0,1] n_seqs=2 n_seq_tokens=1 head=3 n=1 used=4
+0.26.219.963 W RSTRACE event=find_end head=0 n=2 used=4 min=0 max=1 tails=[0,1] rs_z=-1
+0.26.222.939 W RSTRACE event=find_begin ids=[3] n_seqs=1 n_seq_tokens=1 head=0 n=2 used=4
+0.26.222.943 W RSTRACE event=find_end head=3 n=1 used=4 min=3 max=3 tails=[3] rs_z=-1
+0.26.238.584 I slot print_timing: id  0 | task 10 | prompt eval time =     124.28 ms /    16 tokens (    7.77 ms per token,   128.75 tokens per second)
+0.26.238.590 I slot print_timing: id  0 | task 10 |        eval time =      58.39 ms /     4 tokens (   19.46 ms per token,    51.38 tokens per second)
+0.26.238.591 I slot print_timing: id  0 | task 10 |       total time =     182.66 ms /    20 tokens
+0.26.238.592 I slot print_timing: id  0 | task 10 |    graphs reused =          3
+0.26.238.629 I slot      release: id  0 | task 10 | stop processing: n_tokens = 19, truncated = 0
+0.26.238.904 I slot print_timing: id  1 | task 9 | prompt eval time =     124.66 ms /    16 tokens (    7.79 ms per token,   128.34 tokens per second)
+0.26.238.908 I slot print_timing: id  1 | task 9 |        eval time =      58.31 ms /     4 tokens (   19.44 ms per token,    51.45 tokens per second)
+0.26.238.909 I slot print_timing: id  1 | task 9 |       total time =     182.97 ms /    20 tokens
+0.26.238.910 I slot print_timing: id  1 | task 9 |    graphs reused =          3
+0.26.238.919 I slot      release: id  1 | task 9 | stop processing: n_tokens = 19, truncated = 0
+0.26.239.178 I slot print_timing: id  3 | task 8 | prompt eval time =     125.02 ms /    16 tokens (    7.81 ms per token,   127.98 tokens per second)
+0.26.239.181 I slot print_timing: id  3 | task 8 |        eval time =      58.22 ms /     4 tokens (   19.41 ms per token,    51.53 tokens per second)
+0.26.239.182 I slot print_timing: id  3 | task 8 |       total time =     183.24 ms /    20 tokens
+0.26.239.183 I slot print_timing: id  3 | task 8 |    graphs reused =          3
+0.26.239.192 I slot      release: id  3 | task 8 | stop processing: n_tokens = 19, truncated = 0
+0.53.999.719 I srv    operator(): operator(): cleaning up before exit...

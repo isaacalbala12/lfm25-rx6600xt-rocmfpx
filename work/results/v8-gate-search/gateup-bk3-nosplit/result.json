@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 412.291,
+    "median_us": 411.965,
+    "p5_us": 410.2875,
+    "p95_us": 415.078,
+    "samples_us": [
+      412.78,
+      414.33,
+      411.12,
+      410.22,
+      415.69,
+      413.49,
+      410.38,
+      410.37,
+      413.38,
+      411.15
+    ],
+    "stdev_us": 1.9113023483129634
+  },
+  "candidate_id": "gateup-bk3-nosplit",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_nosplit_m",
+  "control": {
+    "mean_us": 412.754,
+    "median_us": 413.355,
+    "p5_us": 410.302,
+    "p95_us": 414.853,
+    "samples_us": [
+      410.88,
+      414.56,
+      413.62,
+      410.39,
+      414.06,
+      410.23,
+      411.03,
+      414.97,
+      413.09,
+      414.71
+    ],
+    "stdev_us": 1.915139681589835
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "decision": "REJECT_MICRO",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789764084.293114,
+  "gate": "PASS",
+  "mutation": "remove split-K indexing and reduction branches from the exact gate/up BK3 pipeline",
+  "paired_bootstrap_95ci_percent": [
+    -0.6355932203389814,
+    0.593237816787795
+  ],
+  "paired_delta_median_percent": -0.3240251938690042,
+  "paired_delta_percent": [
+    0.20231634037601864,
+    -0.3240251938690042,
+    0.593237816787795,
+    -0.6355932203389814,
+    -0.39502295240395613
+  ],
+  "pairs": 5,
+  "parent": "gateup-selective-bkstep3",
+  "provenance": {
+    "candidate_backend_sha256": "11dcfffc8db821cba7cd8f262639a082065b6b406a1e7738de354d5c8c7700b1",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "11dcfffc8db821cba7cd8f262639a082065b6b406a1e7738de354d5c8c7700b1",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048",
+    "manifest_sha256": "2b14cfadbad248c9e9f9bce97d8616fa3da340a1db57618a03896e65fbae7af7",
+    "problem": {
+      "family": "gateup",
+      "k": 2048,
+      "m": 10752,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "2aa481b40f70c17920dcf4ea235a18b6ad7dddfb0064052d634def0acca4583b",
+    "source_head": "b1710bfa4e1688192bd84f960dc9680831ef9fa3",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789764033.8817568
+}

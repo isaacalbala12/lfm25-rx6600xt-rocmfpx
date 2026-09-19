@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "control": {
+    "path": "work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/extensions/rocmfpx-vulkan/backend/vulkan-shaders.spv/matmul_rocmfp4_fast_q8_1_bk3.spv",
+    "sha256": "bb4837aeb821fe55ea6ee4a6b0de74b9e7d319a2731a03fa571bb8db0b89b299",
+    "bytes": 20532,
+    "words": 5133,
+    "instructions": 1180,
+    "opcodes": {
+      "OpAccessChain": 150,
+      "OpBitcast": 16,
+      "OpBitwiseAnd": 8,
+      "OpBitwiseOr": 1,
+      "OpBranch": 70,
+      "OpBranchConditional": 36,
+      "OpCapability": 7,
+      "OpCompositeConstruct": 9,
+      "OpCompositeExtract": 39,
+      "OpConstant": 55,
+      "OpConstantComposite": 2,
+      "OpControlBarrier": 3,
+      "OpConvertSToF": 1,
+      "OpConvertUToF": 1,
+      "OpDecorate": 34,
+      "OpEntryPoint": 1,
+      "OpExecutionMode": 1,
+      "OpExtInst": 4,
+      "OpExtInstImport": 1,
+      "OpExtension": 1,
+      "OpFAdd": 1,
+      "OpFConvert": 5,
+      "OpFMul": 3,
+      "OpFunction": 1,
+      "OpFunctionEnd": 1,
+      "OpIAdd": 113,
+      "OpIEqual": 12,
+      "OpIMul": 50,
+      "OpISub": 1,
+      "OpLabel": 108,
+      "OpLoad": 99,
+      "OpLogicalOr": 1,
+      "OpLoopMerge": 17,
+      "OpMemberDecorate": 26,
+      "OpMemoryModel": 1,
+      "OpPhi": 21,
+      "OpReturn": 1,
+      "OpSDot": 8,
+      "OpSelectionMerge": 20,
+      "OpShiftLeftLogical": 2,
+      "OpShiftRightLogical": 4,
+      "OpSpecConstant": 10,
+      "OpSpecConstantComposite": 1,
+      "OpSpecConstantOp": 25,
+      "OpStore": 54,
+      "OpSwitch": 1,
+      "OpTypeArray": 10,
+      "OpTypeBool": 1,
+      "OpTypeFloat": 2,
+      "OpTypeFunction": 1,
+      "OpTypeInt": 4,
+      "OpTypePointer": 27,
+      "OpTypeRuntimeArray": 3,
+      "OpTypeStruct": 8,
+      "OpTypeVector": 5,
+      "OpTypeVoid": 1,
+      "OpUConvert": 27,
+      "OpUDiv": 18,
+      "OpULessThan": 23,
+      "OpUMod": 10,
+      "OpVariable": 14
+    }
+  },
+  "candidate": {
+    "path": "work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/extensions/rocmfpx-vulkan/backend/vulkan-shaders.spv/matmul_rocmfp4_fast_q8_1_bk3_exact.spv",
+    "sha256": "768ea32ee7c398568aaf8b7e649e3b1afcdf2557d5495b136a0656ec6b7d6664",
+    "bytes": 19840,
+    "words": 4960,
+    "instructions": 1139,
+    "opcodes": {
+      "OpAccessChain": 146,
+      "OpBitcast": 16,
+      "OpBitwiseAnd": 8,
+      "OpBitwiseOr": 1,
+      "OpBranch": 67,
+      "OpBranchConditional": 34,
+      "OpCapability": 7,
+      "OpCompositeConstruct": 9,
+      "OpCompositeExtract": 39,
+      "OpConstant": 53,
+      "OpConstantComposite": 2,
+      "OpControlBarrier": 3,
+      "OpConvertSToF": 1,
+      "OpConvertUToF": 1,
+      "OpDecorate": 34,
+      "OpEntryPoint": 1,
+      "OpExecutionMode": 1,
+      "OpExtInst": 3,
+      "OpExtInstImport": 1,
+      "OpExtension": 1,
+      "OpFAdd": 1,
+      "OpFConvert": 5,
+      "OpFMul": 3,
+      "OpFunction": 1,
+      "OpFunctionEnd": 1,
+      "OpIAdd": 106,
+      "OpIEqual": 12,
+      "OpIMul": 46,
+      "OpLabel": 103,
+      "OpLoad": 95,
+      "OpLogicalOr": 1,
+      "OpLoopMerge": 17,
+      "OpMemberDecorate": 26,
+      "OpMemoryModel": 1,
+      "OpPhi": 20,
+      "OpReturn": 1,
+      "OpSDot": 8,
+      "OpSelectionMerge": 18,
+      "OpShiftLeftLogical": 2,
+      "OpShiftRightLogical": 4,
+      "OpSpecConstant": 10,
+      "OpSpecConstantComposite": 1,
+      "OpSpecConstantOp": 25,
+      "OpStore": 54,
+      "OpSwitch": 1,
+      "OpTypeArray": 10,
+      "OpTypeBool": 1,
+      "OpTypeFloat": 2,
+      "OpTypeFunction": 1,
+      "OpTypeInt": 4,
+      "OpTypePointer": 27,
+      "OpTypeRuntimeArray": 3,
+      "OpTypeStruct": 8,
+      "OpTypeVector": 5,
+      "OpTypeVoid": 1,
+      "OpUConvert": 27,
+      "OpUDiv": 16,
+      "OpULessThan": 21,
+      "OpUMod": 9,
+      "OpVariable": 14
+    }
+  },
+  "delta_percent": {
+    "bytes": -3.3703487239431174,
+    "words": -3.3703487239431174,
+    "instructions": -3.474576271186436
+  },
+  "opcode_differences": [
+    {
+      "opcode": "OpIAdd",
+      "control": 113,
+      "candidate": 106,
+      "delta": -7
+    },
+    {
+      "opcode": "OpLabel",
+      "control": 108,
+      "candidate": 103,
+      "delta": -5
+    },
+    {
+      "opcode": "OpAccessChain",
+      "control": 150,
+      "candidate": 146,
+      "delta": -4
+    },
+    {
+      "opcode": "OpIMul",
+      "control": 50,
+      "candidate": 46,
+      "delta": -4
+    },
+    {
+      "opcode": "OpLoad",
+      "control": 99,
+      "candidate": 95,
+      "delta": -4
+    },
+    {
+      "opcode": "OpBranch",
+      "control": 70,
+      "candidate": 67,
+      "delta": -3
+    },
+    {
+      "opcode": "OpBranchConditional",
+      "control": 36,
+      "candidate": 34,
+      "delta": -2
+    },
+    {
+      "opcode": "OpConstant",
+      "control": 55,
+      "candidate": 53,
+      "delta": -2
+    },
+    {
+      "opcode": "OpSelectionMerge",
+      "control": 20,
+      "candidate": 18,
+      "delta": -2
+    },
+    {
+      "opcode": "OpUDiv",
+      "control": 18,
+      "candidate": 16,
+      "delta": -2
+    },
+    {
+      "opcode": "OpULessThan",
+      "control": 23,
+      "candidate": 21,
+      "delta": -2
+    },
+    {
+      "opcode": "OpExtInst",
+      "control": 4,
+      "candidate": 3,
+      "delta": -1
+    },
+    {
+      "opcode": "OpISub",
+      "control": 1,
+      "candidate": 0,
+      "delta": -1
+    },
+    {
+      "opcode": "OpPhi",
+      "control": 21,
+      "candidate": 20,
+      "delta": -1
+    },
+    {
+      "opcode": "OpUMod",
+      "control": 10,
+      "candidate": 9,
+      "delta": -1
+    }
+  ],
+  "limitations": [
+    "SPIR-V structure is not RDNA2 ISA.",
+    "VGPR, SGPR, LDS allocation, spills and occupancy are not measured."
+  ]
+}

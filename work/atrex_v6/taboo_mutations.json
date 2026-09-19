@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "shape": "M=10752,K=2048,N=128 FP4_FAST x Q8_1",
+  "mutations": [
+    {
+      "id": "gateup-two-subgroups",
+      "patterns": ["two subgroup", "2 subgroup", "2sg"],
+      "reason": "+36.23% latency in the measured gate/up experiment"
+    },
+    {
+      "id": "gateup-four-subgroups",
+      "patterns": ["four subgroup", "4 subgroup", "4sg"],
+      "reason": "+81.88% latency in the measured gate/up experiment"
+    },
+    {
+      "id": "arithmetic-fp4-unpack",
+      "patterns": ["arithmetic unpack", "arithmetic fp4", "lut-free unpack"],
+      "reason": "+44.67% latency for the exact FP4_FAST decode path"
+    },
+    {
+      "id": "dual-accumulators",
+      "patterns": ["dual accumulator", "dualacc", "two accumulator banks"],
+      "reason": "+9.87% latency"
+    },
+    {
+      "id": "packed32-extraction",
+      "patterns": ["packed32", "packed 32", "aligned 32-bit extraction"],
+      "reason": "+1.88% latency at gate/up N=128"
+    },
+    {
+      "id": "bm32-bn128",
+      "patterns": ["bm32 bn128", "bm=32 bn=128", "bm 32 bn 128"],
+      "reason": "no measurable gate/up gain and a down regression trend"
+    },
+    {
+      "id": "global-bk-step-2",
+      "patterns": ["global bk_step=2", "global bk step 2", "bk2 global"],
+      "reason": "gate/up improved but down regressed 4.71%; only selective BK2 is composable"
+    },
+    {
+      "id": "rows4-short-conv",
+      "patterns": ["rows4", "four rows per wave"],
+      "reason": "paired median -0.40% with confidence interval crossing zero"
+    },
+    {
+      "id": "broad-n-selector",
+      "patterns": ["n-only selector", "broad n selector"],
+      "reason": "geometry depends on M/K/N; the prior broad selector regressed the server"
+    },
+    {
+      "id": "bk3-explicit-compute-loop-unroll",
+      "status": "REJECTED",
+      "patterns": ["explicitly unroll the BK3 compute K-step loop", "bk3-unroll-kstep"],
+      "reason": "five paired exact-plugin runs improved only 0.159% and the 95% interval crossed zero"
+    },
+    {
+      "id": "down-bm32-bn64",
+      "status": "TABOO_STRONG",
+      "patterns": ["down bm32 bn64", "halve down BM from 64 to 32"],
+      "reason": "+21.80% exact down N128 latency; lost row-tile reuse dominates"
+    },
+    {
+      "id": "down-bfirst-only",
+      "status": "REJECTED",
+      "patterns": ["down b-first only", "stage down q8 before fp4 only"],
+      "reason": "SPIR-V was identical to control; five formal pairs crossed zero (-0.614% median)"
+    },
+    {
+      "id": "down-stride-hoist-only",
+      "status": "REJECTED",
+      "patterns": ["down stride hoist only", "hoist down stride blocks only"],
+      "reason": "SPIR-V was identical to control; five formal pairs crossed zero (-0.332% median)"
+    },
+    {
+      "id": "down-exact-shape-v8",
+      "status": "COMPOSABLE",
+      "patterns": ["down exact shape v8"],
+      "reason": "-2.161% local with favorable CI, but only about 0.50% predicted global leverage; not server-promoted"
+    },
+    {
+      "id": "down-q8-group4-v8",
+      "status": "COMPOSABLE",
+      "patterns": ["down q8 group4 v8"],
+      "reason": "-1.793% local alone; did not compose with down-exact and remains below server-promotion leverage"
+    },
+    {
+      "id": "gateup-bk3-nosplit-v8",
+      "status": "REJECTED",
+      "patterns": ["gateup bk3 nosplit v8", "gate bk3 split-k-only"],
+      "reason": "-0.324% local and the five-pair confidence interval crossed zero"
+    },
+    {
+      "id": "gateup-bk3-k2048-only-v8",
+      "status": "REJECTED",
+      "patterns": ["gateup bk3 k2048 only", "gate bk3 compile-time-k-only"],
+      "reason": "-0.143% local and the five-pair confidence interval crossed zero"
+    },
+    {
+      "id": "gateup-bk3-exact-shape-v8",
+      "status": "COMPOSABLE",
+      "patterns": ["gateup bk3 exact shape v8"],
+      "reason": "-1.316% local with favorable CI, but only about 0.43% predicted global leverage; not server-promoted"
+    },
+    {
+      "id": "gateup-bk3-bpair-v9",
+      "status": "REJECTED",
+      "patterns": ["gateup bk3 bpair", "prefetch both tn=2 q8 columns into array caches"],
+      "reason": "+0.767% latency with CI crossing zero; SPIR-V added 18 access chains, 9 loads and 9 stores"
+    },
+    {
+      "id": "scheduler-ewma-ratio-65-68-v9",
+      "status": "REJECTED",
+      "patterns": ["ewma ratio target 65", "ewma ratio target 68", "ms per prompt token min chunk 64"],
+      "reason": "ITL improved 13-15% but fresh-user TTFT regressed 45-48%; scope is the tested ratio controller, not every temporal scheduler"
+    },
+    {
+      "id": "gateup-padded-block-v10",
+      "status": "COMPOSABLE",
+      "patterns": ["gateup padded block v10", "20-byte aligned device representation"],
+      "reason": "-1.227% local with favorable CI, but only about 0.36% mixed-batch leverage, 17.65% extra selected-weight memory and substantial runtime complexity"
+    },
+    {
+      "id": "gateup-global-planar-v10",
+      "status": "TABOO_STRONG",
+      "patterns": ["gateup global planar v10", "separate aligned code and scale planes"],
+      "reason": "+43.150% latency; separating scales globally destroys the locality needed by the gate/up kernel"
+    },
+    {
+      "id": "gateup-group4-layout-v10",
+      "status": "REJECTED",
+      "patterns": ["gateup group4 layout v10", "64 aligned code bytes followed by one four-scale word"],
+      "reason": "+3.851% latency; compact local grouping preserves bytes and locality but its address/extraction work still exceeds the saved byte-load reconstruction"
+    }
+  ]
+}

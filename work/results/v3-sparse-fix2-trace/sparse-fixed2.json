@@ -1,0 +1,249 @@
+{
+  "schema_version": 2,
+  "metric_definition": "sum(successful completion_tokens) / (last response end - first request start)",
+  "metric_scope": "HTTP service throughput including prefill, queueing, decode, streaming and transport",
+  "workload_kind": "controlled_fixed_output",
+  "label": "sparse-fixed2",
+  "base_url": "http://127.0.0.1:18138",
+  "model": "work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf",
+  "request_model": "work/results/models/LFM2.5-2.6B-ROCmFP4_FAST_COHERENT-own.gguf",
+  "tokenizer": "/home/isaac/vllm-challenge/models/LFM2.5-2.6B",
+  "prompt_tokens_target": 16,
+  "max_tokens": 4,
+  "concurrency": 3,
+  "repetitions": 1,
+  "warmup": 0,
+  "seed": 270917,
+  "prompt_generator": {
+    "name": "safe_corpus_cycle_v1",
+    "corpus_sha256": "2419160809da983c13a3e80f87dc382c9287cbe1aa48b144385dc47024cd85b5",
+    "special_token_ids_excluded": true,
+    "output_special_token_ids_biased_out": [
+      124893,
+      124894,
+      124900
+    ]
+  },
+  "sampling": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 0
+  },
+  "prompt_mode": "varied",
+  "slot_policy": "forced",
+  "slot_ids": [
+    0,
+    1,
+    3
+  ],
+  "cache_prompt": "off",
+  "ignore_eos": true,
+  "arrival_stagger_ms": 0.0,
+  "validity": {
+    "status": "INVALID",
+    "all_requests_succeeded": false,
+    "all_streams_complete": false,
+    "all_effective_prompts_match_target": true,
+    "all_outputs_match_budget": false,
+    "usage_token_counts_present": false,
+    "cache_telemetry_available": false,
+    "cache_policy_satisfied": false,
+    "invalid_reasons": [
+      "all_requests_succeeded",
+      "all_streams_complete",
+      "all_outputs_match_budget",
+      "usage_token_counts_present",
+      "cache_telemetry_available",
+      "cache_policy_satisfied"
+    ]
+  },
+  "repetitions_detail": [
+    {
+      "repetition": 0,
+      "requests": 3,
+      "successful": 0,
+      "failed": 3,
+      "prompt_tokens_total": 0,
+      "cached_prompt_tokens_total": 0,
+      "cached_prompt_tokens_observations": 0,
+      "cache_telemetry_complete": true,
+      "computed_prompt_tokens_total": 0,
+      "output_tokens_total": 0,
+      "wall_seconds_first_send_to_last_completion": 1.8387962300002982,
+      "aggregate_output_tok_s": 0.0,
+      "aggregate_input_tok_s": 0.0,
+      "ttft_ms": {
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "mean": null,
+        "min": null,
+        "max": null,
+        "samples": 0
+      },
+      "e2e_ms": {
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "mean": null,
+        "min": null,
+        "max": null,
+        "samples": 0
+      },
+      "inter_chunk_ms": {
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "mean": null,
+        "min": null,
+        "max": null,
+        "samples": 0
+      },
+      "inter_chunk_basis": "non-empty SSE content chunks; not assumed to be one tokenizer token",
+      "per_request_output_tok_s": [],
+      "per_request_output_tok_s_distribution": {
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "mean": null,
+        "min": null,
+        "max": null,
+        "samples": 0
+      },
+      "output_token_sources": [],
+      "finish_reasons": [],
+      "errors": [
+        "stream ended before [DONE]",
+        "stream ended before [DONE]",
+        "stream ended before [DONE]"
+      ]
+    }
+  ],
+  "aggregate": {
+    "requests": 3,
+    "successful": 0,
+    "failed": 3,
+    "prompt_tokens_total": 0,
+    "cached_prompt_tokens_total": 0,
+    "cached_prompt_tokens_observations": 0,
+    "cache_telemetry_complete": true,
+    "computed_prompt_tokens_total": 0,
+    "output_tokens_total": 0,
+    "wall_seconds_first_send_to_last_completion": 1.8387962300002982,
+    "aggregate_output_tok_s": 0.0,
+    "aggregate_input_tok_s": 0.0,
+    "ttft_ms": {
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "mean": null,
+      "min": null,
+      "max": null,
+      "samples": 0
+    },
+    "e2e_ms": {
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "mean": null,
+      "min": null,
+      "max": null,
+      "samples": 0
+    },
+    "inter_chunk_ms": {
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "mean": null,
+      "min": null,
+      "max": null,
+      "samples": 0
+    },
+    "inter_chunk_basis": "non-empty SSE content chunks; not assumed to be one tokenizer token",
+    "per_request_output_tok_s": [],
+    "per_request_output_tok_s_distribution": {
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "mean": null,
+      "min": null,
+      "max": null,
+      "samples": 0
+    },
+    "output_token_sources": [],
+    "finish_reasons": [],
+    "errors": [
+      "stream ended before [DONE]",
+      "stream ended before [DONE]",
+      "stream ended before [DONE]"
+    ]
+  },
+  "raw": [
+    {
+      "ok": false,
+      "prompt_tokens": 16,
+      "cached_prompt_tokens": null,
+      "output_tokens": 1,
+      "output_token_source": "tokenizer_fallback",
+      "ttft_ms": 125.60251400282141,
+      "e2e_ms": 1837.7526190015487,
+      "inter_chunk_ms": [],
+      "stream_chunks_with_content": 1,
+      "finish_reason": null,
+      "error": "stream ended before [DONE]",
+      "text_chars": 7,
+      "text_sha256": "21deb6dbbb5562038319ce4d42c7cc28a4e4cf3dcff8a98782a848b9ee7ad0b7",
+      "text": null,
+      "timings": {},
+      "stream_done_received": false,
+      "protocol_error": null,
+      "request_start_ms_from_batch": 1.0436109987495001,
+      "response_end_ms_from_batch": 1838.7962300002982
+    },
+    {
+      "ok": false,
+      "prompt_tokens": 16,
+      "cached_prompt_tokens": null,
+      "output_tokens": 1,
+      "output_token_source": "tokenizer_fallback",
+      "ttft_ms": 126.82244700044976,
+      "e2e_ms": 1838.6082280012488,
+      "inter_chunk_ms": [],
+      "stream_chunks_with_content": 1,
+      "finish_reason": null,
+      "error": "stream ended before [DONE]",
+      "text_chars": 5,
+      "text_sha256": "4a8f540240f1e578cdc0175ca246b617f4b97363011c34c5d5145246af7274cf",
+      "text": null,
+      "timings": {},
+      "stream_done_received": false,
+      "protocol_error": null,
+      "request_start_ms_from_batch": 0.0,
+      "response_end_ms_from_batch": 1838.6082280012488
+    },
+    {
+      "ok": false,
+      "prompt_tokens": 16,
+      "cached_prompt_tokens": null,
+      "output_tokens": 2,
+      "output_token_source": "tokenizer_fallback",
+      "ttft_ms": 94.71537799981888,
+      "e2e_ms": 1838.0890819971683,
+      "inter_chunk_ms": [
+        31.666494000091916
+      ],
+      "stream_chunks_with_content": 2,
+      "finish_reason": null,
+      "error": "stream ended before [DONE]",
+      "text_chars": 12,
+      "text_sha256": "4b7893f86e0faca5e2b7a0961695b0bf2bbdcca59cdbe56422213f2c496546da",
+      "text": null,
+      "timings": {},
+      "stream_done_received": false,
+      "protocol_error": null,
+      "request_start_ms_from_batch": 0.6574370017915498,
+      "response_end_ms_from_batch": 1838.7465189989598
+    }
+  ],
+  "status": "INVALID"
+}

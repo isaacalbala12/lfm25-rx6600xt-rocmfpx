@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "id": "gateup-bk3-padded-v10",
+  "parent": "gateup-selective-bkstep3",
+  "mutation": "expand selected gate/up FP4_FAST blocks into a reversible 20-byte aligned device representation",
+  "hypothesis": "the 17-byte disk stride forces four byte loads and reconstruction for each code word; a device-only aligned representation can remove this load and address overhead while preserving every code and scale",
+  "expected_mechanism": "replace byte gathers and code-word reconstruction with one aligned uint32 load per consumed code word",
+  "affected_resource": "weight traffic, access chains, integer address arithmetic, loads, and reconstruction instructions",
+  "expected_local_gain": "3-8%",
+  "expected_global_leverage": "gate/up is 29.50% of the full mixed-batch GPU time in V9; 2.55% local is the approximate 0.75% global promotion threshold",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/types.glsl",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp"
+  ],
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_PADDED": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_PADDED": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_padded_m"
+}

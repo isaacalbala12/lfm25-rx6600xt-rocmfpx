@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "down-nosplit-nobounds",
+  "parent": "down-bm64-bn64-bk32-bk4",
+  "mutation": "compose one-K-partition and exact M/N output-bound removal without no-tail",
+  "hypothesis": "the two individually small setup and epilogue simplifications may interact even without changing the repeated staging path",
+  "expected_mechanism": "remove generic split setup and output predicates",
+  "affected_resource": "integer setup and epilogue control",
+  "expected_local_gain": "0-2%",
+  "expected_global_leverage": "0-0.47%",
+  "control_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT_NOBOUNDS": "0"},
+  "candidate_env": {"GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT_NOBOUNDS": "1"},
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_down_nosplit_nobounds_m"
+}

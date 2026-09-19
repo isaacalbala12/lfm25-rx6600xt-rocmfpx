@@ -1,0 +1,69 @@
+{
+  "candidate": {
+    "mean_us": 427.8383333333333,
+    "median_us": 428.345,
+    "p5_us": 424.5725,
+    "p95_us": 430.4325,
+    "samples_us": [
+      424.31,
+      428.53,
+      430.14,
+      425.36,
+      430.53,
+      428.16
+    ],
+    "stdev_us": 2.5185663911572003
+  },
+  "candidate_id": "gateup-bkstep1",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp"
+  ],
+  "control": {
+    "mean_us": 429.34166666666664,
+    "median_us": 429.26,
+    "p5_us": 426.365,
+    "p95_us": 432.9125,
+    "samples_us": [
+      427.46,
+      429.09,
+      426.0,
+      433.79,
+      429.43,
+      430.28
+    ],
+    "stdev_us": 2.6625808281940873
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_m",
+  "decision": "REJECT_MICRO",
+  "finished_at_unix": 1789743836.595351,
+  "gate": "PASS",
+  "mutation": "stage one K block per MMQ barrier iteration",
+  "paired_bootstrap_95ci_percent": [
+    -0.49895904813965775,
+    -0.11864465924555923
+  ],
+  "paired_delta_median_percent": -0.4331329169342202,
+  "paired_delta_percent": [
+    -0.4331329169342202,
+    -0.49895904813965775,
+    -0.11864465924555923
+  ],
+  "pairs": 3,
+  "parent": "gateup-control",
+  "provenance": {
+    "candidate_backend_sha256": "40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "40f6b9c4768ed3fd1cb214e94983fe5a6e24dc85bb2c50eded662e9e07b25b40",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048",
+    "manifest_sha256": "abc39b22efbdd20158adeca307fd6160bfb26a9a4c8c5f5dc2b7b9548ad6254a",
+    "source_head": "7c4b5c0e50f9a3228f2b53b12764165dcb3e61ac",
+    "source_status": "M extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp",
+    "test_sha256": "6cc800a685038caa9b3af3a38b01a0c2c247e3028c8daaa809a1b9ea74cf6331"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789743572.077553
+}

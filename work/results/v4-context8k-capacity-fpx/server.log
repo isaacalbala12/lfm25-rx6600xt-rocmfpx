@@ -1,0 +1,55 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+0.00.120.114 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.123.346 W srv  llama_server: -----------------
+0.00.123.349 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.123.350 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.123.350 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.123.350 W srv  llama_server: -----------------
+0.00.125.234 I srv    load_model: loading model 'work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf'
+0.02.244.787 I cmn          init: llama threadpool init, n_threads = 4
+0.02.314.566 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 8704, kv_unified = 'false'
+0.02.314.607 I srv    load_model: sequence policy: lowest_slot_first=1 dense_sequences=0 remap_trace=0
+0.02.325.566 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.02.325.615 I srv  llama_server: model loaded
+0.02.325.626 I srv  llama_server: listening on http://127.0.0.1:18180
+0.16.071.581 I slot get_availabl: id  3 | task -1 | selected slot by id (3)
+0.16.071.634 I slot launch_slot_: id  3 | task 1 | processing task, is_child = 0
+0.16.071.638 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.16.071.723 I slot launch_slot_: id  1 | task 2 | processing task, is_child = 0
+0.17.971.624 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.17.971.684 I slot launch_slot_: id  0 | task 4 | processing task, is_child = 0
+0.17.971.690 I slot get_availabl: id  2 | task -1 | selected slot by id (2)
+0.17.971.731 I slot launch_slot_: id  2 | task 5 | processing task, is_child = 0
+0.22.113.676 I slot print_timing: id  0 | task 4 | prompt processing, n_tokens =   8060, progress = 0.98, t =   4.14 s / 1945.97 tokens per second
+0.22.184.006 I slot print_timing: id  1 | task 2 | prompt processing, n_tokens =   4228, progress = 0.52, t =   6.04 s / 699.78 tokens per second
+0.24.433.278 I slot print_timing: id  0 | task 4 | prompt processing, n_tokens =   8188, progress = 1.00, t =   6.46 s / 1267.20 tokens per second
+0.24.502.599 I slot print_timing: id  1 | task 2 | prompt processing, n_tokens =   8060, progress = 0.98, t =   8.36 s / 963.94 tokens per second
+0.26.522.510 I slot print_timing: id  0 | task 4 | prompt eval time =    8550.72 ms /  8192 tokens (    1.04 ms per token,   958.05 tokens per second)
+0.26.522.529 I slot print_timing: id  0 | task 4 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+0.26.522.532 I slot print_timing: id  0 | task 4 |       total time =    8550.72 ms /  8193 tokens
+0.26.522.538 I slot print_timing: id  0 | task 4 |    graphs reused =         74
+0.26.523.579 I slot      release: id  0 | task 4 | stop processing: n_tokens = 8192, truncated = 0
+0.26.523.607 I slot print_timing: id  1 | task 2 | prompt processing, n_tokens =   8188, progress = 1.00, t =  10.45 s / 783.54 tokens per second
+0.26.529.511 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   4100, progress = 0.50, t =   4.34 s / 945.21 tokens per second
+0.28.791.990 I slot print_timing: id  1 | task 2 | prompt eval time =   12720.21 ms /  8192 tokens (    1.55 ms per token,   644.01 tokens per second)
+0.28.792.000 I slot print_timing: id  1 | task 2 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+0.28.792.003 I slot print_timing: id  1 | task 2 |       total time =   12720.21 ms /  8193 tokens
+0.28.792.005 I slot print_timing: id  1 | task 2 |    graphs reused =         89
+0.28.793.014 I slot      release: id  1 | task 2 | stop processing: n_tokens = 8192, truncated = 0
+0.28.793.043 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   8060, progress = 0.98, t =   6.61 s / 1219.88 tokens per second
+0.30.719.044 I slot print_timing: id  2 | task 5 | prompt processing, n_tokens =   8188, progress = 1.00, t =   8.53 s / 959.36 tokens per second
+0.30.783.333 I slot print_timing: id  3 | task 1 | prompt processing, n_tokens =   4100, progress = 0.50, t =   4.19 s / 978.68 tokens per second
+0.32.964.057 I slot print_timing: id  2 | task 5 | prompt eval time =   10779.87 ms /  8192 tokens (    1.32 ms per token,   759.93 tokens per second)
+0.32.964.065 I slot print_timing: id  2 | task 5 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+0.32.964.068 I slot print_timing: id  2 | task 5 |       total time =   10779.87 ms /  8193 tokens
+0.32.964.070 I slot print_timing: id  2 | task 5 |    graphs reused =        118
+0.32.965.026 I slot      release: id  2 | task 5 | stop processing: n_tokens = 8192, truncated = 0
+0.32.965.055 I slot print_timing: id  3 | task 1 | prompt processing, n_tokens =   8060, progress = 0.98, t =   6.43 s / 1252.77 tokens per second
+0.32.976.392 I slot print_timing: id  3 | task 1 | prompt processing, n_tokens =   8188, progress = 1.00, t =   6.45 s / 1270.11 tokens per second
+0.33.095.295 I slot print_timing: id  3 | task 1 | prompt eval time =    6565.60 ms /  8192 tokens (    0.80 ms per token,  1247.72 tokens per second)
+0.33.095.312 I slot print_timing: id  3 | task 1 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token,     0.00 tokens per second)
+0.33.095.316 I slot print_timing: id  3 | task 1 |       total time =    6565.60 ms /  8193 tokens
+0.33.095.327 I slot print_timing: id  3 | task 1 |    graphs reused =        118
+0.33.096.438 I slot      release: id  3 | task 1 | stop processing: n_tokens = 8192, truncated = 0
+0.39.013.401 I srv    operator(): operator(): cleaning up before exit...
