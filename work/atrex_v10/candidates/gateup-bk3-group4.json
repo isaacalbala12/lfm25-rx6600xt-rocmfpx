@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "gateup-bk3-group4-v10",
+  "parent": "gateup-selective-bkstep3",
+  "mutation": "reorder selected gate/up FP4_FAST weights into four-block groups containing 64 aligned code bytes followed by one four-scale word",
+  "hypothesis": "grouping four blocks preserves the padded candidate's aligned code loads and the compact layout's zero byte overhead without separating scales from the codes that consume them",
+  "expected_mechanism": "remove byte gathers and code reconstruction while preserving code-scale cache locality and the original 17 bytes per block",
+  "affected_resource": "access chains, loads, address arithmetic, code reconstruction, cache locality, and weight traffic",
+  "expected_local_gain": "2-6%",
+  "expected_global_leverage": "gate/up is 29.50% of full mixed-batch GPU time; 2.55% local is the approximate 0.75% global promotion threshold",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp"
+  ],
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_GROUP4": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_GROUP4": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_group4_m"
+}

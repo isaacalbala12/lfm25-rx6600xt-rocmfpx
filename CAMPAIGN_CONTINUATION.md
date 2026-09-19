@@ -3,8 +3,9 @@
 This is the public entry point for continuing the engineering campaign on
 `campaign-v3`. It summarizes the current production configuration, the evidence
 that must be preserved, closed hypotheses, raw-result locations and the exact
-next experiment. The detailed V9 audit remains in
-[`work/HANDOFF_V9.md`](work/HANDOFF_V9.md).
+next experiment. The current detailed audit is
+[`work/HANDOFF_V10.md`](work/HANDOFF_V10.md); V9 remains the source for the
+mixed-workload profile.
 
 ## Objective and constraints
 
@@ -124,6 +125,30 @@ A 68 ms target reproduced the same poor frontier in its first pair. Chunks
 **REJECT production**. Fixed chunk128 remains production. Do not run another
 generic chunk or EWMA-target sweep.
 
+## V10 structural FP4 layout results
+
+V10 implemented three reversible device representations for the exact gate/up
+BK3 path. Every candidate preserved FP4 codes/scales, passed CPU-reference
+correctness and proved its exact Vulkan route.
+
+| Layout | Bytes/block | Local latency delta | 95% CI | Decision |
+|---|---:|---:|---:|---|
+| aligned padded | 20 | -1.227% | [-1.906%, -0.386%] | COMPOSABLE only |
+| global code/scale planes | 17 | +43.150% | [+40.833%, +43.873%] | REJECT |
+| four-block local groups | 17 | +3.851% | [+3.308%, +4.473%] | REJECT |
+
+The padded layout proves aligned code loads can help: SPIR-V instructions fall
+2.80%. It still predicts only ~0.36% mixed-batch leverage, expands selected
+weights 17.65% and requires substantial runtime conversion. The compact planar
+result proves scale locality is critical; grouping scales locally restores most
+of the loss but remains slower. This layout family is closed.
+
+V10 also composed the independent V8 exact gate/up and exact down candidates.
+Three simultaneous-8K C4 pairs improved input/output throughput 0.549%, TTFT
+p95 0.581% and E2E p95 0.549%. This is below the 0.75% promotion threshold,
+and one of twelve output hashes diverged. It remains **ARCHIVE COMPOSABLE**, not
+production. Raw evidence is under `work/results/v10-*`.
+
 ## Closed directions
 
 Do not reopen without a materially new mechanism:
@@ -134,6 +159,7 @@ Do not reopen without a materially new mechanism:
 - explicit compute-loop unroll directives;
 - dual accumulators or arithmetic FP4 unpack;
 - naive packed32 reconstruction;
+- padded, global-planar or grouped-four gate/up layout variations;
 - BM32/BN128 gate or BM32/BN64 down;
 - V8 bounds/exact-shape candidates as standalone server promotions;
 - Q8-group4 composition with down-exact;
@@ -149,35 +175,30 @@ The full negative-result memory is
 
 ## Next experiment
 
-The next justified high-leverage family is a reversible, exact prepacking of one
-real gate/up tensor. The hypothesis is that arranging unchanged FP4 codes and
-scales in wave32 consumption order can remove address chains and improve
-coalescing beyond what control-flow specialization achieved.
+Gate/down MMQ control-flow and layout work is now converged below product
+leverage. The next step is measurement, not another shader mutation:
 
-Required sequence:
+1. Split the V9 prefill `misc` bucket by exact operation and graph, beginning
+   with RMS norm/rope, ADD, GLU, CPY/SSM-conv, CONCAT and MUL.
+2. Reuse the existing raw V9 trace first; add instrumentation only for fields
+   that are genuinely absent.
+3. Record exclusive GPU time, calls, shape and selected pipeline.
+4. Compute `profile_share * plausible_local_gain`; require at least 0.75%
+   plausible mixed-batch leverage before implementing a candidate.
+5. If no misc family qualifies, formulate an algorithmic Flash Attention
+   hypothesis distinct from the rejected occupancy/Bc tile experiments.
 
-1. Trace the current FP4_FAST block layout and exact lane-to-weight mapping.
-2. Design one reversible `[K-block][M-tile]` or equivalent layout for a single
-   hot matrix; do not convert or duplicate the complete model.
-3. Account for one-time packing cost, extra VRAM and production headroom.
-4. Add an exact opt-in pipeline and fallback while preserving identical codes,
-   scales and mathematical values.
-5. Extend the exact-plugin microbenchmark to consume the packed real matrix.
-6. Measure N=127, N=128 and one real tail with hot and rotating buffers.
-7. Require approximately 2.55% local improvement on gate/up before a server
-   test; at the current profile share this corresponds to about 0.75% maximum
-   mixed-workload leverage.
-8. If it passes, run simultaneous 8K C4, then 3D+1P, resident C4 and quality.
-
-If prepacking fails, close MMQ temporarily and split the 9.15% prefill `other`
-bucket by exact operation. Do not fall back to random shader or scheduler tuning.
+Do not re-open prepacking by changing only group size. Do not re-open the
+scheduler until a kernel materially lowers mixed-batch cost or a policy can
+meet the existing TTFT guardrail.
 
 ## Reproducibility and current hashes
 
-Nested ROCmFPX source checkpoint: `f5acc76`.
+Nested ROCmFPX search-bank checkpoint: `8634463`.
 
-The nested changes are archived in
-[`patches/v9-mixed-profile-bpair-ewma.patch`](patches/v9-mixed-profile-bpair-ewma.patch).
+V10 nested changes are archived as reconstructable mail patches under
+[`patches/v10-fp4-layouts`](patches/v10-fp4-layouts), applied on top of
+ROCmFPX `f5acc76`.
 
 Checkpoint artifact SHA-256 values:
 
@@ -185,16 +206,19 @@ Checkpoint artifact SHA-256 values:
 - `libllama-server-impl.so`: `284fe0826a1f0fca439a705e4a795cc7265f0f7d49ac4b4770fec38096e1b190`;
 - `libllama.so.0.3.0`: `3067a87a156465c1447256b9feffadd769057a8bc6f943fca99162cccfc03afc`;
 - `rocmfpx-vulkan-plugin.so`: `40f3f48cfec7310bcfb017371d1232a7df7935f9e9fcadc2efcdda139832a208`;
-- `libggml-rocmfpx-vulkan.so`: `a35c48d9b0790e94e7089e99a22efe4b5290b36a4e041a46ad1de5f5d224c624`;
+- V10 search-bank `libggml-rocmfpx-vulkan.so`: `f89f3faaa85b22c5257b5194ea42aa3af9644afc93330bc2ab18f48fd26b4724`;
 - FP4_FAST GGUF: `d56f602eb9bcad2cafbe2a52cef2fa14ba09e6290679a2aee164db22815f0933`.
 
-At this checkpoint the repository harness passes 28/28 tests. With V9
+At this checkpoint the repository harness passes 28/28 tests. With V10
 experiment variables unset, exact CPU-reference validation selects
 `matmul_rocmfp4_fast_q8_1_bk3_m` and passes.
 
 ## Key documents
 
-- [`work/HANDOFF_V9.md`](work/HANDOFF_V9.md): complete technical handoff.
+- [`work/HANDOFF_V10.md`](work/HANDOFF_V10.md): current complete technical handoff.
+- [`work/KERNEL_MICROBENCH_V10.md`](work/KERNEL_MICROBENCH_V10.md): layout results.
+- [`work/ATREX_SEARCH_V10.md`](work/ATREX_SEARCH_V10.md): search and composition decisions.
+- [`work/HANDOFF_V9.md`](work/HANDOFF_V9.md): V9 mixed-profile source.
 - [`work/CONCURRENCY_PROFILE_V9.md`](work/CONCURRENCY_PROFILE_V9.md): service and scheduler results.
 - [`work/KERNEL_MICROBENCH_V9.md`](work/KERNEL_MICROBENCH_V9.md): exact kernel result.
 - [`work/PREFILL8K_PROFILE_V9.md`](work/PREFILL8K_PROFILE_V9.md): mixed prefill operation shares.

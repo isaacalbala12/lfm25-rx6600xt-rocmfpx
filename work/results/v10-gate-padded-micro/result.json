@@ -1,0 +1,87 @@
+{
+  "candidate": {
+    "mean_us": 407.589,
+    "median_us": 407.23,
+    "p5_us": 405.23600000000005,
+    "p95_us": 411.948,
+    "samples_us": [
+      404.93,
+      407.45,
+      408.89,
+      407.43,
+      414.45,
+      405.61,
+      406.88,
+      407.5,
+      407.03,
+      405.72
+    ],
+    "stdev_us": 2.669029994419522
+  },
+  "candidate_id": "gateup-bk3-padded-v10",
+  "candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_padded_m",
+  "control": {
+    "mean_us": 412.286,
+    "median_us": 412.25,
+    "p5_us": 409.71000000000004,
+    "p95_us": 414.289,
+    "samples_us": [
+      413.27,
+      411.94,
+      410.04,
+      409.44,
+      411.86,
+      413.27,
+      412.23,
+      412.27,
+      414.08,
+      414.46
+    ],
+    "stdev_us": 1.6100393369935508
+  },
+  "control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "decision": "REVIEW_LEVERAGE",
+  "evidence_level": "formal_micro",
+  "finished_at_unix": 1789776819.3986506,
+  "gate": "PASS",
+  "mutation": "expand selected gate/up FP4_FAST blocks into a reversible 20-byte aligned device representation",
+  "paired_bootstrap_95ci_percent": [
+    -1.9057619426943728,
+    -0.3856103870747418
+  ],
+  "paired_delta_median_percent": -1.227410551849606,
+  "paired_delta_percent": [
+    -1.5547557591401029,
+    -0.3856103870747418,
+    -0.6144486323367282,
+    -1.227410551849606,
+    -1.9057619426943728
+  ],
+  "pairs": 5,
+  "parent": "gateup-selective-bkstep3",
+  "provenance": {
+    "candidate_backend_sha256": "69800bd438e2db7364488e9841a6d83fc89622fa294faa6711426ce3195c79f5",
+    "cmake_sha256": "ecda33f6e67fd17d11476521cf1f460d5e2e1db5dc1cfad42513821d86ed196b",
+    "compiler": "g++ (conda-forge gcc 16.2.0-4) 16.2.0",
+    "control_backend_sha256": "69800bd438e2db7364488e9841a6d83fc89622fa294faa6711426ce3195c79f5",
+    "filter": "type_a=q4_0_rocmfp4_fast,type_b=f32,m=10752,n=128,k=2048",
+    "manifest_sha256": "c14037a260cc17be2b81bb4ac90fd046fe41021ab456a48c363cac534295285a",
+    "problem": {
+      "family": "gateup",
+      "k": 2048,
+      "m": 10752,
+      "n": 128,
+      "schema_version": 1,
+      "type_a": "q4_0_rocmfp4_fast",
+      "type_b": "f32"
+    },
+    "problem_sha256": "2aa481b40f70c17920dcf4ea235a18b6ad7dddfb0064052d634def0acca4583b",
+    "source_head": "a48783cbcce5d934b61e79c583afd3a9c44fa390",
+    "source_status": "",
+    "test_sha256": "8533a82c3e9352787c4c7966a39eba30802bbef11b13e27b06bf18f9d8735244"
+  },
+  "reason": "all build, correctness, route and timing gates passed",
+  "restored_clean": true,
+  "schema_version": 1,
+  "started_at_unix": 1789776768.444816
+}

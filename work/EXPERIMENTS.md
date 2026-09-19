@@ -628,3 +628,44 @@ Follow-up output identity:
 - EWMA68 was stopped after one pair: ITL -13.12%, TTFT +44.64%.
 - Decision: **REJECT production**. The policy fails both <=70 ms ITL and
   <=5.5 s TTFT. Fixed chunk128 remains KEEP.
+
+## EXP-V10-GATEUP-PADDED-LAYOUT — ARCHIVE COMPOSABLE
+
+- Reversible device-only expansion changed selected gate/up FP4_FAST blocks
+  from 17 to 20 bytes: four aligned code words and one aligned scale word.
+- Exact CPU-reference and route proof passed. Five ABBA pairs measured
+  412.250 -> 407.230 us: **-1.227%**, bootstrap 95% CI
+  **[-1.906%, -0.386%]**.
+- SPIR-V instructions fell 2.80%, but the predicted mixed-batch leverage is
+  only ~0.36%; selected tensor storage rises 17.65% and runtime conversion is
+  substantial. Decision: **ARCHIVE COMPOSABLE**, no server run.
+
+## EXP-V10-GATEUP-GLOBAL-PLANAR — REJECT_MICRO
+
+- Reordered unchanged codes into one aligned plane and unchanged scales into a
+  second plane at exactly 17 bytes/block.
+- Correctness and route proof passed, but five pairs measured 412.685 ->
+  588.300 us: **+43.150%**, CI **[+40.833%, +43.873%]**.
+- Decision: **REJECT_MICRO**. Scale/code locality is critical; do not repeat a
+  remote global scale plane.
+
+## EXP-V10-GATEUP-GROUP4-LAYOUT — REJECT_MICRO
+
+- Grouped four blocks as 64 aligned code bytes plus one adjacent four-scale
+  word, preserving exactly 17 bytes/block and restoring local scales.
+- Correctness and route proof passed. Five pairs measured 412.715 -> 428.005
+  us: **+3.851%**, CI **[+3.308%, +4.473%]**.
+- Decision: **REJECT_MICRO**. The tested aligned/prepacked layout family is
+  closed; no group-size sweep is justified.
+
+## EXP-V10-COMPOSE-V8-EXACT-GATE-DOWN — ARCHIVE COMPOSABLE
+
+- Composed the independent archived gate/up exact-shape and down exact-shape
+  selectors in the same binary; production BK3 remained the base gate kernel.
+- Three paired simultaneous-8K C4 runs: aggregate input/output throughput
+  **+0.549%**, bootstrap range **[+0.402%, +0.688%]**; TTFT p95 **-0.581%** and
+  E2E p95 **-0.549%**.
+- Output hashes were exact in 2/3 pairs; pair 1 diverged for one of four
+  requests. The gain is below the 0.75% promotion threshold.
+- Decision: **ARCHIVE COMPOSABLE / no promotion**. No 3D+1P or quality
+  expansion was run.

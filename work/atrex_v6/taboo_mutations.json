@@ -112,6 +112,24 @@
       "status": "REJECTED",
       "patterns": ["ewma ratio target 65", "ewma ratio target 68", "ms per prompt token min chunk 64"],
       "reason": "ITL improved 13-15% but fresh-user TTFT regressed 45-48%; scope is the tested ratio controller, not every temporal scheduler"
+    },
+    {
+      "id": "gateup-padded-block-v10",
+      "status": "COMPOSABLE",
+      "patterns": ["gateup padded block v10", "20-byte aligned device representation"],
+      "reason": "-1.227% local with favorable CI, but only about 0.36% mixed-batch leverage, 17.65% extra selected-weight memory and substantial runtime complexity"
+    },
+    {
+      "id": "gateup-global-planar-v10",
+      "status": "TABOO_STRONG",
+      "patterns": ["gateup global planar v10", "separate aligned code and scale planes"],
+      "reason": "+43.150% latency; separating scales globally destroys the locality needed by the gate/up kernel"
+    },
+    {
+      "id": "gateup-group4-layout-v10",
+      "status": "REJECTED",
+      "patterns": ["gateup group4 layout v10", "64 aligned code bytes followed by one four-scale word"],
+      "reason": "+3.851% latency; compact local grouping preserves bytes and locality but its address/extraction work still exceeds the saved byte-load reconstruction"
     }
   ]
 }

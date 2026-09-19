@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "gateup-bk3-planar-v10",
+  "parent": "gateup-selective-bkstep3",
+  "mutation": "reorder selected gate/up FP4_FAST blocks into separate aligned code and scale planes without increasing device bytes",
+  "hypothesis": "the padded experiment proves aligned code words help but loses leverage to 17.65% extra traffic; a compact planar representation can retain aligned code loads at exactly the original byte count",
+  "expected_mechanism": "eliminate byte gathers and code reconstruction while keeping total FP4 code-plus-scale traffic unchanged",
+  "affected_resource": "access chains, loads, address arithmetic, code reconstruction, and weight traffic",
+  "expected_local_gain": "2-6%",
+  "expected_global_leverage": "gate/up is 29.50% of the full mixed-batch GPU time in V9; 2.55% local is the approximate 0.75% global promotion threshold",
+  "changed_files": [
+    "extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl",
+    "extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp"
+  ],
+  "control_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_PLANAR": "0"
+  },
+  "candidate_env": {
+    "GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_PLANAR": "1"
+  },
+  "expected_control_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_m",
+  "expected_candidate_pipeline": "matmul_rocmfp4_fast_q8_1_bk3_planar_m"
+}
