@@ -13,8 +13,10 @@
 set -euo pipefail
 
 WORK=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work
-BUILD=$WORK/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin
+# Override BUILD to point the harness at a candidate backend directory.
+BUILD=${BUILD:-$WORK/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin}
 OUTPUT=${1:?usage: run_primary_metric_v11.sh <output-dir>}
+PORT=${PORT:-18261}
 
 source /home/isaac/vllm-challenge/env.sh
 unset HSA_OVERRIDE_GFX_VERSION
@@ -27,7 +29,7 @@ export PROMPT_TOKENS=128
 export MAX_TOKENS=64
 export REPETITIONS=10
 export WARMUP=1
-export CONCURRENCIES="1 2 3 4"
+export CONCURRENCIES=${CONCURRENCIES:-"1 2 3 4"}
 export CACHE_PROMPT=off
 export PROMPT_MODE=varied
 export SLOT_POLICY=auto

@@ -1,0 +1,85 @@
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index 4f7fbb1..507ef39 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -9584,6 +9584,32 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
+     GGML_ASSERT(ne11 == 1 || ne12 * ne13 == 1);
+     bool batch_n = ne11 > 1;
+ 
++    // A replicated batch over a weight matrix that has no batch dimension of its
++    // own is a pure broadcast: every batch element multiplies the same rows by a
++    // different column of src1. Dispatching those over grid_y makes each workgroup
++    // walk the whole weight matrix again, so a four-slot decode reads the weights
++    // four times and leans on L2 to hide it. Folding the batch into the column
++    // dimension hands one workgroup the same columns instead, and a workgroup
++    // already reuses the rows it loads across columns. The layouts coincide:
++    // ne11 == 1 makes the batch stride of src1 equal its row stride, which is
++    // exactly what the batch_n path assumes for stride_batch_y and stride_batch_d,
++    // and ne02 == ne03 == 1 makes a_offset zero for every batch element.
++    const bool fold_allowed = getenv("GGML_VK_MMV_NO_FOLD_BATCH") == nullptr;
++    const bool fold_batch_into_cols = fold_allowed && !batch_n && ne11 == 1 && ne13 == 1 &&
++                                      ne02 == 1 && ne03 == 1 &&
++                                      ne12 > 1 && ne12 <= mul_mat_vec_max_cols;
++    if (getenv("GGML_VK_MMV_TRACE_FOLD") != nullptr) {
++        std::string trace = "mmv-fold: m=" + std::to_string(ne20) + " n=" + std::to_string(ne11) +
++                            " k=" + std::to_string(ne00) + " ne02=" + std::to_string(ne02) +
++                            " ne12=" + std::to_string(ne12) + " batch_n=" + std::to_string((int) batch_n) +
++                            " fold=" + std::to_string((int) fold_batch_into_cols) + "\n";
++        fputs(trace.c_str(), stderr);
++    }
++    // Columns the pipeline has to be built for.
++    const uint64_t pipeline_cols = fold_batch_into_cols ? ne12 : ne11;
++    // Elements actually dispatched along grid_y.
++    const uint64_t dispatch_batch = fold_batch_into_cols ? 1 : ne12 * ne13;
++
+     const bool x_non_contig = !ggml_vk_dim01_contiguous(src0);
+     const bool y_non_contig = !ggml_vk_dim01_contiguous(src1);
+ 
+@@ -9602,12 +9628,12 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
+     }
+ 
+     // Check for mmq first
+-    vk_pipeline dmmv = quantize_y ? ggml_vk_get_dequantize_mul_mat_vec(ctx, src0->type, GGML_TYPE_Q8_1, ne11, ne20, ne00) : nullptr;
++    vk_pipeline dmmv = quantize_y ? ggml_vk_get_dequantize_mul_mat_vec(ctx, src0->type, GGML_TYPE_Q8_1, pipeline_cols, ne20, ne00) : nullptr;
+     vk_pipeline to_q8_1 = nullptr;
+ 
+     if (dmmv == nullptr) {
+         // Fall back to f16 dequant mul mat
+-        dmmv = ggml_vk_get_dequantize_mul_mat_vec(ctx, src0->type, src1->type, ne11, ne20, ne00);
++        dmmv = ggml_vk_get_dequantize_mul_mat_vec(ctx, src0->type, src1->type, pipeline_cols, ne20, ne00);
+         quantize_y = false;
+     }
+ 
+@@ -9735,10 +9761,12 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
+         }
+     }
+ 
+-    // For batch_n, the A matrix is the same for each batch, and B/D use the row stride as the batch stride
+-    uint32_t stride_batch_x = batch_n ? 0 : ne00*ne01;
+-    uint32_t stride_batch_y = batch_n ? ne10 : (ne10*ne11);
+-    uint32_t stride_batch_d = batch_n ? ne20 : (ne20*ne21);
++    // For batch_n, the A matrix is the same for each batch, and B/D use the row stride as the batch stride.
++    // fold_batch_into_cols puts the batch in the column dimension instead, where the same holds.
++    const bool shared_batch = batch_n || fold_batch_into_cols;
++    uint32_t stride_batch_x = shared_batch ? 0 : ne00*ne01;
++    uint32_t stride_batch_y = shared_batch ? ne10 : (ne10*ne11);
++    uint32_t stride_batch_d = shared_batch ? ne20 : (ne20*ne21);
+ 
+     if (!ggml_vk_dim01_contiguous(src0) && !qx_needs_dequant) {
+         stride_batch_x = src0->nb[0] / ggml_type_size(src0->type);
+@@ -9778,12 +9806,12 @@ static void ggml_vk_mul_mat_vec_q_f16(ggml_backend_vk_context * ctx, vk_context&
+         fusion_flags |= MAT_VEC_FUSION_FLAGS_BIAS1;
+     }
+ 
+-    ggml_pipeline_request_descriptor_sets(ctx, dmmv, CEIL_DIV(ne12 * ne13, ctx->device->properties.limits.maxComputeWorkGroupCount[1]));
++    ggml_pipeline_request_descriptor_sets(ctx, dmmv, CEIL_DIV(dispatch_batch, ctx->device->properties.limits.maxComputeWorkGroupCount[1]));
+ 
+     uint32_t base_work_group_y = 0;
+-    while (base_work_group_y < ne12 * ne13) {
++    while (base_work_group_y < dispatch_batch) {
+ 
+-        uint32_t groups_y = std::min((uint32_t)(ne12 * ne13) - base_work_group_y, ctx->device->properties.limits.maxComputeWorkGroupCount[1]);
++        uint32_t groups_y = std::min((uint32_t)dispatch_batch - base_work_group_y, ctx->device->properties.limits.maxComputeWorkGroupCount[1]);
+         const vk_mat_vec_push_constants pc = {
+             (uint32_t)ne00, (uint32_t)ne10, (uint32_t)ne10, (uint32_t)ne01,
+             stride_batch_x, stride_batch_y, stride_batch_d,

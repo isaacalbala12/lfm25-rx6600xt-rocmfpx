@@ -1,0 +1,10 @@
+control_bin=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/v11-control-bin
+candidate_bin=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin
+model=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf
+order=control/candidate alternating
+device=ROCmFPXVulkan0
+flags=-ngl 99 -fa on -np 4 -cb --cache-prompt -c 36864 --kv-unified-per-slot 9216 -b 4096 -ub 128 -ctk q8_0 -ctv q8_0
+prefill_chunk_tokens=128
+d56f602eb9bcad2cafbe2a52cef2fa14ba09e6290679a2aee164db22815f0933  /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf
+f89f3faaa85b22c5257b5194ea42aa3af9644afc93330bc2ab18f48fd26b4724  /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/v11-control-bin/libggml-rocmfpx-vulkan.so
+cf4c325ec2e400c0914bcec66639a486ff1234e315bcf813cafbfe0ebef9a966  /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/libggml-rocmfpx-vulkan.so

@@ -66,6 +66,23 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 
 ## Important engineering findings
 
+- **The host GPU is bimodal, and this invalidates unpaired measurements.** The
+  RX 6600 XT randomly enters a state where MEMCLK oscillates between 1000 MHz
+  and 541 MHz and every workload runs about 40% slower. It happened in 5 of 12
+  interleaved runs of identical commands. The campaign's `ubatch=512` "cliff"
+  was this state, and V3's 229.27-versus-233.99 discrepancy is consistent with
+  it. Every measurement from V11 onward states the mode it ran in; see
+  `work/GPU_BIMODAL_V11.md`. Pinning the power profile would remove the variance
+  for both benchmarks and the server, and has not been done because it is a
+  system power decision.
+- **Four-slot decode was re-reading the weight matrix once per sequence.**
+  The short-conv and SSM projections take a `(k, 1, 4)` input, so the backend
+  dispatched them with `grid_y = 4` and each workgroup walked the whole weight
+  matrix for one token. Folding the replicated batch into the column dimension
+  makes one workgroup serve all four slots: **+13.0% on four-sequence decode**,
+  +8.4% on idle resident decode at 8K, +4% on the C=4 128/64 service metric, and
+  a 12% better E2E tail. Perplexity is bit-identical and C=2 outputs are 20/20
+  identical. See `work/DECODE_BATCH_FOLD_V11.md`.
 - **The format choice depended on a shape the campaign had stopped
   measuring.** Format screening happened once, at 128/64 and 512/128, where
   decode dominates and FP4_FAST wins. When the objective moved to an 8K
@@ -79,8 +96,9 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
   same reason: the bottleneck is not the block layout.
 - **Marginal returns on the MMQ family are exhausted.** Roughly 40 shader
   variants across V3--V10 produced a best service-level kernel result of
-  +1.1641% (selective gate/up BK3), and the largest service win in the whole
-  campaign was a scheduler setting, not a kernel.
+  +1.1641% (selective gate/up BK3). The decode batch fold above, found by
+  measuring the roofline before writing code, is two orders of magnitude
+  larger.
 - `ubatch=512` triggers a server-only performance cliff correlated with the
   RX 6600 XT memory clock alternating between 541 and 1000 MHz. `ubatch=128`
   avoids it without changing system power settings.
@@ -138,6 +156,9 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
   with the leverage verdict that closes the micro-optimization route.
 - `work/FORMAT_PREFILL_V11.md`: the format finding, screen and paired A/B.
 - `work/PRIMARY_METRIC_V11.md`: primary-metric regression control.
+- `work/GPU_BIMODAL_V11.md`: the two-state GPU clock behaviour and the
+  measurement protocol it forces.
+- `work/DECODE_BATCH_FOLD_V11.md`: the four-slot decode weight-reuse fix.
 - `work/NEXT_ACTION.md`: current production state and the next exact actions.
 - `work/HANDOFF_V9.md`, `work/HANDOFF_V10.md`: per-version handoffs.
 - `work/KERNEL_MICROBENCH_V*.md`, `work/PREFILL8K_PROFILE_V*.md`,
