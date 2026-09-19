@@ -84,9 +84,19 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 - `ubatch=512` triggers a server-only performance cliff correlated with the
   RX 6600 XT memory clock alternating between 541 and 1000 MHz. `ubatch=128`
   avoids it without changing system power settings.
-- Sparse active slot IDs such as `{0, 1, 3}` can reduce Vulkan C=3 throughput
-  from roughly 208 to 117 tok/s. The opt-in compact scheduler in the included
-  ROCmFPX patch selects the lowest available slots and removes this cliff.
+- Sparse active slot IDs such as `{0, 1, 3}` reduce the contemporary coherent
+  model from about 200--202 to 131--132 tok/s. V3 proves the recurrent allocator
+  splits the sparse set every step. The opt-in compact scheduler in the included
+  ROCmFPX patch selects the lowest available slots and removes this cliff; the
+  staged dense-internal-ID runtime (R1) preserves logical API slot IDs, passes
+  active completion/cancellation/reuse with host sampling, and still awaits
+  deterministic logit equivalence before production.
+- Backend sampling cannot be rebound safely during sequence migration. Dense
+  remapping rejects that combination explicitly instead of aborting or silently
+  changing the sampling policy.
+- A shape-specific four-subgroup FP4_FAST decode selector improved selected
+  exact-pipeline microbenchmarks but reduced full-server C4 throughput by 5.29%
+  in the observed run. It is retained only as an experimental switch.
 - Capping prompt admission at 128 tokens per iteration lifted decode retention
   from 1.46% to 15.70% and cut resident ITL p95 from 2189 ms to 89 ms on the 8K
   profile, at a cost of +22.4% new-user TTFT. This remains the single largest
@@ -114,10 +124,16 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 ## Repository layout
 
 - `work/RESULTS.md`: V2 decision report and leaderboard.
+- `CAMPAIGN_CONTINUATION.md`: the V3--V10 continuation guide.
 - `work/EXPERIMENTS.md`: hypotheses, evidence and KEEP/STAGE/REJECT decisions,
   V1 through V10.
 - `work/BASELINES.json`: machine-readable baselines.
 - `work/HARDWARE_MANIFEST.json`: hardware, source revisions and artifact hashes.
+- `work/SHAPE_CENSUS.csv` and `work/SHAPE_CENSUS_V3.csv` through `_V5.csv`:
+  profiled Vulkan operation shapes.
+- `work/PLUGIN_EXECUTION_MAP.md`, `work/PROFILE_V3.md`,
+  `work/CAMPAIGN_V3_RESULT.md`, `work/SEQUENCE_REMAP_VALIDATION.md`: the first
+  campaign's plugin dispatch map, profile, result and runtime remap validation.
 - `work/MISC_BREAKDOWN_V11.md`: prefill `misc` decomposition by op and graph,
   with the leverage verdict that closes the micro-optimization route.
 - `work/FORMAT_PREFILL_V11.md`: the format finding, screen and paired A/B.
@@ -133,6 +149,11 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 - `work/results/`: raw benchmark evidence for every run.
 - `patches/ROCmFPX-gfx1032.patch`: local ROCmFPX changes against revision
   `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`.
+- `patches/`: every candidate shader change, grouped by campaign version
+  (`v5-*`, `v6-auto/`, `v8-*`, `v9-*`, `v10-fp4-layouts/`), each with its
+  matching revert patch where one was applied.
+- `patches/campaign-v3-runtime-kernel.patch`,
+  `patches/campaign-v4-prefill-chunk.patch`: the two promoted runtime changes.
 
 ## Excluded artifacts
 

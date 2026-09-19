@@ -1,0 +1,245 @@
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index dcf3728..66e1211 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -773,6 +773,7 @@ struct vk_device_struct {
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_exact;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_bpair;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst;
+@@ -1858,6 +1859,7 @@ static bool vk_rocmfp4_fast_mmq_bk3_gateup_nobounds = false;
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup_exact = false;
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup_k2048 = false;
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup_shape = false;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup_bpair = false;
+ static bool vk_rocmfp4_fast_mmq_down_notail = false;
+ static bool vk_rocmfp4_fast_mmq_down_hoist = false;
+ static bool vk_rocmfp4_fast_mmq_down_bfirst = false;
+@@ -4525,6 +4527,7 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_exact, matmul_rocmfp4_fast_q8_1_bk3_exact, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048, matmul_rocmfp4_fast_q8_1_bk3_k2048, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape, matmul_rocmfp4_fast_q8_1_bk3_shape, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_bpair, matmul_rocmfp4_fast_q8_1_bk3_bpair, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail, matmul_rocmfp4_fast_q8_1_down_notail, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist, matmul_rocmfp4_fast_q8_1_down_hoist, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst, matmul_rocmfp4_fast_q8_1_down_bfirst, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+@@ -6871,11 +6874,13 @@ static void ggml_vk_instance_init() {
+     vk_rocmfp4_fast_mmq_bk3_gateup_exact = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_EXACT");
+     vk_rocmfp4_fast_mmq_bk3_gateup_k2048 = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_K2048");
+     vk_rocmfp4_fast_mmq_bk3_gateup_shape = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_SHAPE");
++    vk_rocmfp4_fast_mmq_bk3_gateup_bpair = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_BPAIR");
+     const int gateup_search_variants = int(vk_rocmfp4_fast_mmq_bk3_gateup_nosplit) +
+                                        int(vk_rocmfp4_fast_mmq_bk3_gateup_nobounds) +
+                                        int(vk_rocmfp4_fast_mmq_bk3_gateup_exact) +
+                                        int(vk_rocmfp4_fast_mmq_bk3_gateup_k2048) +
+-                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_shape);
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_shape) +
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_bpair);
+     if (gateup_search_variants > 1) {
+         throw std::runtime_error("only one GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_* candidate may be enabled");
+     }
+@@ -8980,6 +8985,8 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+             mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048.f32acc;
+         } else if (vk_rocmfp4_fast_mmq_bk3_gateup_shape && ne11 == 128) {
+             mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape.f32acc;
++        } else if (vk_rocmfp4_fast_mmq_bk3_gateup_bpair && ne11 == 128) {
++            mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_bpair.f32acc;
+         }
+     }
+     const bool use_rocmfp4_fast_down_search =
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+index 8a266a2..29fa85e 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+@@ -97,6 +97,9 @@ shared block_b_cache buf_b[BN * BK_STEP];
+ // Register cache
+ block_a_cache cache_a[WMITER * TM];
+ block_b_cache cache_b;
++#if defined(ROCMFP4_FAST_GATEUP_BPAIR) && defined(DATA_A_ROCMFP4_FAST)
++block_b_cache cache_b_pair[2];
++#endif
+ 
+ #define LOAD_VEC_A (4 * QUANT_R_MMQ)
+ #define LOAD_VEC_B 16
+@@ -311,6 +314,23 @@ void main() {
+             }
+ 
+             [[unroll]] for (uint wsic = 0; wsic < WNITER; wsic++) {
++#if defined(ROCMFP4_FAST_GATEUP_BPAIR) && defined(DATA_A_ROCMFP4_FAST)
++                [[unroll]] for (uint cc = 0; cc < TN; cc++) {
++                    const uint ib = k_step * BN + warp_c * WN + wsic * WSUBN + tiwc * TN + cc;
++                    block_b_to_registers_pair(cc, ib);
++                }
++
++                [[unroll]] for (uint cc = 0; cc < TN; cc++) {
++                    [[unroll]] for (uint wsir = 0; wsir < WMITER; wsir++) {
++                        [[unroll]] for (uint cr = 0; cr < TM; cr++) {
++                            const uint cache_a_idx = wsir * TM + cr;
++                            const uint sums_idx = (wsic * TN + cc) * (WMITER * TM) + wsir * TM + cr;
++
++                            sums[sums_idx] += mmq_dot_product_pair(cache_a_idx, cc);
++                        }
++                    }
++                }
++#else
+                 [[unroll]] for (uint cc = 0; cc < TN; cc++) {
+                     const uint ib = k_step * BN + warp_c * WN + wsic * WSUBN + tiwc * TN + cc;
+                     block_b_to_registers(ib);
+@@ -324,6 +344,7 @@ void main() {
+                         }
+                     }
+                 }
++#endif
+             }
+         }
+ 
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+index 584a578..9e8d213 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+@@ -497,3 +497,21 @@ void block_b_to_registers(const uint ib) {
+         cache_b.qs[iqs] = buf_b[ib].qs[iqs];
+     }
+ }
++
++#if defined(ROCMFP4_FAST_GATEUP_BPAIR) && defined(DATA_A_ROCMFP4_FAST)
++void block_b_to_registers_pair(const uint pair_idx, const uint ib) {
++    cache_b_pair[pair_idx].ds = buf_b[ib].ds;
++    [[unroll]] for (uint iqs = 0; iqs < BK / 4; iqs++) {
++        cache_b_pair[pair_idx].qs[iqs] = buf_b[ib].qs[iqs];
++    }
++}
++
++ACC_TYPE mmq_dot_product_pair(const uint ib_a, const uint pair_idx) {
++    int32_t q_sum = 0;
++    [[unroll]] for (uint iqs = 0; iqs < 8; iqs++) {
++        q_sum += dotPacked4x8EXT(cache_a[ib_a].qs[iqs], cache_b_pair[pair_idx].qs[iqs]);
++    }
++
++    return ACC_TYPE(float(q_sum) * float(cache_a[ib_a].d) * float(cache_b_pair[pair_idx].ds.x));
++}
++#endif
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+index 194e488..c5f37e8 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -630,6 +630,7 @@ void matmul_shaders(bool fp16, MatMulIdType matmul_id_type, bool coopmat, bool c
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_exact", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_k2048", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_GATEUP_K_2048", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_shape", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}, {"ROCMFP4_FAST_GATEUP_K_2048", "1"}, {"ROCMFP4_FAST_GATEUP_SHAPE_10752_128_2048", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_bpair", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_GATEUP_BPAIR", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_notail", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_hoist", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_HOIST_STRIDES", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_bfirst", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_B_FIRST", "1"}}), fp16, coopmat, coopmat2, f16acc);
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index f2b4eee..30d338b 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -923,6 +923,10 @@ private:
+     bool dense_sequences = false;   // env: LLAMA_SERVER_DENSE_SEQUENCES
+     bool remap_trace = false;       // env: LLAMA_SERVER_REMAP_TRACE
+     int32_t prefill_chunk_tokens = 0; // env: LLAMA_SERVER_PREFILL_CHUNK_TOKENS; 0 = n_batch
++    double prefill_target_ms = 0.0; // env: LLAMA_SERVER_PREFILL_TARGET_MS; 0 = disabled
++    int32_t prefill_min_tokens = 64; // lower clamp for the temporal scheduler
++    double prefill_mixed_ms_per_token_ewma = 0.0;
++    bool prefill_ewma_trace = false;
+     bool compact_sequences_pending = false;
+     bool batch_trace = false; // env: LLAMA_SERVER_BATCH_TRACE
+     uint64_t batch_trace_id = 0;
+@@ -1419,9 +1423,29 @@ private:
+             prefill_chunk_tokens = LLAMA_SERVER_PREFILL_CHUNK_TOKENS ?
+                 std::max(0, atoi(LLAMA_SERVER_PREFILL_CHUNK_TOKENS)) : 0;
+ 
++            const char * LLAMA_SERVER_PREFILL_TARGET_MS = getenv("LLAMA_SERVER_PREFILL_TARGET_MS");
++            prefill_target_ms = LLAMA_SERVER_PREFILL_TARGET_MS ?
++                std::max(0.0, atof(LLAMA_SERVER_PREFILL_TARGET_MS)) : 0.0;
++
++            const char * LLAMA_SERVER_PREFILL_MIN_TOKENS = getenv("LLAMA_SERVER_PREFILL_MIN_TOKENS");
++            prefill_min_tokens = LLAMA_SERVER_PREFILL_MIN_TOKENS ?
++                std::max(1, atoi(LLAMA_SERVER_PREFILL_MIN_TOKENS)) : 64;
++            prefill_ewma_trace = env_flag("LLAMA_SERVER_PREFILL_EWMA_TRACE", false);
++
++            if (prefill_target_ms > 0.0 && prefill_chunk_tokens <= 0) {
++                throw std::runtime_error("LLAMA_SERVER_PREFILL_TARGET_MS requires LLAMA_SERVER_PREFILL_CHUNK_TOKENS > 0");
++            }
++            if (prefill_chunk_tokens > 0) {
++                prefill_min_tokens = std::min(prefill_min_tokens, prefill_chunk_tokens);
++            }
++
+             if (prefill_chunk_tokens > 0) {
+                 SRV_WRN("LLAMA_SERVER_PREFILL_CHUNK_TOKENS = %d\n", prefill_chunk_tokens);
+             }
++            if (prefill_target_ms > 0.0) {
++                SRV_WRN("temporal prefill scheduler: target_ms=%.3f min_tokens=%d max_tokens=%d\n",
++                        prefill_target_ms, prefill_min_tokens, prefill_chunk_tokens);
++            }
+ 
+             SRV_INF("sequence policy: lowest_slot_first=%d dense_sequences=%d remap_trace=%d\n",
+                     lowest_slot_first ? 1 : 0, dense_sequences ? 1 : 0, remap_trace ? 1 : 0);
+@@ -3286,6 +3310,18 @@ private:
+             }
+         });
+ 
++        int32_t active_prefill_chunk_tokens = prefill_chunk_tokens;
++        if (prefill_target_ms > 0.0 && !generating.empty() && prefill_mixed_ms_per_token_ewma > 0.0) {
++            const int32_t estimated_tokens = std::max(1, (int32_t) std::floor(
++                prefill_target_ms / prefill_mixed_ms_per_token_ewma));
++            active_prefill_chunk_tokens = std::clamp(
++                estimated_tokens, prefill_min_tokens, prefill_chunk_tokens);
++        }
++        if (prefill_ewma_trace && prefill_target_ms > 0.0 && !generating.empty()) {
++            SRV_WRN("PREFILLEWMA event=budget decoders=%zu ewma_ms_per_token=%.6f chunk_tokens=%d\n",
++                    generating.size(), prefill_mixed_ms_per_token_ewma, active_prefill_chunk_tokens);
++        }
++
+         // generate the actual drafts (if any)
+         if (!drafting.empty()) {
+             queue_tasks.yield_to_queue([&]() {
+@@ -3800,7 +3836,7 @@ private:
+                     // add prompt tokens for processing in the current batch
+                     while (slot.prompt.n_tokens() < slot.task->n_tokens() &&
+                            batch.size() < n_batch &&
+-                           (prefill_chunk_tokens == 0 || batch.size() - n_tokens_prev < prefill_chunk_tokens)) {
++                           (active_prefill_chunk_tokens == 0 || batch.size() - n_tokens_prev < active_prefill_chunk_tokens)) {
+                         // get next token to process
+                         llama_token cur_tok = input_tokens[slot.prompt.n_tokens()];
+                         if (cur_tok == LLAMA_TOKEN_NULL) {
+@@ -3990,16 +4026,32 @@ private:
+         // yield to the queue, so we can still handle metrics tasks while decoding
+         // note: the sync is done here too, so that the wait is also covered by the yield
+         int ret = 0;
+-        const int64_t trace_start_us = batch_trace ? ggml_time_us() : 0;
++        const bool track_prefill_ewma = prefill_target_ms > 0.0 && n_prompt_tokens > 0 &&
++                                         batch_view.n_tokens > n_prompt_tokens;
++        const int64_t trace_start_us = (batch_trace || track_prefill_ewma) ? ggml_time_us() : 0;
+         queue_tasks.yield_to_queue([&]() {
+             ret = llama_decode(ctx_tgt, batch_view);
+             if (ret == 0 && has_output) {
+                 llama_synchronize(ctx_tgt);
+             }
+         });
++        const int64_t trace_elapsed_us = (batch_trace || track_prefill_ewma) ?
++            ggml_time_us() - trace_start_us : 0;
++        if (track_prefill_ewma && ret == 0) {
++            constexpr double ewma_alpha = 0.25;
++            const double sample_ms_per_token = trace_elapsed_us / 1000.0 / n_prompt_tokens;
++            prefill_mixed_ms_per_token_ewma = prefill_mixed_ms_per_token_ewma == 0.0 ?
++                sample_ms_per_token :
++                ewma_alpha * sample_ms_per_token + (1.0 - ewma_alpha) * prefill_mixed_ms_per_token_ewma;
++            if (prefill_ewma_trace) {
++                SRV_WRN("PREFILLEWMA event=sample prompt_tokens=%d decode_tokens=%d wall_us=%" PRId64 " sample_ms_per_token=%.6f ewma_ms_per_token=%.6f\n",
++                        n_prompt_tokens, batch_view.n_tokens - n_prompt_tokens, trace_elapsed_us,
++                        sample_ms_per_token, prefill_mixed_ms_per_token_ewma);
++            }
++        }
+         if (batch_trace) {
+             SRV_WRN("BATCHTRACE id=%" PRIu64 " phase=complete wall_us=%" PRId64 " ret=%d\n",
+-                    trace_id, ggml_time_us() - trace_start_us, ret);
++                    trace_id, trace_elapsed_us, ret);
+         }
+ 
+         if (ret != 0) {
+

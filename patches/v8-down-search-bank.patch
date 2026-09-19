@@ -1,0 +1,307 @@
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index 4a4fc08..0ba929b 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -768,6 +768,17 @@ struct vk_device_struct {
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_f16[GGML_TYPE_COUNT];
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_COUNT];
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nosplit;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nobounds;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_exact;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail_nosplit;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail_nobounds;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nosplit_nobounds;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_q8group4;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_exact_q8group4;
+ 
+     vk_matmul_pipeline pipeline_matmul_id_f32 {};
+     vk_matmul_pipeline pipeline_matmul_id_bf16 {};
+@@ -1837,6 +1848,17 @@ static int vk_rocmfp4_fast_dmmv_wg = -1;
+ // The validated production default for FP4_FAST gate/up prefill on gfx1032.
+ // Set GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP=0 for a same-binary BK4 control.
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup = true;
++static bool vk_rocmfp4_fast_mmq_down_notail = false;
++static bool vk_rocmfp4_fast_mmq_down_hoist = false;
++static bool vk_rocmfp4_fast_mmq_down_bfirst = false;
++static bool vk_rocmfp4_fast_mmq_down_nosplit = false;
++static bool vk_rocmfp4_fast_mmq_down_nobounds = false;
++static bool vk_rocmfp4_fast_mmq_down_exact = false;
++static bool vk_rocmfp4_fast_mmq_down_notail_nosplit = false;
++static bool vk_rocmfp4_fast_mmq_down_notail_nobounds = false;
++static bool vk_rocmfp4_fast_mmq_down_nosplit_nobounds = false;
++static bool vk_rocmfp4_fast_mmq_down_q8group4 = false;
++static bool vk_rocmfp4_fast_mmq_down_exact_q8group4 = false;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4 = 3;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE = 4;
+@@ -4488,6 +4510,17 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4], matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST], matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3, matmul_rocmfp4_fast_q8_1_bk3, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail, matmul_rocmfp4_fast_q8_1_down_notail, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist, matmul_rocmfp4_fast_q8_1_down_hoist, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst, matmul_rocmfp4_fast_q8_1_down_bfirst, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nosplit, matmul_rocmfp4_fast_q8_1_down_nosplit, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nobounds, matmul_rocmfp4_fast_q8_1_down_nobounds, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_exact, matmul_rocmfp4_fast_q8_1_down_exact, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail_nosplit, matmul_rocmfp4_fast_q8_1_down_notail_nosplit, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail_nobounds, matmul_rocmfp4_fast_q8_1_down_notail_nobounds, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nosplit_nobounds, matmul_rocmfp4_fast_q8_1_down_nosplit_nobounds, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_q8group4, matmul_rocmfp4_fast_q8_1_down_q8group4, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_exact_q8group4, matmul_rocmfp4_fast_q8_1_down_exact_q8group4, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+ 
+             CREATE_MMQ(GGML_TYPE_Q2_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q2_K], matmul_q2_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q3_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q3_K], matmul_q3_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, , 0);
+@@ -6818,6 +6851,31 @@ static void ggml_vk_instance_init() {
+     if (const char * value = getenv("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP")) {
+         vk_rocmfp4_fast_mmq_bk3_gateup = strcmp(value, "0") != 0;
+     }
++    vk_rocmfp4_fast_mmq_down_notail = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL");
++    vk_rocmfp4_fast_mmq_down_hoist = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_HOIST");
++    vk_rocmfp4_fast_mmq_down_bfirst = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_BFIRST");
++    vk_rocmfp4_fast_mmq_down_nosplit = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT");
++    vk_rocmfp4_fast_mmq_down_nobounds = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOBOUNDS");
++    vk_rocmfp4_fast_mmq_down_exact = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT");
++    vk_rocmfp4_fast_mmq_down_notail_nosplit = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL_NOSPLIT");
++    vk_rocmfp4_fast_mmq_down_notail_nobounds = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL_NOBOUNDS");
++    vk_rocmfp4_fast_mmq_down_nosplit_nobounds = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOSPLIT_NOBOUNDS");
++    vk_rocmfp4_fast_mmq_down_q8group4 = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_Q8GROUP4");
++    vk_rocmfp4_fast_mmq_down_exact_q8group4 = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_EXACT_Q8GROUP4");
++    const int down_search_variants = int(vk_rocmfp4_fast_mmq_down_notail) +
++                                     int(vk_rocmfp4_fast_mmq_down_hoist) +
++                                     int(vk_rocmfp4_fast_mmq_down_bfirst) +
++                                     int(vk_rocmfp4_fast_mmq_down_nosplit) +
++                                     int(vk_rocmfp4_fast_mmq_down_nobounds) +
++                                     int(vk_rocmfp4_fast_mmq_down_exact) +
++                                     int(vk_rocmfp4_fast_mmq_down_notail_nosplit) +
++                                     int(vk_rocmfp4_fast_mmq_down_notail_nobounds) +
++                                     int(vk_rocmfp4_fast_mmq_down_nosplit_nobounds) +
++                                     int(vk_rocmfp4_fast_mmq_down_q8group4) +
++                                     int(vk_rocmfp4_fast_mmq_down_exact_q8group4);
++    if (down_search_variants > 1) {
++        throw std::runtime_error("only one GGML_VK_ROCMFP4_FAST_MMQ_DOWN_* candidate may be enabled");
++    }
+     if (vk_selection_logger_enabled) {
+         std::cerr << "VKSEL event=backend source=rocmfpx-vulkan-plugin" << std::endl;
+     }
+@@ -8885,6 +8943,32 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+     if (use_rocmfp4_fast_bk3_gateup) {
+         mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3.f32acc;
+     }
++    const bool use_rocmfp4_fast_down_search =
++        quantize_y && src0->type == GGML_TYPE_Q4_0_ROCMFP4_FAST &&
++        ne01 == 2048 && ne10 == 10752 && ne11 == 128;
++    if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_notail) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_hoist) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_bfirst) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_nosplit) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nosplit.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_nobounds) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nobounds.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_exact) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_exact.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_notail_nosplit) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail_nosplit.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_notail_nobounds) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail_nobounds.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_nosplit_nobounds) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_nosplit_nobounds.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_q8group4) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_q8group4.f32acc;
++    } else if (use_rocmfp4_fast_down_search && vk_rocmfp4_fast_mmq_down_exact_q8group4) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_exact_q8group4.f32acc;
++    }
+ 
+     if (mmp == nullptr) {
+         // Fall back to f16 dequant mul mat
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+index aae1c2e..8318855 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+@@ -131,9 +131,15 @@ void main() {
+     const uint batch_idx_a = i03 * p.ne02 + i02;
+ #endif
+ 
++#ifdef ROCMFP4_FAST_DOWN_NO_SPLIT_K
++    const uint blocks_m = p.M / BM;
++    const uint ir = gl_WorkGroupID.x;
++    const uint ik = 0;
++#else
+     const uint blocks_m = (p.M + BM - 1) / BM;
+     const uint ir = gl_WorkGroupID.x % blocks_m;
+     const uint ik = gl_WorkGroupID.x / blocks_m;
++#endif
+ 
+     const uint WNITER = (WM * WN) / (WARP * TM * TN * WMITER);
+     const uint WSUBM = WM / WMITER;
+@@ -183,7 +189,10 @@ void main() {
+     if (ic * BN >= _ne1) return;
+ #endif
+ 
+-#ifdef MUL_MAT_ID
++#ifdef ROCMFP4_FAST_DOWN_NO_SPLIT_K
++    const uint start_k = 0;
++    const uint end_k = p.K;
++#elif defined(MUL_MAT_ID)
+     const uint start_k = 0;
+     const uint end_k = p.K;
+ #else
+@@ -206,37 +215,76 @@ void main() {
+ 
+     ACC_TYPE sums[WMITER * TM * WNITER * TN];
+ 
++#ifdef ROCMFP4_FAST_DOWN_HOIST_STRIDES
++    const uint stride_a_blocks = p.stride_a / BK;
++    const uint stride_b_blocks = p.stride_b / BK;
++#endif
++
+     [[unroll]] for (uint i = 0; i < WMITER*TM*WNITER*TN; i++) {
+         sums[i] = ACC_TYPE(0.0f);
+     }
+ 
+     for (uint block = start_k; block < end_k; block += BK * BK_STEP) {
++#ifdef ROCMFP4_FAST_DOWN_B_FIRST
++        [[unroll]] for (uint l = 0; loadc_b + l < BN; l += loadstride_b) {
++            const uint buf_ib = loadc_b + l;
++            const uint ib = pos_b_ib + buf_ib * p.stride_b / BK;
++            const uint iqs = loadr_b;
++
++            [[unroll]] for (uint k_step = 0; k_step < BK_STEP; k_step++) {
++                block_b_to_shmem(k_step * BN + buf_ib, ib + k_step, iqs, block + k_step * BK < end_k);
++            }
++        }
++#endif
+         [[unroll]] for (uint l = 0; loadc_a + l < BM; l += loadstride_a) {
+             const uint buf_ib = loadc_a + l;
++#ifdef ROCMFP4_FAST_DOWN_HOIST_STRIDES
++            const uint ib = pos_a_ib + buf_ib * stride_a_blocks;
++#else
+             const uint ib = pos_a_ib + buf_ib * p.stride_a / BK;
++#endif
+             const uint iqs = loadr_a;
+ 
+             [[unroll]] for (uint k_step = 0; k_step < BK_STEP; k_step++) {
++#ifdef ROCMFP4_FAST_DOWN_NO_K_TAIL
++                block_a_to_shmem(k_step * BM + buf_ib, ib + k_step, iqs);
++#else
+                 if (block + k_step * BK < end_k) {
+                     block_a_to_shmem(k_step * BM + buf_ib, ib + k_step, iqs);
+                 }
++#endif
+             }
+         }
++#ifndef ROCMFP4_FAST_DOWN_B_FIRST
+         [[unroll]] for (uint l = 0; loadc_b + l < BN; l += loadstride_b) {
+             const uint buf_ib = loadc_b + l;
+ 
+ #ifdef MUL_MAT_ID
+             const u16vec2 row_idx = row_ids[buf_ib];
+             const uint ib = pos_b_ib + row_idx.y * p.batch_stride_b / BK + (row_idx.x % p.ne11) * p.stride_b / BK;
++#elif defined(ROCMFP4_FAST_DOWN_HOIST_STRIDES)
++            const uint ib = pos_b_ib + buf_ib * stride_b_blocks;
+ #else
+             const uint ib = pos_b_ib + buf_ib * p.stride_b / BK;
+ #endif
+             const uint iqs = loadr_b;
++#ifdef ROCMFP4_FAST_DOWN_Q8_GROUP4
++            const uint ib_outer = ib / 4;
++#endif
+ 
+             [[unroll]] for (uint k_step = 0; k_step < BK_STEP; k_step++) {
++#ifdef ROCMFP4_FAST_DOWN_Q8_GROUP4
++                block_b_to_shmem_group4(k_step * BN + buf_ib, ib_outer, k_step, iqs);
++#else
++#ifdef ROCMFP4_FAST_DOWN_NO_K_TAIL
++                block_b_to_shmem(k_step * BN + buf_ib, ib + k_step, iqs, true);
++#else
+                 block_b_to_shmem(k_step * BN + buf_ib, ib + k_step, iqs, block + k_step * BK < end_k);
++#endif
++#endif
+             }
+         }
++#endif
+ 
+         barrier();
+ 
+@@ -277,8 +325,10 @@ void main() {
+     const uint dr = ir * BM + warp_r * WM;
+     const uint dc = ic * BN + warp_c * WN;
+ 
+-#ifndef MUL_MAT_ID
++#if !defined(MUL_MAT_ID) && !defined(ROCMFP4_FAST_DOWN_NO_SPLIT_K)
+     const uint offsets = batch_idx * p.batch_stride_d + ik * p.batch_stride_d * p.num_batches;
++#elif !defined(MUL_MAT_ID)
++    const uint offsets = batch_idx * p.batch_stride_d;
+ #endif
+ 
+     [[unroll]] for (uint wsic = 0; wsic < WNITER; wsic++) {
+@@ -299,10 +349,14 @@ void main() {
+                     if (dr_warp + cr < p.M) {
+                         data_d[row_idx.y * p.batch_stride_d + row_idx.x * p.stride_d + dr_warp + cr] = D_TYPE(sums[sums_idx].x);
+                     }
++#else
++#ifdef ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS
++                    data_d[offsets + (dc_warp + cc) * p.stride_d + dr_warp + cr] = D_TYPE(sums[sums_idx].x);
+ #else
+                     if (dr_warp + cr < p.M && dc_warp + cc < p.N) {
+                         data_d[offsets + (dc_warp + cc) * p.stride_d + dr_warp + cr] = D_TYPE(sums[sums_idx].x);
+                     }
++#endif
+ #endif // MUL_MAT_ID
+                 }
+             }
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+index 82d036c..584a578 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+@@ -477,6 +477,20 @@ void block_b_to_shmem(const uint buf_ib, const uint ib, const uint iqs, const bo
+     }
+ }
+ 
++#ifdef ROCMFP4_FAST_DOWN_Q8_GROUP4
++void block_b_to_shmem_group4(const uint buf_ib, const uint ib_outer, const uint ib_inner, const uint iqs) {
++    if (iqs == 0) {
++        buf_b[buf_ib].ds = FLOAT_TYPEV2(data_b[ib_outer].ds[ib_inner]);
++    }
++
++    const ivec4 values = data_b[ib_outer].qs[ib_inner * 2 + iqs];
++    buf_b[buf_ib].qs[iqs * 4    ] = values.x;
++    buf_b[buf_ib].qs[iqs * 4 + 1] = values.y;
++    buf_b[buf_ib].qs[iqs * 4 + 2] = values.z;
++    buf_b[buf_ib].qs[iqs * 4 + 3] = values.w;
++}
++#endif
++
+ void block_b_to_registers(const uint ib) {
+     cache_b.ds = buf_b[ib].ds;
+     [[unroll]] for (uint iqs = 0; iqs < BK / 4; iqs++) {
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+index e0067ce..d1b90f4 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -625,6 +625,17 @@ void matmul_shaders(bool fp16, MatMulIdType matmul_id_type, bool coopmat, bool c
+             string_to_spv(shader_name + "_" + tname + "_q8_1", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"},}), fp16, coopmat, coopmat2, f16acc);
+             if (tname == "rocmfp4_fast" && matmul_id_type == MatMulIdType::NONE) {
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_notail", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_hoist", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_HOIST_STRIDES", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_bfirst", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_B_FIRST", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_nosplit", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_nobounds", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_exact", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_notail_nosplit", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_notail_nobounds", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_nosplit_nobounds", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_q8group4", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_Q8_GROUP4", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_down_exact_q8group4", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}, {"ROCMFP4_FAST_DOWN_Q8_GROUP4", "1"}}), fp16, coopmat, coopmat2, f16acc);
+             }
+         }
+ #endif
+

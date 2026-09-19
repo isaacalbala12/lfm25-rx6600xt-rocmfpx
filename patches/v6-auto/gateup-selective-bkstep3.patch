@@ -1,0 +1,78 @@
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -767,6 +767,7 @@ struct vk_device_struct {
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat[GGML_TYPE_COUNT];
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_f16[GGML_TYPE_COUNT];
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_COUNT];
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3;
+ 
+     vk_matmul_pipeline pipeline_matmul_id_f32 {};
+     vk_matmul_pipeline pipeline_matmul_id_bf16 {};
+@@ -1833,6 +1834,7 @@ static bool vk_dmmv_phase_logger_enabled = false;
+ // selects it only for the gate/up M=10752, K=2048, N=4 shape. Mode 4 uses a
+ // two-subgroup hybrid reduction for that same exact shape.
+ static int vk_rocmfp4_fast_dmmv_wg = -1;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup = false;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_LARGE_ALL = 2;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4 = 3;
+ static constexpr int ROCMFP4_FAST_DMMV_WG_GATEUP_N4_DOUBLE = 4;
+@@ -4483,6 +4485,7 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+             CREATE_MMQ(GGML_TYPE_MXFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_MXFP4], matmul_mxfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4], matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST], matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3, matmul_rocmfp4_fast_q8_1_bk3, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+ 
+             CREATE_MMQ(GGML_TYPE_Q2_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q2_K], matmul_q2_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q3_K, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q3_K], matmul_q3_k_q8_1, mmq_wg_denoms, warptile_mmq_int_k, vk_mat_mat_push_constants, 3, , 0);
+@@ -6810,6 +6813,9 @@ static void ggml_vk_instance_init() {
+             throw std::runtime_error("GGML_VK_ROCMFP4_FAST_DMMV_WG must be auto, subgroup, large, large-all, gateup-n4, gateup-n4-2sg, or conv-n1-rows4");
+         }
+     }
++    if (const char * value = getenv("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP")) {
++        vk_rocmfp4_fast_mmq_bk3_gateup = strcmp(value, "1") == 0;
++    }
+     if (vk_selection_logger_enabled) {
+         std::cerr << "VKSEL event=backend source=rocmfpx-vulkan-plugin" << std::endl;
+     }
+@@ -8870,6 +8876,14 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+     // Check for mmq first
+     vk_matmul_pipeline mmp = quantize_y ? ggml_vk_get_mul_mat_mat_pipeline(ctx, src0->type, GGML_TYPE_Q8_1, (ggml_prec)dst->op_params[0]) : nullptr;
+ 
++    const bool use_rocmfp4_fast_bk3_gateup =
++        vk_rocmfp4_fast_mmq_bk3_gateup && quantize_y &&
++        src0->type == GGML_TYPE_Q4_0_ROCMFP4_FAST &&
++        ne01 == 10752 && ne10 == 2048 && ne11 > 64;
++    if (use_rocmfp4_fast_bk3_gateup) {
++        mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3.f32acc;
++    }
++
+     if (mmp == nullptr) {
+         // Fall back to f16 dequant mul mat
+         mmp = ggml_vk_get_mul_mat_mat_pipeline(ctx, src0->type, y_non_contig ? f16_type : src1->type, (ggml_prec)dst->op_params[0]);
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_shmem_types.glsl b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_shmem_types.glsl
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_shmem_types.glsl
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_shmem_types.glsl
+@@ -61,6 +61,9 @@ struct block_a_cache {
+ };
+ #elif defined(DATA_A_ROCMFP4_FAST)
+ #define QUANT_R_MMQ 2
++#if defined(ROCMFP4_FAST_BK_STEP_3) && !defined(MUL_MAT_ID)
++#define BK_STEP 3
++#endif
+ struct block_a_cache {
+     int32_t qs[8];
+     FLOAT_TYPE d;
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -623,6 +623,9 @@ void matmul_shaders(bool fp16, MatMulIdType matmul_id_type, bool coopmat, bool c
+         // Integer dot mmq performs better with f32 accumulators (different shader, skip for dot2)
+         if (!f16acc && !coopmat && !coopmat2 && !dot2 && (is_legacy_quant(tname) || is_k_quant(tname) || tname == "mxfp4" || tname == "rocmfp4" || tname == "rocmfp4_fast")) {
+             string_to_spv(shader_name + "_" + tname + "_q8_1", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"},}), fp16, coopmat, coopmat2, f16acc);
++            if (tname == "rocmfp4_fast" && matmul_id_type == MatMulIdType::NONE) {
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}}), fp16, coopmat, coopmat2, f16acc);
++            }
+         }
+ #endif
+     }

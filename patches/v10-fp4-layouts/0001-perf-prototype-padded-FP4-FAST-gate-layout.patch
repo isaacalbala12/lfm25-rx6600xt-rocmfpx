@@ -1,0 +1,356 @@
+From a48783cbcce5d934b61e79c583afd3a9c44fa390 Mon Sep 17 00:00:00 2001
+From: isaacalbala12 <isaacalbala12@users.noreply.github.com>
+Date: Sat, 19 Sep 2026 02:12:22 +0200
+Subject: [PATCH 1/3] perf: prototype padded FP4 FAST gate layout
+
+---
+ .../rocmfpx-vulkan/backend/ggml-vulkan.cpp    | 163 +++++++++++++++++-
+ .../backend/vulkan-shaders/mul_mmq.comp       |   3 +
+ .../backend/vulkan-shaders/mul_mmq_funcs.glsl |   8 +
+ .../backend/vulkan-shaders/types.glsl         |   9 +
+ .../vulkan-shaders/vulkan-shaders-gen.cpp     |   1 +
+ 5 files changed, 182 insertions(+), 2 deletions(-)
+
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index 66e1211..8507eca 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -774,6 +774,7 @@ struct vk_device_struct {
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_bpair;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_padded;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst;
+@@ -1860,6 +1861,7 @@ static bool vk_rocmfp4_fast_mmq_bk3_gateup_exact = false;
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup_k2048 = false;
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup_shape = false;
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup_bpair = false;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup_padded = false;
+ static bool vk_rocmfp4_fast_mmq_down_notail = false;
+ static bool vk_rocmfp4_fast_mmq_down_hoist = false;
+ static bool vk_rocmfp4_fast_mmq_down_bfirst = false;
+@@ -4528,6 +4530,7 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048, matmul_rocmfp4_fast_q8_1_bk3_k2048, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape, matmul_rocmfp4_fast_q8_1_bk3_shape, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_bpair, matmul_rocmfp4_fast_q8_1_bk3_bpair, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_padded, matmul_rocmfp4_fast_q8_1_bk3_padded, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail, matmul_rocmfp4_fast_q8_1_down_notail, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist, matmul_rocmfp4_fast_q8_1_down_hoist, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst, matmul_rocmfp4_fast_q8_1_down_bfirst, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+@@ -6875,12 +6878,14 @@ static void ggml_vk_instance_init() {
+     vk_rocmfp4_fast_mmq_bk3_gateup_k2048 = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_K2048");
+     vk_rocmfp4_fast_mmq_bk3_gateup_shape = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_SHAPE");
+     vk_rocmfp4_fast_mmq_bk3_gateup_bpair = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_BPAIR");
++    vk_rocmfp4_fast_mmq_bk3_gateup_padded = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_PADDED");
+     const int gateup_search_variants = int(vk_rocmfp4_fast_mmq_bk3_gateup_nosplit) +
+                                        int(vk_rocmfp4_fast_mmq_bk3_gateup_nobounds) +
+                                        int(vk_rocmfp4_fast_mmq_bk3_gateup_exact) +
+                                        int(vk_rocmfp4_fast_mmq_bk3_gateup_k2048) +
+                                        int(vk_rocmfp4_fast_mmq_bk3_gateup_shape) +
+-                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_bpair);
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_bpair) +
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_padded);
+     if (gateup_search_variants > 1) {
+         throw std::runtime_error("only one GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_* candidate may be enabled");
+     }
+@@ -8078,6 +8083,33 @@ static void ggml_vk_buffer_write(vk_buffer& dst, size_t offset, const void * src
+ 
+ static constexpr size_t ggml_vk_rocmfpx_fp6_disk_block_size = 26;
+ static constexpr size_t ggml_vk_rocmfpx_fp6_expanded_block_size = 34;
++static constexpr size_t ggml_vk_rocmfp4_fast_disk_block_size = 17;
++static constexpr size_t ggml_vk_rocmfp4_fast_padded_block_size = 20;
++
++static bool ggml_vk_rocmfp4_fast_is_padded_gateup(const ggml_tensor * tensor) {
++    return vk_rocmfp4_fast_mmq_bk3_gateup_padded &&
++           tensor->type == GGML_TYPE_Q4_0_ROCMFP4_FAST &&
++           tensor->ne[0] == 2048 && tensor->ne[1] == 10752;
++}
++
++static void ggml_vk_rocmfp4_fast_expand_padded(uint8_t * dst, const uint8_t * src, size_t nblocks) {
++    for (size_t ib = 0; ib < nblocks; ++ib) {
++        const uint8_t * s = src + ib * ggml_vk_rocmfp4_fast_disk_block_size;
++        uint8_t * d = dst + ib * ggml_vk_rocmfp4_fast_padded_block_size;
++        memcpy(d, s, 16);
++        d[16] = s[16];
++        d[17] = d[18] = d[19] = 0;
++    }
++}
++
++static void ggml_vk_rocmfp4_fast_pack_padded(uint8_t * dst, const uint8_t * src, size_t nblocks) {
++    for (size_t ib = 0; ib < nblocks; ++ib) {
++        uint8_t * d = dst + ib * ggml_vk_rocmfp4_fast_disk_block_size;
++        const uint8_t * s = src + ib * ggml_vk_rocmfp4_fast_padded_block_size;
++        memcpy(d, s, 16);
++        d[16] = s[16];
++    }
++}
+ 
+ static int8_t ggml_vk_rocmfpx_fp6_decode_code(uint8_t code) {
+     const int8_t mag = code & 31;
+@@ -8158,6 +8190,11 @@ static size_t ggml_vk_rocmfpx_fp6_expanded_size_from_disk(size_t size) {
+ }
+ 
+ static size_t ggml_vk_tensor_nbytes(const ggml_tensor * tensor) {
++    if (ggml_vk_rocmfp4_fast_is_padded_gateup(tensor)) {
++        GGML_ASSERT(ggml_nbytes(tensor) % ggml_vk_rocmfp4_fast_disk_block_size == 0);
++        return (ggml_nbytes(tensor) / ggml_vk_rocmfp4_fast_disk_block_size) *
++               ggml_vk_rocmfp4_fast_padded_block_size;
++    }
+     if (tensor->type == GGML_TYPE_Q6_0_ROCMFPX) {
+         return ggml_vk_rocmfpx_fp6_expanded_size_from_disk(ggml_nbytes(tensor));
+     }
+@@ -8353,6 +8390,51 @@ static void ggml_vk_rocmfpx_fp6_read_packed_range(vk_buffer& src, size_t tensor_
+     memcpy(dst, packed.data() + offset - packed_offset, size);
+ }
+ 
++static void ggml_vk_rocmfp4_fast_write_padded_range(vk_buffer& dst, size_t tensor_offset,
++                                                     const void * src, size_t offset, size_t size) {
++    GGML_ASSERT(size > 0);
++    const size_t first_block = offset / ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t end_offset = offset + size;
++    const size_t end_block = (end_offset + ggml_vk_rocmfp4_fast_disk_block_size - 1) /
++                             ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t nblocks = end_block - first_block;
++    const size_t packed_offset = first_block * ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t packed_size = nblocks * ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t expanded_offset = first_block * ggml_vk_rocmfp4_fast_padded_block_size;
++    const size_t expanded_size = nblocks * ggml_vk_rocmfp4_fast_padded_block_size;
++    std::vector<uint8_t> expanded(expanded_size);
++
++    if (offset == packed_offset && size == packed_size) {
++        ggml_vk_rocmfp4_fast_expand_padded(expanded.data(), (const uint8_t *) src, nblocks);
++    } else {
++        std::vector<uint8_t> packed(packed_size);
++        ggml_vk_buffer_read(dst, tensor_offset + expanded_offset, expanded.data(), expanded_size);
++        ggml_vk_rocmfp4_fast_pack_padded(packed.data(), expanded.data(), nblocks);
++        memcpy(packed.data() + offset - packed_offset, src, size);
++        ggml_vk_rocmfp4_fast_expand_padded(expanded.data(), packed.data(), nblocks);
++    }
++    ggml_vk_buffer_write(dst, tensor_offset + expanded_offset, expanded.data(), expanded_size);
++}
++
++static void ggml_vk_rocmfp4_fast_read_padded_range(vk_buffer& src, size_t tensor_offset,
++                                                    void * dst, size_t offset, size_t size) {
++    GGML_ASSERT(size > 0);
++    const size_t first_block = offset / ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t end_offset = offset + size;
++    const size_t end_block = (end_offset + ggml_vk_rocmfp4_fast_disk_block_size - 1) /
++                             ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t nblocks = end_block - first_block;
++    const size_t packed_offset = first_block * ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t packed_size = nblocks * ggml_vk_rocmfp4_fast_disk_block_size;
++    const size_t expanded_offset = first_block * ggml_vk_rocmfp4_fast_padded_block_size;
++    const size_t expanded_size = nblocks * ggml_vk_rocmfp4_fast_padded_block_size;
++    std::vector<uint8_t> expanded(expanded_size);
++    std::vector<uint8_t> packed(packed_size);
++    ggml_vk_buffer_read(src, tensor_offset + expanded_offset, expanded.data(), expanded_size);
++    ggml_vk_rocmfp4_fast_pack_padded(packed.data(), expanded.data(), nblocks);
++    memcpy(dst, packed.data() + offset - packed_offset, size);
++}
++
+ static void ggml_vk_buffer_copy_async(vk_context& ctx, vk_buffer& dst, size_t dst_offset, vk_buffer& src, size_t src_offset, size_t size) {
+     VK_LOG_DEBUG("ggml_vk_buffer_copy_async(" << size << ")");
+     // Make sure both buffers are on same device
+@@ -8987,6 +9069,8 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+             mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape.f32acc;
+         } else if (vk_rocmfp4_fast_mmq_bk3_gateup_bpair && ne11 == 128) {
+             mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_bpair.f32acc;
++        } else if (vk_rocmfp4_fast_mmq_bk3_gateup_padded) {
++            mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_padded.f32acc;
+         }
+     }
+     const bool use_rocmfp4_fast_down_search =
+@@ -9071,7 +9155,8 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+                   << " pipeline=" << pipeline->name << std::endl;
+     }
+ 
+-    const uint64_t qx_sz = src0->type == GGML_TYPE_Q6_0_ROCMFPX ?
++    const uint64_t qx_sz = (src0->type == GGML_TYPE_Q6_0_ROCMFPX ||
++                            ggml_vk_rocmfp4_fast_is_padded_gateup(src0)) ?
+         ggml_vk_tensor_nbytes(src0) :
+         ggml_type_size(src0->type) * x_ne / ggml_blck_size(src0->type);
+     const uint64_t qy_sz = ggml_type_size(src1->type) * y_ne / ggml_blck_size(src1->type);
+@@ -15424,6 +15509,12 @@ static void ggml_backend_vk_buffer_set_tensor(ggml_backend_buffer_t buffer, ggml
+         return;
+     }
+ 
++    if (ggml_vk_rocmfp4_fast_is_padded_gateup(tensor)) {
++        ggml_vk_rocmfp4_fast_write_padded_range(buf, vk_tensor_offset(tensor) + tensor->view_offs,
++                                                data, offset, size);
++        return;
++    }
++
+     if (tensor->type == GGML_TYPE_Q6_0_ROCMFPX) {
+         ggml_vk_rocmfpx_fp6_write_packed_range(buf, vk_tensor_offset(tensor) + tensor->view_offs,
+                                                data, offset, size);
+@@ -15444,6 +15535,37 @@ static void ggml_backend_vk_buffer_set_tensor_2d(ggml_backend_buffer_t buffer, g
+         return;
+     }
+ 
++    if (ggml_vk_rocmfp4_fast_is_padded_gateup(tensor) &&
++        offset % ggml_vk_rocmfp4_fast_disk_block_size == 0 &&
++        size % ggml_vk_rocmfp4_fast_disk_block_size == 0 &&
++        stride_tensor % ggml_vk_rocmfp4_fast_disk_block_size == 0 &&
++        stride_data % ggml_vk_rocmfp4_fast_disk_block_size == 0) {
++        const size_t nblocks = size / ggml_vk_rocmfp4_fast_disk_block_size;
++        const size_t expanded_size = nblocks * ggml_vk_rocmfp4_fast_padded_block_size;
++        const size_t expanded_offset = (offset / ggml_vk_rocmfp4_fast_disk_block_size) *
++                                       ggml_vk_rocmfp4_fast_padded_block_size;
++        const size_t expanded_stride_tensor = (stride_tensor / ggml_vk_rocmfp4_fast_disk_block_size) *
++                                              ggml_vk_rocmfp4_fast_padded_block_size;
++        std::vector<uint8_t> expanded(expanded_size * n_copies);
++        for (size_t i = 0; i < n_copies; ++i) {
++            ggml_vk_rocmfp4_fast_expand_padded(expanded.data() + i * expanded_size,
++                                               (const uint8_t *) data + i * stride_data, nblocks);
++        }
++        ggml_vk_buffer_write_2d(buf, vk_tensor_offset(tensor) + tensor->view_offs + expanded_offset,
++                                expanded.data(), expanded_size, expanded_stride_tensor,
++                                expanded_size, n_copies);
++        return;
++    }
++
++    if (ggml_vk_rocmfp4_fast_is_padded_gateup(tensor)) {
++        for (size_t i = 0; i < n_copies; ++i) {
++            ggml_vk_rocmfp4_fast_write_padded_range(buf, vk_tensor_offset(tensor) + tensor->view_offs,
++                                                    (const uint8_t *) data + i * stride_data,
++                                                    offset + i * stride_tensor, size);
++        }
++        return;
++    }
++
+     if (tensor->type == GGML_TYPE_Q6_0_ROCMFPX &&
+         ggml_vk_rocmfpx_fp6_range_aligned(offset, size) &&
+         stride_tensor % ggml_vk_rocmfpx_fp6_disk_block_size == 0 &&
+@@ -15487,6 +15609,12 @@ static void ggml_backend_vk_buffer_get_tensor(ggml_backend_buffer_t buffer, cons
+ 
+     vk_buffer buf = buf_ctx->dev_buffer;
+ 
++    if (ggml_vk_rocmfp4_fast_is_padded_gateup(tensor)) {
++        ggml_vk_rocmfp4_fast_read_padded_range(buf, vk_tensor_offset(tensor) + tensor->view_offs,
++                                               data, offset, size);
++        return;
++    }
++
+     if (tensor->type == GGML_TYPE_Q6_0_ROCMFPX) {
+         ggml_vk_rocmfpx_fp6_read_packed_range(buf, vk_tensor_offset(tensor) + tensor->view_offs,
+                                               data, offset, size);
+@@ -15508,6 +15636,37 @@ static void ggml_backend_vk_buffer_get_tensor_2d(ggml_backend_buffer_t buffer, c
+ 
+     vk_buffer buf = buf_ctx->dev_buffer;
+ 
++    if (ggml_vk_rocmfp4_fast_is_padded_gateup(tensor) &&
++        offset % ggml_vk_rocmfp4_fast_disk_block_size == 0 &&
++        size % ggml_vk_rocmfp4_fast_disk_block_size == 0 &&
++        stride_tensor % ggml_vk_rocmfp4_fast_disk_block_size == 0 &&
++        stride_data % ggml_vk_rocmfp4_fast_disk_block_size == 0) {
++        const size_t nblocks = size / ggml_vk_rocmfp4_fast_disk_block_size;
++        const size_t expanded_size = nblocks * ggml_vk_rocmfp4_fast_padded_block_size;
++        const size_t expanded_offset = (offset / ggml_vk_rocmfp4_fast_disk_block_size) *
++                                       ggml_vk_rocmfp4_fast_padded_block_size;
++        const size_t expanded_stride_tensor = (stride_tensor / ggml_vk_rocmfp4_fast_disk_block_size) *
++                                              ggml_vk_rocmfp4_fast_padded_block_size;
++        std::vector<uint8_t> expanded(expanded_size * n_copies);
++        ggml_vk_buffer_read_2d(buf, vk_tensor_offset(tensor) + tensor->view_offs + expanded_offset,
++                               expanded.data(), expanded_stride_tensor, expanded_size,
++                               expanded_size, n_copies);
++        for (size_t i = 0; i < n_copies; ++i) {
++            ggml_vk_rocmfp4_fast_pack_padded((uint8_t *) data + i * stride_data,
++                                             expanded.data() + i * expanded_size, nblocks);
++        }
++        return;
++    }
++
++    if (ggml_vk_rocmfp4_fast_is_padded_gateup(tensor)) {
++        for (size_t i = 0; i < n_copies; ++i) {
++            ggml_vk_rocmfp4_fast_read_padded_range(buf, vk_tensor_offset(tensor) + tensor->view_offs,
++                                                   (uint8_t *) data + i * stride_data,
++                                                   offset + i * stride_tensor, size);
++        }
++        return;
++    }
++
+     if (tensor->type == GGML_TYPE_Q6_0_ROCMFPX &&
+         ggml_vk_rocmfpx_fp6_range_aligned(offset, size) &&
+         stride_tensor % ggml_vk_rocmfpx_fp6_disk_block_size == 0 &&
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+index 29fa85e..8beef0b 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+@@ -24,6 +24,9 @@
+ layout(local_size_x_id = 0, local_size_y = 1, local_size_z = 1) in;
+ 
+ layout (binding = 0) readonly buffer A {A_TYPE data_a[];};
++#if defined(ROCMFP4_FAST_PADDED) && defined(DATA_A_ROCMFP4_FAST)
++layout (binding = 0) readonly buffer A_ROCMFP4_FAST_PADDED {block_rocmfp4_fast_padded data_a_padded[];};
++#endif
+ #if defined(A_TYPE_PACKED16)
+ layout (binding = 0) readonly buffer A_PACKED16 {A_TYPE_PACKED16 data_a_packed16[];};
+ #endif
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+index 9e8d213..5eb9b9f 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq_funcs.glsl
+@@ -147,10 +147,14 @@ ACC_TYPE mmq_dot_product(const uint ib_a) {
+ #if defined(DATA_A_MXFP4) || defined(DATA_A_ROCMFP4) || defined(DATA_A_ROCMFP4_FAST)
+ // 1-byte quant loads for microscaled FP4 blocks. ROCmFP4 uses two compact half-block scales.
+ void block_a_to_shmem(const uint buf_ib, const uint ib, const uint iqs) {
++#if defined(ROCMFP4_FAST_PADDED) && defined(DATA_A_ROCMFP4_FAST)
++    const uint32_t qs = data_a_padded[ib].qs[iqs];
++#else
+     const uint32_t qs = pack32(u8vec4(data_a[ib].qs[iqs * 4    ],
+                                       data_a[ib].qs[iqs * 4 + 1],
+                                       data_a[ib].qs[iqs * 4 + 2],
+                                       data_a[ib].qs[iqs * 4 + 3]));
++#endif
+ 
+     const u8vec4 i_a0 = unpack8( qs       & 0x0F0F0F0F);
+     const u8vec4 i_a1 = unpack8((qs >> 4) & 0x0F0F0F0F);
+@@ -168,7 +172,11 @@ void block_a_to_shmem(const uint buf_ib, const uint ib, const uint iqs) {
+         buf_a[buf_ib].d = FLOAT_TYPEV2(ue4m3_to_fp32(data_a[ib].e[0]),
+                                        ue4m3_to_fp32(data_a[ib].e[1]));
+ #elif defined(DATA_A_ROCMFP4_FAST)
++#if defined(ROCMFP4_FAST_PADDED)
++        buf_a[buf_ib].d = FLOAT_TYPE(ue4m3_to_fp32(uint8_t(data_a_padded[ib].e)));
++#else
+         buf_a[buf_ib].d = FLOAT_TYPE(ue4m3_to_fp32(data_a[ib].e));
++#endif
+ #else
+         buf_a[buf_ib].d = FLOAT_TYPE(e8m0_to_fp32(data_a[ib].e) * 0.5);
+ #endif
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/types.glsl b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/types.glsl
+index 025c130..ebf54df 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/types.glsl
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/types.glsl
+@@ -1736,6 +1736,15 @@ struct block_rocmfp4_fast
+     uint8_t e;
+ };
+ 
++// Device-only reversible representation used by the gate/up padded-layout
++// experiment. The GGUF remains the 17-byte block above; upload expands it to
++// four aligned code words plus one aligned scale word.
++struct block_rocmfp4_fast_padded
++{
++    uint32_t qs[4];
++    uint32_t e;
++};
++
+ #if defined(DATA_A_ROCMFP4)
+ #define QUANT_K QUANT_K_ROCMFP4
+ #define QUANT_R QUANT_R_ROCMFP4
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+index c5f37e8..256468b 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -631,6 +631,7 @@ void matmul_shaders(bool fp16, MatMulIdType matmul_id_type, bool coopmat, bool c
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_k2048", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_GATEUP_K_2048", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_shape", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}, {"ROCMFP4_FAST_GATEUP_K_2048", "1"}, {"ROCMFP4_FAST_GATEUP_SHAPE_10752_128_2048", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_bpair", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_GATEUP_BPAIR", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_padded", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_PADDED", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_notail", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_hoist", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_HOIST_STRIDES", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_bfirst", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_B_FIRST", "1"}}), fp16, coopmat, coopmat2, f16acc);
+-- 
+2.53.0
+

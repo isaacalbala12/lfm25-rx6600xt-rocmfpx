@@ -1,0 +1,123 @@
+diff --git a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+index 0ba929b..dcf3728 100644
+--- a/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
++++ b/extensions/rocmfpx-vulkan/backend/ggml-vulkan.cpp
+@@ -768,6 +768,11 @@ struct vk_device_struct {
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_f16[GGML_TYPE_COUNT];
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_COUNT];
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_nosplit;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_nobounds;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_exact;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048;
++    vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist;
+     vk_matmul_pipeline2 pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst;
+@@ -1848,6 +1853,11 @@ static int vk_rocmfp4_fast_dmmv_wg = -1;
+ // The validated production default for FP4_FAST gate/up prefill on gfx1032.
+ // Set GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP=0 for a same-binary BK4 control.
+ static bool vk_rocmfp4_fast_mmq_bk3_gateup = true;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup_nosplit = false;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup_nobounds = false;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup_exact = false;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup_k2048 = false;
++static bool vk_rocmfp4_fast_mmq_bk3_gateup_shape = false;
+ static bool vk_rocmfp4_fast_mmq_down_notail = false;
+ static bool vk_rocmfp4_fast_mmq_down_hoist = false;
+ static bool vk_rocmfp4_fast_mmq_down_bfirst = false;
+@@ -4510,6 +4520,11 @@ static void ggml_vk_load_shaders(vk_device& device, vk_pipeline requested) {
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4], matmul_rocmfp4_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1[GGML_TYPE_Q4_0_ROCMFP4_FAST], matmul_rocmfp4_fast_q8_1, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3, matmul_rocmfp4_fast_q8_1_bk3, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_nosplit, matmul_rocmfp4_fast_q8_1_bk3_nosplit, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_nobounds, matmul_rocmfp4_fast_q8_1_bk3_nobounds, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_exact, matmul_rocmfp4_fast_q8_1_bk3_exact, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048, matmul_rocmfp4_fast_q8_1_bk3_k2048, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
++            CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape, matmul_rocmfp4_fast_q8_1_bk3_shape, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_notail, matmul_rocmfp4_fast_q8_1_down_notail, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_hoist, matmul_rocmfp4_fast_q8_1_down_hoist, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+             CREATE_MMQ(GGML_TYPE_Q4_0_ROCMFP4_FAST, pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_down_bfirst, matmul_rocmfp4_fast_q8_1_down_bfirst, mmq_wg_denoms, warptile_mmq_int, vk_mat_mat_push_constants, 3, , 0);
+@@ -6851,6 +6866,19 @@ static void ggml_vk_instance_init() {
+     if (const char * value = getenv("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP")) {
+         vk_rocmfp4_fast_mmq_bk3_gateup = strcmp(value, "0") != 0;
+     }
++    vk_rocmfp4_fast_mmq_bk3_gateup_nosplit = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOSPLIT");
++    vk_rocmfp4_fast_mmq_bk3_gateup_nobounds = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_NOBOUNDS");
++    vk_rocmfp4_fast_mmq_bk3_gateup_exact = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_EXACT");
++    vk_rocmfp4_fast_mmq_bk3_gateup_k2048 = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_K2048");
++    vk_rocmfp4_fast_mmq_bk3_gateup_shape = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_SHAPE");
++    const int gateup_search_variants = int(vk_rocmfp4_fast_mmq_bk3_gateup_nosplit) +
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_nobounds) +
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_exact) +
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_k2048) +
++                                       int(vk_rocmfp4_fast_mmq_bk3_gateup_shape);
++    if (gateup_search_variants > 1) {
++        throw std::runtime_error("only one GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP_* candidate may be enabled");
++    }
+     vk_rocmfp4_fast_mmq_down_notail = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_NOTAIL");
+     vk_rocmfp4_fast_mmq_down_hoist = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_HOIST");
+     vk_rocmfp4_fast_mmq_down_bfirst = ggml_vk_env_enabled("GGML_VK_ROCMFP4_FAST_MMQ_DOWN_BFIRST");
+@@ -8942,6 +8970,17 @@ static void ggml_vk_mul_mat_q_f16(ggml_backend_vk_context * ctx, vk_context& sub
+         ne01 == 10752 && ne10 == 2048 && ne11 > 64;
+     if (use_rocmfp4_fast_bk3_gateup) {
+         mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3.f32acc;
++        if (vk_rocmfp4_fast_mmq_bk3_gateup_nosplit) {
++            mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_nosplit.f32acc;
++        } else if (vk_rocmfp4_fast_mmq_bk3_gateup_nobounds) {
++            mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_nobounds.f32acc;
++        } else if (vk_rocmfp4_fast_mmq_bk3_gateup_exact) {
++            mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_exact.f32acc;
++        } else if (vk_rocmfp4_fast_mmq_bk3_gateup_k2048 && ne11 == 128) {
++            mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_k2048.f32acc;
++        } else if (vk_rocmfp4_fast_mmq_bk3_gateup_shape && ne11 == 128) {
++            mmp = ctx->device->pipeline_dequant_mul_mat_mat_q8_1_rocmfp4_fast_bk3_shape.f32acc;
++        }
+     }
+     const bool use_rocmfp4_fast_down_search =
+         quantize_y && src0->type == GGML_TYPE_Q4_0_ROCMFP4_FAST &&
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+index 8318855..8a266a2 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/mul_mmq.comp
+@@ -132,7 +132,11 @@ void main() {
+ #endif
+ 
+ #ifdef ROCMFP4_FAST_DOWN_NO_SPLIT_K
++#ifdef ROCMFP4_FAST_GATEUP_SHAPE_10752_128_2048
++    const uint blocks_m = 168;
++#else
+     const uint blocks_m = p.M / BM;
++#endif
+     const uint ir = gl_WorkGroupID.x;
+     const uint ik = 0;
+ #else
+@@ -191,7 +195,11 @@ void main() {
+ 
+ #ifdef ROCMFP4_FAST_DOWN_NO_SPLIT_K
+     const uint start_k = 0;
++#ifdef ROCMFP4_FAST_GATEUP_K_2048
++    const uint end_k = 2048;
++#else
+     const uint end_k = p.K;
++#endif
+ #elif defined(MUL_MAT_ID)
+     const uint start_k = 0;
+     const uint end_k = p.K;
+diff --git a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+index d1b90f4..194e488 100644
+--- a/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
++++ b/extensions/rocmfpx-vulkan/backend/vulkan-shaders/vulkan-shaders-gen.cpp
+@@ -625,6 +625,11 @@ void matmul_shaders(bool fp16, MatMulIdType matmul_id_type, bool coopmat, bool c
+             string_to_spv(shader_name + "_" + tname + "_q8_1", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"},}), fp16, coopmat, coopmat2, f16acc);
+             if (tname == "rocmfp4_fast" && matmul_id_type == MatMulIdType::NONE) {
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_bk3", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_nosplit", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_nobounds", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_exact", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_k2048", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_GATEUP_K_2048", "1"}}), fp16, coopmat, coopmat2, f16acc);
++                string_to_spv(shader_name + "_" + tname + "_q8_1_bk3_shape", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_BK_STEP_3", "1"}, {"ROCMFP4_FAST_DOWN_NO_SPLIT_K", "1"}, {"ROCMFP4_FAST_DOWN_NO_OUTPUT_BOUNDS", "1"}, {"ROCMFP4_FAST_GATEUP_K_2048", "1"}, {"ROCMFP4_FAST_GATEUP_SHAPE_10752_128_2048", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_notail", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_NO_K_TAIL", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_hoist", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_HOIST_STRIDES", "1"}}), fp16, coopmat, coopmat2, f16acc);
+                 string_to_spv(shader_name + "_" + tname + "_q8_1_down_bfirst", "mul_mmq.comp", merge_maps(merge_maps(base_dict, float_type_dict), {{data_a_key, "1"}, {"D_TYPE", "float"}, {"ROCMFP4_FAST_DOWN_B_FIRST", "1"}}), fp16, coopmat, coopmat2, f16acc);
+
