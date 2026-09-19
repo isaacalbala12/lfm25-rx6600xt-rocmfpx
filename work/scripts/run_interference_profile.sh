@@ -55,7 +55,7 @@ trap cleanup EXIT INT TERM
 
 "$SERVER" --model "$MODEL" --host "$HOST" --port "$PORT" -ngl 99 -fa on -np 4 -cb \
   --cache-prompt --cache-reuse 0 -dev "$DEVICE" -c 36864 --kv-unified-per-slot 9216 \
-  -b 4096 -ub 128 -ctk q8_0 -ctv q8_0 >"$OUTPUT/server.log" 2>&1 &
+  -b 4096 -ub 128 -ctk "${KV_K:-q8_0}" -ctv "${KV_V:-q8_0}" >"$OUTPUT/server.log" 2>&1 &
 server_pid=$!
 
 for _ in $(seq 1 300); do
