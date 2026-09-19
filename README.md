@@ -164,6 +164,8 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 - `work/GPU_BIMODAL_V11.md`: the two-state GPU clock behaviour and the
   measurement protocol it forces.
 - `work/DECODE_BATCH_FOLD_V11.md`: the four-slot decode weight-reuse fix.
+- `work/QUALITY_V11.md`: the first perplexity measurement, and the quality cost of
+  each quantized format.
 - `work/PREFILL_LEADS_V11.md`: prefill per-family efficiency, the `down` versus
   gate/up gap, and the refuted split-k lead.
 - `work/NEXT_ACTION.md`: current production state and the next exact actions.

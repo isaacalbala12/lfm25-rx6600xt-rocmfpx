@@ -1,0 +1,1323 @@
+# LFM2.5-2.6B on RX 6600 XT / gfx1032
+
+Reproducible performance-engineering campaign for LFM2.5-2.6B on an AMD
+Radeon RX 6600 XT (RDNA2/gfx1032), optimized for one to four concurrent
+requests.
+
+Two workloads are tracked, because they have different winners:
+
+- the **declared primary metric**: 128 input tokens, 64 output tokens,
+  concurrency 4, aggregate output tok/s measured over HTTP from first request
+  send to final response completion (`work/PRIMARY_METRIC_V11.md`);
+- the **interactive 8K profile**: four slots of at least 8192 tokens each, three
+  resident decoders plus one arriving prefill, where the metrics are new-user
+  TTFT, resident inter-token latency and decode retention
+  (`work/FORMAT_PREFILL_V11.md`).
+
+Every number below is a service measurement over real HTTP with no
+instrumentation, unless the referenced document says otherwise.
+
+## Current result
+
+### Primary metric, 128/64, re-measured 2026-09-19
+
+Profile `production-throughput`: ROCmFP4_FAST, KV `q8_0/q8_0`, `b512/ub128`,
+fixed `chunk128` scheduler, compact slot allocation, `-np 4 -cb`.
+
+| Concurrency | Aggregate output tok/s | TTFT p50 | E2E p95 |
+| ---: | ---: | ---: | ---: |
+| 1 | 107.96 | 72.5 ms | 600 ms |
+| 2 | 167.72 | 149.4 ms | 769 ms |
+| 3 | 206.28 | 247.8 ms | 992 ms |
+| 4 | **230.82** | 347.7 ms | 1128 ms |
+
+All four cells `VALID`, 40/40 C=4 requests successful. The original V2 series
+published 108.01 / 169.12 / 207.71 / **233.99** on an earlier build and weight
+artifact; the current production binary measures 0.04% to 1.36% lower. See
+`work/PRIMARY_METRIC_V11.md`.
+
+### Interactive 8K profile, mixed 3 decoders + 1 prefill
+
+| Format | New-user TTFT | Resident ITL p95 | Decode retention | Resident aggregate |
+| --- | ---: | ---: | ---: | ---: |
+| ROCmFP4_FAST (`b4096/ub128`) | 5197 ms | 88.5 ms | 15.96% | 238.9 tok/s |
+| **Q4_0 (`b4096/ub128`)** | **4847 ms** | **83.0 ms** | **17.82%** | 229.5 tok/s |
+
+Three paired runs, every 95% interval excluding zero: TTFT −6.98%
+[−7.06, −6.41], ITL p95 −7.16% [−8.55, −3.80], retention +11.61%
+[+11.32, +12.14], resident decode −3.96%. The control arm reproduces the
+published V9 production numbers, which is what makes the deltas trustworthy.
+
+The interactivity goal recorded in V8/V9 is **still not met**: 83.0 ms against
+a ≤70 ms ITL target, with TTFT comfortably inside its ≤5.5 s guardrail.
+
+### Direct kernel screen at the prefill shape
+
+`ROCmFPXVulkan0`, three repetitions, same build:
+
+| Model | bpw | pp128 | pp512 | pp2048 | tg128 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ROCmFP4_FAST | 4.25 | 2271 | 2459 | 2389 | **132.74** |
+| Q8_0 | 8.50 | 1907 | 2206 | 2175 | 76.03 |
+| Q4_0 | 4.70 | **2621** | **2739** | **2669** | 123.87 |
+
+The format ranking inverts with shape: Q4_0 is 15.4% faster at the prefill
+chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
+
+## Important engineering findings
+
+- **The format choice depended on a shape the campaign had stopped
+  measuring.** Format screening happened once, at 128/64 and 512/128, where
+  decode dominates and FP4_FAST wins. When the objective moved to an 8K
+  prefill-dominated workload (prefill is 83.5% of the mixed pair), the ranking
+  inverted and nobody re-screened. Q4_0 is worth −7.0% TTFT and −7.2% ITL on
+  the profile that was being optimized.
+- **More bits do not buy prefill speed.** Q8_0 removes FP4 code/scale unpacking
+  from the inner loop and doubles the weight bytes; it is 16.0% slower at
+  pp128. V10's three FP4 block-layout candidates (padded +17.65% bytes for
+  1.227% local, global planar +43.150%, grouped-four +3.851%) failed for the
+  same reason: the bottleneck is not the block layout.
+- **Marginal returns on the MMQ family are exhausted.** Roughly 40 shader
+  variants across V3--V10 produced a best service-level kernel result of
+  +1.1641% (selective gate/up BK3), and the largest service win in the whole
+  campaign was a scheduler setting, not a kernel.
+- `ubatch=512` triggers a server-only performance cliff correlated with the
+  RX 6600 XT memory clock alternating between 541 and 1000 MHz. `ubatch=128`
+  avoids it without changing system power settings.
+- Sparse active slot IDs such as `{0, 1, 3}` reduce the contemporary coherent
+  model from about 200--202 to 131--132 tok/s. V3 proves the recurrent allocator
+  splits the sparse set every step. The opt-in compact scheduler in the included
+  ROCmFPX patch selects the lowest available slots and removes this cliff; the
+  staged dense-internal-ID runtime (R1) preserves logical API slot IDs, passes
+  active completion/cancellation/reuse with host sampling, and still awaits
+  deterministic logit equivalence before production.
+- Backend sampling cannot be rebound safely during sequence migration. Dense
+  remapping rejects that combination explicitly instead of aborting or silently
+  changing the sampling policy.
+- A shape-specific four-subgroup FP4_FAST decode selector improved selected
+  exact-pipeline microbenchmarks but reduced full-server C4 throughput by 5.29%
+  in the observed run. It is retained only as an experimental switch.
+- Capping prompt admission at 128 tokens per iteration lifted decode retention
+  from 1.46% to 15.70% and cut resident ITL p95 from 2189 ms to 89 ms on the 8K
+  profile, at a cost of +22.4% new-user TTFT. This remains the single largest
+  improvement the campaign produced.
+- ROCmFPX Q2 is fast and memory-efficient but failed basic output-quality
+  checks, so it is not a production candidate.
+- ROCmFPX HIP kernels beat equivalent upstream HIP kernels in trace-only
+  profiling, but both HIP server paths remain far behind Vulkan on gfx1032.
+
+## Known gaps
+
+- **No formal quality metric exists for any format.** Perplexity and KL
+  divergence against the BF16 checkpoint, using the `llama-perplexity` binary
+  already built in this tree, were identified as the highest-value next
+  experiment on 2026-09-17 and had still not been run when V11 closed. Every
+  quality statement in this repository is a smoke test, an exact-text check or
+  an output-hash comparison. This is the one item that blocks any deployment
+  claim.
+- The 8K interactivity target (ITL p95 ≤ 70 ms) is missed by 18.5%. V9 showed
+  that scheduling alone cannot close it, and V11 shows that format choice alone
+  cannot either; the remaining gap is prefill graph cost.
+- The primary metric was re-measured only once, in V11, after having been left
+  unchecked from V2 through V10. It is now a standing gate.
+
+## Repository layout
+
+- `work/RESULTS.md`: V2 decision report and leaderboard.
+- `CAMPAIGN_CONTINUATION.md`: the V3--V10 continuation guide.
+- `work/EXPERIMENTS.md`: hypotheses, evidence and KEEP/STAGE/REJECT decisions,
+  V1 through V10.
+- `work/BASELINES.json`: machine-readable baselines.
+- `work/HARDWARE_MANIFEST.json`: hardware, source revisions and artifact hashes.
+- `work/SHAPE_CENSUS.csv` and `work/SHAPE_CENSUS_V3.csv` through `_V5.csv`:
+  profiled Vulkan operation shapes.
+- `work/PLUGIN_EXECUTION_MAP.md`, `work/PROFILE_V3.md`,
+  `work/CAMPAIGN_V3_RESULT.md`, `work/SEQUENCE_REMAP_VALIDATION.md`: the first
+  campaign's plugin dispatch map, profile, result and runtime remap validation.
+- `work/MISC_BREAKDOWN_V11.md`: prefill `misc` decomposition by op and graph,
+  with the leverage verdict that closes the micro-optimization route.
+- `work/FORMAT_PREFILL_V11.md`: the format finding, screen and paired A/B.
+- `work/PRIMARY_METRIC_V11.md`: primary-metric regression control.
+- `work/NEXT_ACTION.md`: current production state and the next exact actions.
+- `work/HANDOFF_V9.md`, `work/HANDOFF_V10.md`: per-version handoffs.
+- `work/KERNEL_MICROBENCH_V*.md`, `work/PREFILL8K_PROFILE_V*.md`,
+  `work/ATREX_SEARCH_V*.md`, `work/CONCURRENCY_PROFILE_V*.md`: per-version
+  microbenchmark, profile and automated-search records.
+- `work/scripts/`: reproducible HTTP benchmark, interference, analysis and
+  microbenchmark tooling.
+- `work/tests/`: the harness and analyzer test suite (`pytest -q work/tests`).
+- `work/results/`: raw benchmark evidence for every run.
+- `patches/ROCmFPX-gfx1032.patch`: local ROCmFPX changes against revision
+  `aed0d5fd9620ee96a10cb4e6b16c18514ea370e1`.
+- `patches/`: every candidate shader change, grouped by campaign version
+  (`v5-*`, `v6-auto/`, `v8-*`, `v9-*`, `v10-fp4-layouts/`), each with its
+  matching revert patch where one was applied.
+- `patches/campaign-v3-runtime-kernel.patch`,
+  `patches/campaign-v4-prefill-chunk.patch`: the two promoted runtime changes.
+
+## Excluded artifacts
+
+Models, compiled builds, nested source clones and profiler captures under
+`work/results/profiling/` are deliberately not committed. They total about
+16 GiB and include files larger than GitHub's normal 100 MB limit. Exact model
+hashes and source revisions are recorded in `work/HARDWARE_MANIFEST.json`; see
+`MODEL_ARTIFACTS.md` for details.
+
+Everything else under `work/results/` **is** tracked, including the raw server
+logs and stderr captures for each run, so the evidence for a claim can be read
+directly. That makes the tree about 214 MiB; the largest single file is a
+36.7 MiB selector trace under
+`work/results/v7-bk3-final-guardrails/selector-trace/`. If you only want the
+analysis, a shallow clone or a sparse checkout of `work/*.md`,
+`work/scripts/`, `work/tests/` and the `c*.json` results is enough.
+
+## Reproducing the benchmarks
+
+Build ROCmFPX at the recorded revision, apply the included patch, and provide
+the models with the recorded SHA-256 values. Then:
+
+```bash
+# Primary metric, 128/64, C=1..4
+GPU_RESERVATION_CONFIRMED=1 work/scripts/run_primary_metric_v11.sh /tmp/v11-primary
+
+# Direct prefill/decode format screen
+work/scripts/screen_format_prefill.sh /tmp/v11-screen
+
+# Mixed 8K interactive profile, paired format A/B
+PAIRS=3 work/scripts/run_format_interference_abba.sh /tmp/v11-abba
+```
+
+The plugin build needs the isolated GCC 16 runtime preloaded; the wrapper
+scripts set `LD_PRELOAD` themselves. No system driver, firmware, GPU power
+profile or clock setting was modified by this campaign. Hardware profiling after
+the earlier reset was trace-only.
+# LFM2.5-2.6B en RX 6600 XT / gfx1032
+
+> **Checkpoint contemporáneo (2026-09-17):** las cifras que siguen en este
+> informe son el historial de exploración y no sustituyen el baseline v2. El
+> GGUF situado en la ruta Q4_0 fue reemplazado a las 02:29 y las tandas previas
+> no guardaron su hash. El resultado válido actual está en `BASELINES.json`:
+> ROCmFPX plugin FP4_FAST + slots compactos alcanza 233,99 tok/s en 200
+> peticiones C4, frente a 226,65 upstream, con 0 fallos. `ubatch=512` queda
+> descartado por un cliff de DPM; producción usa `ubatch=128` y
+> `LLAMA_SERVER_COMPACT_SLOTS=1`.
+
+## Leaderboard contemporáneo v2
+
+| Engine | Backend | Quant | C=1 TG | C=2 total | C=4 total | C=4 TG/user | TTFT C=4 p50/p95 | E2E p95 C=4 | VRAM |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ROCmFPX | ROCmFPXVulkan0 + slots compactos | FP4_FAST | **108,0** | **169,1** | **234,0** | **58,9** | 327/351 ms | **1.113 ms** | **1,85 GiB** |
+| llama.cpp | Vulkan0 + slots compactos | Q4_0 | 100,8 | 163,0 | 226,7 | 56,9 | **297/309 ms** | 1.140 ms | 2,00 GiB |
+
+El p95 de esta tabla usa 200 peticiones C=4 por backend; no es una extrapolación
+de tres muestras. La ventaja emparejada de FPX en throughput C4 es +3,30%
+(IC bootstrap 95% +2,77 a +3,84%). Con llegadas separadas 100 ms, FPX da
+223,7 frente a 209,9 tok/s y también mejora TTFT p95 (116 frente a 193 ms).
+
+La recomendación cambia con la forma: FPX gana 128/64 y 512/128; upstream
+Q4_0 gana 2048/256 (101,7 vs 100,0 tok/s con b4096/u128) y la pantalla
+exploratoria 7680/512 (92,4 vs 88,6). Por tanto, el perfil de producción de
+arriba es el ganador de la carga prioritaria corta, no un ganador universal.
+
+Informe de decisión para un servidor con un máximo real de cuatro solicitudes
+concurrentes. La métrica primaria es el throughput agregado en C=4; el
+ranking C=1 se conserva por separado.
+
+## Decisión ejecutiva
+
+La ruta que maximiza la métrica primaria —throughput agregado con cuatro
+peticiones— es ahora la extensión Vulkan opcional de ROCmFPX:
+
+```text
+ROCmFPXVulkan0 (plugin Charlie, compilado con el mismo árbol ROCmFPX)
+modelo: LFM2.5-2.6B-ROCmFP4_FAST.gguf
+KV: q8_0 / q8_0
+batch: 512, ubatch: 128
+-ngl 99 -fa on -np 4 -cb -c 4096
+```
+
+En la matriz completa da 103,8 / 160,6 / 204,3 / **233,2 tok/s** en
+C=1/2/3/4, 58,3 tok/s por usuario en C=4, TTFT p50 de 341 ms, p95 E2E de
+1.094 ms y 1,865 GiB de VRAM. Las 30 peticiones medidas de la matriz
+terminaron correctamente, además del warmup de cada celda. Esta es la mejor
+ruta de rendimiento para producción si se empaqueta también la runtime GCC 16
+exacta: el plugin necesita precargar la `libstdc++` del toolchain aislado
+porque el RPATH de este build antepone la runtime del sistema. El margen es
+de +1,2% frente al perfil upstream estable Q4_0 `b4096/ub512` y +2,1% frente
+al control upstream `b512/ub128`.
+
+La configuración de producción equilibrada, sin esa dependencia del plugin y
+con menor TTFT, sigue siendo:
+
+```text
+llama.cpp Vulkan upstream
+modelo: LFM2.5-2.6B-Q4_0.gguf
+KV: q8_0 / q8_0
+batch: 4096, ubatch: 512
+-ngl 99 -fa on -np 4 -cb -c 4096
+```
+
+En la medición principal alcanza 230,5 tok/s agregados en C=4, 57,6 tok/s por
+usuario, TTFT p50 de 272 ms, p95 E2E de 1.111 ms y 2,05 GiB de VRAM. El
+baseline Q4_K_M conserva más margen de calidad, pero baja a 222,1 tok/s en
+C=4.
+
+La nueva ruta ROCmFPX Vulkan ya está optimizada para el servidor real:
+`ROCmFP4_FAST`, MMQ int-dot habilitado, KV `q8_0/q8_0`, `b=512`,
+`ubatch=128`, `-np 4 -cb`. En la matriz comparable alcanza 102,7 / 165,5 /
+203,1 / 226,5 tok/s agregados en C=1/2/3/4, usa 1,87 GiB y gana C=1 y C=2;
+en C=4 queda a ~0,9% del upstream equivalente. El valor de C=4 que había
+quedado en 194,1 tok/s correspondía a `b=2048/ubatch=512`, no al punto
+óptimo encontrado ahora.
+
+El máximo C=4 bruto de esta tanda es Q4_0 f16 con `b1024/ub256`: 231,1
+tok/s. Sólo supera al perfil de producción en ~0,3%, pero baja a 78,4 tok/s
+en C=1 y empeora el p95; por eso no es la configuración de servicio.
+
+La recomendación práctica es mantener estos perfiles:
+
+1. `production-throughput`: ROCmFPX `ROCmFPXVulkan0`, FP4_FAST + KV q8 +
+   `b512/ub128` (máximo C=4 medido y menor VRAM).
+2. `production-safe`: llama.cpp Vulkan `Vulkan0`, Q4_0 + KV q8 +
+   `b4096/ub512` (máximo sin plugin y menor TTFT).
+3. `production-fpx-low-vram`: ROCmFPX Vulkan integrado, FP4_FAST + KV q8 +
+   `b512/ub128` (mejor C=1/C=2, sin cargar el plugin).
+4. `production-quality`: Q4_K_M + KV f16 + `b2048/ub512`.
+
+El plugin actual pasa el smoke de disponibilidad 3/3 y las comprobaciones de
+palabras exactas/JSON; eso no sustituye una evaluación de perplexity contra el
+checkpoint BF16. Para un despliegue que no pueda aceptar esa validación
+pendiente, usar `production-safe`.
+
+Arranque reproducible del perfil ganador (las dos bibliotecas precargadas son
+las del toolchain local, no las del sistema):
+
+```bash
+BIN=/home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-cm1/bin
+export ROCMFPX_PLUGIN_PATH="$BIN/rocmfpx-vulkan-plugin.so"
+export LD_PRELOAD=/home/isaac/vllm-challenge/toolchain/lib/libstdc++.so.6:/home/isaac/vllm-challenge/toolchain/lib/libgcc_s.so.1
+"$BIN/llama-server" -m /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/results/models/LFM2.5-2.6B-ROCmFP4_FAST.gguf -dev ROCmFPXVulkan0 \
+  -ngl 99 -fa on -np 4 -cb -c 4096 -b 512 -ub 128 \
+  -ctk q8_0 -ctv q8_0
+```
+
+## Leaderboard principal: estado reproducible post-Sunshine
+
+Condiciones comunes: RX 6600 XT, gfx1032, p=128, salida máxima 64, warmup=1,
+3 repeticiones por concurrencia, mismas semillas y tokenizer local. Los
+throughputs son la mediana de las tres repeticiones agregadas. `TTFT` es el
+p50 de las peticiones de C=4; `p95` es E2E de C=4. Las rutas HIP se miden en
+una pantalla separada porque son órdenes de magnitud más lentas y no permiten
+una matriz p=128/max=64 razonable en este equipo.
+
+| Engine | Backend | Quant | C=1 TG | C=2 total TG | C=4 total TG | C=4 TG/user | TTFT C=4 | p95 C=4 | VRAM máx. | Estado |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| llama.cpp | Vulkan | Q4_0, KV q8, b4096/u512 | **100,5** | 152,7 | 230,5 | **57,6** | 272 ms | **1.111 ms** | 2,05 GiB | producción equilibrada |
+| llama.cpp | Vulkan | Q4_0, KV q8, b512/u128 | 100,7 | 154,1 | 228,5 | 57,1 | 291 ms | 1.123 ms | 2,01 GiB | control actual del tuning |
+| llama.cpp | Vulkan | Q4_0, KV f16, b4096/u512 | 97,4 | **156,9** | 229,2 | 57,3 | 272 ms | 1.117 ms | 2,06 GiB | mejor C=2 si se prioriza f16 |
+| llama.cpp | Vulkan | Q4_0, KV f16, b2048/u512 | 97,6 | **159,0** | 227,6 | 56,9 | 261 ms | 1.123 ms | 2,07 GiB | menor TTFT |
+| llama.cpp | Vulkan | Q4_0, KV f16, b1024/u256 | 78,4 | 154,3 | **231,1** | 57,8 | 280 ms | 1.167 ms | **2,04 GiB** | máximo C=4 bruto; peor C=1 |
+| llama.cpp | Vulkan | Q4_K_M, KV f16, b2048/u512 | 93,9 | 149,4 | 222,1 | 55,5 | 306 ms | 1.164 ms | 2,14 GiB | baseline calidad |
+| ROCmFPX CM1 | Vulkan | ROCmFP4_FAST, KV q8, b2048/u512 | 96,4 | 141,6 | 194,1 | 48,5 | 541 ms | 1.324 ms | **1,91 GiB** | ruta FPX actual |
+| ROCmFPX Vulkan int-dot | Vulkan | ROCmFP4_FAST, KV q8, b512/u128 | **102,7** | **165,5** | 226,5 | 56,6 | 339 ms | 1.129 ms | **1,87 GiB** | mejor C=1/C=2 y rendimiento/VRAM |
+| ROCmFPX Charlie plugin | Vulkan plugin | ROCmFP4_FAST, KV q8, b512/u128 | **103,8** | 160,6 | **233,2** | **58,3** | 341 ms | **1.094 ms** | **1,87 GiB** | mejor C=4; requiere runtime GCC16 |
+| ROCmFPX CM1 | Vulkan | ROCmFP4_FAST, KV f16, b2048/u512 | 91,8 | 140,7 | 190,2 | 47,5 | 547 ms | 1.373 ms | 1,93 GiB | control FPX |
+| vLLM ROCm | ROCm | FP16 | 12,0 | 23,0 | 45,7 | 11,4 | 389 ms | 5.646 ms | 6,94 GiB | no competitivo; modelo no GGUF |
+
+Ganadores explícitos dentro del estado reproducible actual:
+
+- mejor single-user: ROCmFP4_FAST del plugin, KV q8, `b512/ub128`
+  (103,8 tok/s);
+- mejor C=2: ROCmFP4_FAST int-dot, KV q8, `b512/ub128` (165,5 tok/s);
+- mejor C=4 bruto y mejor rendimiento/VRAM: ROCmFP4_FAST del plugin,
+  `b512/ub128` (233,2 tok/s; ~125 tok/s/GiB);
+- mejor TTFT C=4 sin plugin: Q4_0, KV q8, `b4096/ub512` (272 ms);
+- mejor configuración final para producción orientada a throughput: ROCmFPX
+  `ROCmFPXVulkan0`, FP4_FAST, KV q8, `b512/ub128`, con la runtime GCC16
+  aislada. La configuración de fallback es Q4_0 `b4096/ub512`.
+
+La fila Q4_0 de `b2048/u512` contiene una repetición C=4 con una petición que
+terminó en 4 tokens; la mediana de throughput sigue usando una repetición
+completa, pero la variante final `b4096/u512 + KV q8` no presenta ese recorte.
+
+## Tuning específico para cuatro usuarios
+
+La ruta ROCmFPX int-dot requiere ajustar el tamaño de microbatch al servidor,
+no al máximo teórico del backend. Con cuatro prompts de 128 tokens, `b=512` y
+`ubatch=128` evita la fragmentación y mantiene el trabajo de prefill en un
+solo bloque útil. La pantalla C=4 fue:
+
+| ROCmFPX FP4_FAST, KV q8 | C=4 total | TTFT p50 | E2E p95 | Nota |
+| --- | ---: | ---: | ---: | --- |
+| int-dot, `b4096/ub512` | 111,5 | 1.087 ms | 2.283 ms | demasiado grande para esta carga |
+| int-dot, `b4096/ub256` | 202,6 | 437 ms | 1.268 ms | mejora parcial |
+| int-dot, `b4096/ub64` | 202,9 | 477 ms | 1.259 ms | fragmenta el prefill |
+| int-dot, `b4096/ub128` | 227,9 | 339 ms | 1.129 ms | casi óptimo |
+| int-dot, `b512/ub128` | **226,5** | 339 ms | 1.129 ms | configuración final; menor VRAM |
+| plugin `ROCmFPXVulkan0`, `b512/ub128` | **233,2** | 341 ms | **1.094 ms** | ganador C=4; requiere `LD_PRELOAD` |
+
+El `b=512/ub=128` se repitió con el upstream: Q4_0 dio 228,5 tok/s en C=4,
+por lo que ROCmFPX queda a 0,9% bajo el control. KV `f16/f16` en ROCmFPX
+bajó a 199,2 tok/s; se conserva `q8_0/q8_0`. La misma ruta ROCmFPX sin
+`GGML_VK_ROCMFPX_INTDOT=on` fue validada tras recompilar: el default ahora es
+int-dot y reprodujo 228,3 tok/s en la repetición de verificación C=4.
+
+El selector admite `GGML_VK_ROCMFPX_INTDOT=off` para A/B o depuración. El modo
+escalar sigue siendo útil como control aislado, pero no es la configuración de
+servicio en gfx1032: al procesar cuatro slots el prefill escalar cayó a unos
+36 tok/s agregados.
+
+Archivos de la matriz:
+
+- [Q4_0 KV q8 C=1..4](results/llama-vulkan-q4_0-b4096-u512-kvq8-postsunshine)
+- [Q4_0 KV f16 C=1..4](results/llama-vulkan-q4_0-b4096-u512-postsunshine)
+- [Q4_K_M C=1..4](results/llama-vulkan-q4km-postsunshine)
+- [ROCmFPX FAST KV q8 C=1..4](results/rocmfpx-vulkan-cm1-fast-kvq8-postsunshine)
+- [ROCmFPX FAST int-dot optimizado KV q8 C=1..4](results/rocmfpx-vulkan-fp4-fast-intdot-on-b512-ub128)
+- [ROCmFPX Charlie plugin FAST KV q8 C=1..4](results/rocmfpx-vulkan-plugin-b512-ub128)
+- [Smoke de calidad del plugin FAST](results/quality-rocmfpx-plugin-fast-c4.json)
+- [Upstream Q4_0 control actual b512/u128 C=1..4](results/llama-vulkan-q40-b512-ub128)
+- [ROCmFPX FAST KV f16 C=1..4](results/rocmfpx-vulkan-cm1-fast-postsunshine)
+- [vLLM ROCm C=1..4](results/vllm-rocm-fp16-postsunshine)
+
+## C=3 y tendencia de escalado
+
+| Configuración | C=1 TG | C=2 TG | C=3 TG | C=4 TG |
+| --- | ---: | ---: | ---: | ---: |
+| llama.cpp Vulkan Q4_0, KV q8, b4096/u512 | 100,5 | 152,7 | 206,7 | 230,5 |
+| llama.cpp Vulkan Q4_0, KV q8, b512/u128 | 100,7 | 154,1 | 205,5 | 228,5 |
+| llama.cpp Vulkan Q4_0, KV f16, b2048/u512 | 97,6 | **159,0** | **207,0** | 227,6 |
+| llama.cpp Vulkan Q4_K_M | 93,9 | 149,4 | 193,0 | 222,1 |
+| ROCmFPX FAST, KV q8 | 96,4 | 141,6 | 172,6 | 194,1 |
+| ROCmFPX FAST int-dot, KV q8, b512/u128 | **102,7** | **165,5** | 203,1 | 226,5 |
+| ROCmFPX Charlie plugin FAST, KV q8, b512/u128 | **103,8** | 160,6 | 204,3 | **233,2** |
+| vLLM ROCm FP16 | 12,0 | 23,0 | 34,2 | 45,7 |
+
+El scheduler de llama.cpp con continuous batching y `-np 4` escala de forma
+útil para este caso. Prefix caching no se acredita en estas cifras porque el
+harness cambia los ids del prompt entre repeticiones; sí se deja disponible
+para producción cuando haya prefijos realmente repetidos. Chunked prefill y
+paged KV quedan cubiertos por vLLM, pero no compensan el coste de esta GPU y
+esta carga pequeña.
+
+## ROCmFPX: formatos y mediciones
+
+El árbol oficial actual de [ROCmFPX](https://github.com/ROCmFPX/ROCmFPX)
+expone `ROCmFP4`, `ROCmFP4_FAST`, familias ROCmFPX Q2/Q3/Q5/Q6/Q7/Q8,
+variantes `_COHERENT`, `_EVEN`, `_LEAN`, `_AGENT` y `ROCMI4`. El propio
+proyecto advierte que la disponibilidad de un formato no implica que sea la
+ruta más rápida en una GPU concreta.
+
+| Formato | bpw aprox. | PP tok/s | TG tok/s | C=4 agregado histórico | Calidad/salida | VRAM observada |
+| --- | ---: | ---: | ---: | ---: | --- | ---: |
+| ROCmFPX Q2 | 2,90 | 1.242 | 174,2 | 345,6 | **rechazado**: texto repetitivo/incoherente y JSON incorrecto | 1,58 GiB |
+| ROCmFPX Q3 | 4,27 | 1.215 | 111,1 | 230,5 | no formalmente puntuado; salida válida en smoke | no aislada |
+| ROCmFP4_FAST | 4,25 | 1.007 post-reset / 2.250 pre-reset; 2.248 integrado; 2.224 plugin | 132,8 post-reset / 133,6 pre-reset; 132,9 integrado; 131,4 plugin | 303,3 pre-reset; 226,5 integrado; **233,2 plugin** con `b512/ub128` | smoke chat: palabras exactas y JSON pasan; disponibilidad plugin 3/3 | 1,87 GiB con KV q8 |
+| ROCmFP4_FAST_COHERENT | 4,48 | — | — | 286,3 pre-reset | smoke anterior válido, sin métrica de calidad formal | ~2,09 GiB |
+| ROCmFP4 | 4,50 | — | — | 257,4 pre-reset | no aislado formalmente | ~2,32 GiB |
+| ROCMI4 / otras Q5--Q8 | 4,48--8,25 | inventariadas, sin speed qualification completa | — | — | pendientes de perplexity/eval | — |
+| Q4_0 estándar | 4,70 | 2.296 post-reset | 125,0 | 227,6 post-reset | smoke chat de la familia estándar; usar Q4_K_M si prima calidad | 2,05--2,07 GiB |
+| Q4_K_M estándar | 4,94 | 1.650 post-reset | 121,9 | 222,1 post-reset | smoke chat: palabras exactas y JSON pasan | 2,14 GiB |
+
+PP/TG de `llama-bench` son pruebas directas con p=128 y n=128 para aislar
+prefill/decode; las cifras C=4 son peticiones HTTP reales y, por tanto,
+incluyen scheduler, TTFT y sincronización. No se debe mezclar la cifra
+histórica de ROCmFPX anterior al reset con el leaderboard actual.
+
+El Q2 es un ejemplo importante de por qué no se debe seleccionar por tamaño:
+ganó en throughput bruto, pero falló el smoke de calidad. El FAST normal es
+el mejor compromiso FPX probado; FAST_COHERENT no superó a FAST en esta carga.
+
+## HIP, Vulkan y vLLM
+
+Se compilaron y se hicieron pruebas de los cinco caminos solicitados:
+
+- ROCmFPX HIP nativo gfx1032: carga y ejecución con
+  `HSA_OVERRIDE_GFX_VERSION` sin definir; `llama-bench` directo dio PP 4,70 y
+  TG 1,738 tok/s con FAST. En pantalla C=1..4, p=16/max=8, quedó en
+  aproximadamente 0,765 / 0,815 / 0,799 / 0,912 tok/s agregados.
+- llama.cpp HIP nativo gfx1032: `llama-bench` directo dio PP 3,44 y TG
+  1,211 tok/s con Q4_K_M; la pantalla C=1..4 p=16/max=8 quedó en
+  aproximadamente 0,534 / 0,553 / 0,546 / 0,629 tok/s.
+- ROCmFPX Vulkan integrado: el build CM1 se probó, pero RADV en gfx1032
+  declara `matrix cores: none` y no activa cooperative matrices; el salto útil
+  vino de registrar los kernels MMQ int-dot FP4 y de ajustar `b512/ub128`.
+- ROCmFPX Vulkan Charlie plugin: se cargó como `ROCmFPXVulkan0` y se midió
+  con FP4_FAST, KV q8 y `b512/ub128`; alcanzó 233,2 tok/s agregados en C=4,
+  por encima del upstream. Sin `LD_PRELOAD` no arranca por el símbolo
+  `GLIBCXX_3.4.35`; con la runtime GCC16 aislada sí registra el dispositivo y
+  completa la matriz.
+- llama.cpp Vulkan upstream: es el mejor fallback sin plugin para C=4 con
+  Q4_0 y ofrece el menor TTFT de C=4.
+- vLLM ROCm: versión local `0.29.0+rocm723`, FP16, `max_num_seqs=4`, prefix
+  caching y chunked prefill activos; quedó limitado a ~45,7 tok/s agregados en
+  C=4 y utilizó ~6,94 GiB.
+
+El HIP runtime instalado expone gfx1030 cuando se usa
+`HSA_OVERRIDE_GFX_VERSION=10.3.0`; por eso el binario nativo se ejecutó con
+el override quitado. La construcción gfx1030 sigue disponible como fallback,
+pero no se usa para el ranking nativo.
+
+## Profiling y origen de la diferencia
+
+Se hizo profiling trace-only seguro después de retirar Sunshine. Los dos
+traces observan la misma GPU física (gfx1032, wave32, LDS 64 KiB, 32 CUs):
+
+| Dominio | llama.cpp HIP estándar | ROCmFPX HIP |
+| --- | ---: | ---: |
+| HIP API | 51,25% | 52,04% |
+| dispatch de kernels | 47,26% | 46,06% |
+| copias de memoria | 236 ms | 204 ms |
+| `hipStreamSynchronize` dentro de API | 13,13 s | 9,32 s |
+| kernel MMQ principal | 36,56%, 33,5 ms/call | 40,96%, 23,9 ms/call |
+| grupo M·V J=2 | 20,26%, 9,3 ms/call | 23,52%, 6,9 ms/call |
+| grupo M·V J=4 | 19,25%, 17,7 ms/call | 21,69%, 12,6 ms/call |
+| Flash Attention observado | 0,656% | 0,925% |
+
+La tabla muestra de dónde sale la ventaja HIP de ROCmFPX: sus kernels MMQ/MVV
+custom tienen menor tiempo medio y el trace tiene menos sincronización total.
+En Vulkan, el port de MMQ int-dot para FP4_FAST redujo la pantalla directa de
+~1.025k PP tok/s escalar con N=124 a ~2.231k PP tok/s con N=128 int-dot. En el
+servidor, el beneficio decisivo no es sólo el kernel aislado: `ubatch=128`
+evita la regresión del scheduler al agrupar cuatro slots. El resultado final
+queda a la par del upstream, con menos VRAM y mejor C=1/C=2, pero aún no
+desplaza al upstream en el objetivo primario C=4 para el backend integrado.
+La extensión Charlie obtiene 233,2 tok/s en esa misma pantalla; su `llama-bench`
+aislado es similar (PP 2.224 / TG 131,4), así que la mejora aparece en la ruta
+de servidor multi-slot y no debe atribuirse a un único microkernel sin una
+traza específica del plugin.
+
+No se repitieron contadores PMC de ocupación/bandwidth/register pressure/LDS:
+la ejecución anterior de contadores coincidió con el reset amdgpu. Repetirla
+antes de aislar la causa aumentaría el riesgo y no mejoraría la evidencia
+actual.
+
+## Incidente de sesión y estabilidad
+
+No hubo reinicio completo del sistema: el boot era el mismo. A las 03:09 el
+kernel registró timeout de `amdgpu comp_1.0.1` en el proceso `sunshine`, reset
+de GPU con pérdida de VRAM, errores AER PCIe en la función de audio y reinicio
+de Xwayland/GNOME Shell. Sunshine se eliminó; desde entonces las pruebas
+completadas no han generado nuevos timeouts de anillo ni procesos de
+benchmark persistentes. El mensaje posterior de `svm_range_deferred_list_work`
+es una advertencia de carga del workqueue, no otro reset.
+
+El sistema tiene el root filesystem alrededor del 94% ocupado. No se han
+eliminado modelos, builds ni resultados automáticamente.
+
+## Reproducibilidad y fuentes locales
+
+- [Auditoría de builds y soporte RDNA2](ROCmFPX_AUDIT.md)
+- [Benchmark ROCmFPX FAST KV q8](results/rocmfpx-vulkan-cm1-fast-kvq8-postsunshine)
+- [Benchmark Q4_0 final](results/llama-vulkan-q4_0-b4096-u512-kvq8-postsunshine)
+- [Perfil ROCmFPX HIP](results/profiling/rocmfpx-hip-postsunshine)
+- [Perfil llama.cpp HIP](results/profiling/llama-hip-postsunshine)
+- [Smoke de calidad Q4_0 KV q8](results/quality-q4_0-kvq8-chat-postsunshine.json)
+- [Smoke de calidad ROCmFPX plugin FAST](results/quality-rocmfpx-plugin-fast-c4.json)
+- Selector MMQ: `test-rocmfpx-mmq-rdna2` pasa 112 configuraciones ROCmFPX y
+  el control estándar; `check-rocmfpx-reference.sh` también pasa usando el
+  compilador C/C++ incluido en `/home/isaac/vllm-challenge/toolchain`.
+
+Referencias de proyecto: [ROCmFPX format status](https://github.com/ROCmFPX/ROCmFPX/blob/main/docs/rocmfpx/README.md), [llama.cpp build documentation](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md), [vLLM GPU installation](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/).
+# Registro de experimentos
+
+## V4-CONTEXT-CAPACITY-01 — KEEP
+
+- Hypothesis: four slots can expose at least 8192 effective tokens each without
+  interpreting `-c` as a per-slot value.
+- Configuration: FP4_FAST, q8/q8 KV, R0/K0, `-c 34816`,
+  `--kv-unified-per-slot 8704`, `-np 4`, b4096/u128.
+- Evidence: `/props` reports `n_ctx=8704`; `/slots` reports four independent
+  8704-token slots; 4/4 simultaneous 8192-token prompts completed.
+- Weight eligibility: FP4_FAST whole-artifact BPW is 4.2771; Q4_0 is 4.7276.
+- Harness change: resident-context priming is separate from measured decode,
+  and promotion requires observed cache reuse rather than assuming residency.
+- Decision: **KEEP** protocol and context configuration.
+
+## V4-BASELINE-8K-01 — KEEP split baseline
+
+- Profile A resident decode: FPX S1/S2/S3/S4 =
+  113.13/184.86/225.56/265.79 tok/s; upstream Q4_0 =
+  109.48/179.50/220.63/250.79. FPX C4 delta +5.98%.
+- FPX C4 user p5/p50 = 65.11/66.52 tok/s; ITL p95 15.33 ms.
+- Profile B simultaneous uncached 8192/256 C4: FPX 48.82 output tok/s,
+  1562.17 input tok/s and TTFT p95 17.37 s; upstream 52.12, 1667.75 and
+  15.82 s respectively.
+- Decision: **KEEP FPX** as resident-decode control; **KEEP upstream** as the
+  long-prefill control. No universal winner is declared.
+
+Protocolo vigente desde 2026-09-17: prompts de 128 tokens generados por
+`safe_corpus_cycle_v1`, 64 tokens de salida fija, tokens especiales excluidos
+por `logit_bias`, caché de prompt desactivada, KV q8, `b512/ub128`, FA activado,
+`-np 4 -cb`. La métrica primaria incluye prefill, cola, decode, streaming y
+transporte desde el primer envío hasta la última respuesta.
+
+## EXP-HARNESS-V2 — KEEP
+
+- Hipótesis: el leaderboard necesitaba contabilizar tokens realmente entregados,
+  TTFT, intervalos de entrega, caché efectiva, errores y hashes.
+- Cambio: `work/scripts/bench_client.py` y
+  `work/scripts/benchmark_llama_backend.sh`.
+- Verificación: el smoke produjo 64/64 tokens, prompt efectivo 128, cero tokens
+  cacheados y 102,58 tok/s en C=1.
+- Corrección posterior: se eliminó la síntesis aritmética de IDs de vocabulario;
+  podía introducir EOG/control. El corpus actual solo contiene tokens derivados
+  de texto ordinario y bloquea especiales en la salida fija.
+- Decisión: **KEEP**.
+
+## EXP-VK-UBATCH-DPM — KEEP workaround / STAGE cause
+
+- Hipótesis: la caída del servidor con `ubatch=512` ocurría dentro de la GPU.
+- Evidencia servidor: C=1 cayó a 68,03 y C=4 a 110,14 tok/s; con `ubatch=128`
+  volvió a ~101 y ~228 tok/s.
+- Evidencia micro: `llama-bench` no reprodujo el fallo (PP ~2600, TG 121–125
+  tok/s en ambas configuraciones).
+- Evidencia trace-only: el mismo grafo n=124 tardó 65,0 ms con u128 y 271,9 ms
+  con u512. Las formas y conteos fueron iguales.
+- Telemetría: durante u512 la memoria alternó 541/1000 MHz; u128 mantuvo
+  1000 MHz. No se cambió el perfil de energía.
+- Decisión: **KEEP** `ubatch=128` en producción; causa DPM exacta **STAGE**.
+
+## EXP-COMPACT-SLOTS — KEEP
+
+- Hipótesis: active sequence IDs no contiguos penalizan Vulkan en C=3.
+- Reproducer: `work/results/validation-v2-safe-prompt-upstream-c3`.
+  Slots 0/1/2 dieron ~208–211 tok/s; conjuntos con hueco que incluían slot 3
+  cayeron a ~117–126 tok/s con mclk a 1000 MHz.
+- A/B explícito: `work/results/validation-v2-compact-slots-upstream-c3`
+  mantuvo 197–211 tok/s usando 0/1/2.
+- Cambio implementado: `LLAMA_SERVER_COMPACT_SLOTS=1` en
+  `work/sources/ROCmFPX/tools/server/server-context.cpp`, que selecciona el
+  menor slot libre antes de LRU. La política es opt-in y no cambia upstream.
+- Verificación con cliente OpenAI sin `id_slot`:
+  `work/results/validation-v2-rocmfpx-plugin-server-compact-c3`, cuatro tandas
+  entre 205,6 y 209,2 tok/s, 12/12 respuestas correctas.
+- Decisión: **KEEP**. Es obligatorio para el perfil de producción sin caché.
+
+## EXP-ROCMFPX-PLUGIN-FINAL — KEEP
+
+- Candidato: ROCmFPXVulkan0 + ROCmFP4_FAST + KV q8 + b512/u128 + compact slots.
+- Resultado 10 pares: C1 108,01; C2 169,12; C3 207,71; C4 234,16 tok/s.
+- Control upstream compacto: 100,84 / 162,97 / 205,42 / 227,83 tok/s.
+- Delta emparejado medio: +7,19% / +3,77% / +1,26% / +2,89%.
+- C4 formal (200 solicitudes por backend): 233,99 vs 226,65 tok/s; delta
+  +3,30%, IC bootstrap 95% +2,77 a +3,84%; 0 fallos.
+- Tradeoff simultáneo C4: TTFT p95 351 ms FPX vs 309 ms upstream; E2E p95
+  1113 vs 1140 ms; VRAM 1,85 vs 2,00 GiB aproximadamente.
+- Llegadas 100 ms: 223,69 vs 209,91 tok/s, TTFT p95 116 vs 193 ms.
+- Decisión: **KEEP**, mejor configuración de producción actual.
+
+## EXP-ROCMFPX-INTEGRATED-INTDOT — REJECT for production / KEEP kernels
+
+- Cambio previo: registro de pipelines MMQ q8_1 FP4/FP4_FAST e int-dot por
+  defecto, con `GGML_VK_ROCMFPX_INTDOT=off` para A/B.
+- Criba contemporánea: mediana C4 229,37 tok/s, similar a upstream 229,91 y
+  por debajo del plugin 236,98; TTFT también peor que upstream.
+- Decisión: **REJECT** como motor de producción; **KEEP** como banco de kernels
+  y fallback experimental.
+
+## EXP-WORKLOAD-SHAPES-V2 — split recommendation
+
+| Perfil | Upstream C1 | FPX C1 | Upstream C4 | FPX C4 | Ganador C4 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 128/64 | 100,8 | 108,0 | 226,7 | 234,0 | FPX |
+| 512/128 | 93,9 | 98,1 | 182,6 | 186,3 | FPX |
+| 2048/256, b4096/u128 | ~65,7 | ~65,9 | 101,7 | 100,0 | upstream |
+| 7680/512, b4096/u128 | — | — | 92,4 | 88,6 | upstream (exploratorio) |
+
+- El cruce procede sobre todo del prefill/TTFT: FPX conserva decode y menor
+  VRAM, pero pierde con prefijos largos. La ruta integrada FP4_FAST tampoco lo
+  corrige (94,9 tok/s C4 en 2048/256).
+- `batch=4096/ubatch=128` mejora 2048/256 sin reactivar el cliff de u512.
+- Decisión: FPX **KEEP** para carga corta/media; upstream **KEEP** para carga
+  larga. No se combinan backends dentro de un experimento.
+
+## EXP-FP4-ARITHMETIC-SHADER — REJECT
+
+- La variante aritmética redujo el microbenchmark directo a PP 2206 y TG
+  131,74 frente a PP 2248 y TG 132,85 restaurados, sin ganancia de servidor.
+- Se revirtió el shader. Decisión: **REJECT**.
+
+## EXP-HIP-SYNC — REJECT barrier removal / KEEP kernel work
+
+- Las 409 sincronizaciones observadas esperan trabajo GPU real; los waits largos
+  solapan los kernels pendientes. Eliminarlas rompería lectura de logits/KV.
+- ROCmFPX reduce el tiempo de MMQ/MV, pero HIP sigue muy por detrás de Vulkan
+  en gfx1032.
+- Decisión: quitar barreras **REJECT**; optimizar/portar MMQ/MV **KEEP**.
+
+## EXP-QUANT-SCREEN-V2 — KEEP FAST; reject alternatives
+
+- Criba contemporánea C1/C4, tres tandas por celda salvo FAST (diez):
+  FP4_FAST 108,0/234,2; FAST_COHERENT 103,7/228,0; Q2 122,9/220,6;
+  FP4 92,7/184,5; Q3 86,3/163,2; Q4_0 100,8/227,8; Q4_K_M
+  94,5/213,0 tok/s.
+- Q2 usa solo 1,42 GiB y gana C1 bruto, pero falla las tres pruebas de calidad:
+  repite frases, no devuelve `alpha beta gamma` y no produce el JSON pedido.
+- FAST_COHERENT, FP4, Q3 y Q4_K_M no alcanzan al ganador C4. Q4_0 se mantiene
+  como baseline estándar y Q4_K_M como baseline orientado a calidad.
+- Decisión: FP4_FAST **KEEP**; Q2 **REJECT quality**; los demás candidatos
+  ROCmFPX **REJECT performance** para este perfil de producción.
+
+## EXP-VLLM-HIP — REJECT for this deployment
+
+- vLLM ROCm FP16 histórico: ~45,7 tok/s C4 y ~6,94 GiB VRAM, muy por debajo de
+  Vulkan. Mantener como control funcional, no como candidato de producción.
+- Decisión: **REJECT** para RX 6600 XT / C<=4.
+
+## EXP-V3-HARNESS-VALIDITY — KEEP
+
+- Se separaron `controlled_fixed_output` y `service_eos_enabled`; el segundo ya no bloquea EOS ni otros tokens especiales.
+- El orquestador devuelve 3 y conserva `status=INVALID` si falla finalización, presupuesto fijo, conteo, prompt efectivo o política de caché. Telemetría ausente ya no significa cero.
+- Se registran ejecutable y objetos mapeados, hash del modelo antes/después y sampler local reproducible u opción explícita sin sampler.
+- Ocho tests unitarios pasan. Smoke fijo y servicio: `work/results/v3-harness-*`.
+- Decisión: **KEEP**.
+
+## EXP-V3-SPARSE-PHYSICAL-SEQUENCES — STAGE
+
+- Reproductor original: C3 compacto 199,77–201,76 tok/s; `{0,1,3}` 131,18–131,91; `{0,2,3}` 131,33–132,25. C2 compacto 163,79–163,95; `{0,3}` 97,18–98,79.
+- La traza demuestra que `split_equal(sequential=true)` parte conjuntos dispersos en dos microbatches recurrentes por paso.
+- Relajar directamente el selector produjo asserts de máscara de atención y se revirtió (**REJECT** para ambas variantes).
+- Candidato: IDs físicos densos separados de IDs lógicos, lote ordenado por ID físico y migración diferida hasta el final de `post_decode()`.
+- El reproductor normal con cuatro duraciones, llegada escalonada, desconexión y reciclaje termina correctamente (`work/results/v3-dynamic-dense.json`).
+- Las mejores tandas C3 recuperan 176,98–193,93 tok/s, pero otras caen a 91,7–98,5 con batches densos y mclk alternando 541/1000 MHz.
+- Decisión: **STAGE**. Falta confirmación C4 A/B/B/A estable y logits; el camino sigue opt-in y no admite speculative decoding.
+
+## EXP-V3-PLUGIN-PROFILE — KEEP evidence
+
+- `ROCmFPXVulkan0` ejecuta `extensions/rocmfpx-vulkan/backend`, no el Vulkan integrado.
+- Decode FP4_FAST usa RHS Q8_1 y `mul_mat_vec_rocmfp4_fast_q8_1_f32` para N pequeño.
+- Prefill 2048/u128 está dominado por matmuls FP4_FAST gate/up y down; véanse `work/PLUGIN_EXECUTION_MAP.md`, `work/SHAPE_CENSUS_V3.csv` y `work/PROFILE_V3.md`.
+- Decisión: **KEEP** como evidencia; siguiente familia: GEMV FP4_FAST N=1/2/4, aún sin variante promocionable.
+
+## EXP-V4-PREFILL-INTERFERENCE-R0K0 — KEEP evidence / REJECT scheduling
+
+- Fixed control: ROCmFPXVulkan0 FP4_FAST (4.2771 artifact BPW), q8/q8 KV,
+  R0/K0, 9216 tokens per slot, backend ubatch 128.
+- One uncached 8192-token prefill reduced resident decode delivery to 1.01%,
+  1.23% and 1.45% of control with respectively 1, 2 and 3 active decoders.
+- Decoder ITL p95 rose from single-digit/low-double-digit milliseconds to
+  2145–2189 ms while the new request reached first token in about 4.3 seconds.
+- Per-user variation remained negligible; all resident users stalled together.
+- Evidence: `work/results/v4-profile-c-fpx-q8/`.
+- Decision: evidence **KEEP**; current unlimited logical prompt scheduling is
+  **REJECT** for interactive concurrent service. Prototype a bounded prompt
+  chunk per scheduler iteration without changing the ubatch control.
+
+## EXP-V4-SCHED-CHUNK128 — STAGE
+
+- Change: opt-in `LLAMA_SERVER_PREFILL_CHUNK_TOKENS=128` caps prompt tokens
+  admitted from one slot per logical scheduler iteration. Backend ubatch stays
+  at 128; default zero preserves the old behavior.
+- With 1/2/3 resident decoders plus one uncached 8K prefill, decode retention
+  rises from 1.01/1.23/1.45% to 11.28/13.35/15.63%.
+- Resident ITL p95 falls from 2145–2189 ms to 85–90 ms. New-user TTFT rises
+  from about 4.30 seconds to 5.06–5.27 seconds.
+- All output/cache/uncached-prefill invariants pass and per-user fairness is
+  preserved. Evidence: `work/results/v4-profile-c-fpx-q8-chunk128/`.
+- Decision: **STAGE**. Compare chunk256, then check resident C4 without a fresh
+  prefill before considering promotion.
+
+Follow-up:
+
+- Chunk256 retains only 6.76/7.76/9.20% and yields 156–161 ms ITL p95, versus
+  chunk128 at 11.28/13.35/15.63% and 85–90 ms. Its TTFT advantage is only
+  0.44–0.50 seconds. Chunk128 remains the preferred interactive candidate.
+- Chunk128 resident C4 median is 264.01 tok/s (263.32/264.01/274.02) versus
+  control 265.79, a -0.67% guardrail delta inside run variability. All runs
+  are VALID with 8188 cached prompt tokens per request.
+- Two pre-measurement harness rejections are retained under
+  `v4-profile-a-fpx-q8-chunk128-invalid-*`; neither enters statistics.
+- Decision remains **STAGE** pending paired repetition and Profile B guardrail.
+
+Profile B guardrail completed:
+
+- Three valid C4 8192+256 repetitions give a chunk128 median 48.125 tok/s,
+  17.687 s TTFT p95 and 21.278 s wall, versus control 48.818 tok/s, 17.372 s
+  and 20.976 s: -1.42%, +1.81% and +1.44% respectively.
+- This is a bounded regression compared with the 10–15x interference-retention
+  gain, but it is not a ten-pair contemporary ABBA series.
+- Decision remains **STAGE**; proceed to paired confirmation.
+
+## EXP-V4-DMMV-PHASE-PROFILE — KEEP evidence
+
+- Dedicated paired Vulkan timestamps isolate Q8_1 preparation from FP4_FAST
+  MMV without mixing them into node-level query indices. Profiling forces a
+  fence and its wall throughput is excluded.
+- Seven resident-8K decode graphs: C1 spends 5.056/72.457 ms in Q8/MMV
+  (Q8 6.52%); C4 spends 1.203/57.661 ms (Q8 2.04%).
+- C4 MMV is led by gate/up N=4 (22.833 ms), down N=4 (12.153 ms), and an
+  unbatched 6144x2048 N=1 path (11.946 ms).
+- Gate/up has 420 MMV calls but 210 Q8 preparations: graph-local RHS reuse is
+  already active and resets safely at graph boundaries.
+- Decision: evidence **KEEP**; Q8 reuse experiment **REJECT as duplicate**.
+  Next optimization must target a measured MMV shape, not all N=4 shapes.
+
+## EXP-V4-KERNEL-GATEUP-N4-LARGE — REJECT
+
+- Added an exact selector for the existing four-subgroup hybrid reduction only
+  at gate/up M=10752, K=2048, N=4. Selection proof confirms no neighboring
+  shape changed, and CPU-reference correctness passes.
+- Found and corrected a microbenchmark defect: Vulkan loggers are enabled by
+  variable presence, so the V3 runner's `LOGGER=0` still enabled fenced
+  profiling. The old 1.69--1.72 ms micro timings are invalid as hot-pipeline
+  measurements; the independent K1 server regression remains valid.
+- With all logger variables absent, ten ABBA pairs give 60.840 us for subgroup
+  versus 110.655 us for gateup-n4: **+81.88% latency**, a clear regression.
+- Decision: **REJECT** without a server run. Implement a genuinely different
+  two-subgroup geometry next; do not reuse the four-subgroup K1 pipeline.
+- Evidence: `work/KERNEL_MICROBENCH_V4.md` and
+  `work/results/v4-kernel-gateup-n4-micro-abba10/`.
+
+## EXP-V4-KERNEL-GATEUP-N4-2SG — REJECT
+
+- Compiled a true 64-thread/two-subgroup hybrid pipeline and selected it only
+  for gate/up M=10752, K=2048, N=4. Exact correctness and selector isolation
+  pass.
+- Ten logger-free ABBA pairs give 61.095 us for one subgroup versus 83.230 us
+  for two subgroups: **+36.23% latency**.
+- Decision: **REJECT** without a server run. One wave is decisively better than
+  two and four waves for this shape. Close subgroup-count tuning here.
+
+## EXP-V4-KERNEL-CONV-N1-ROWS4 — REJECT
+
+- Halved rows accumulated per wave from eight to four only for FP4_FAST
+  M=6144, K=2048, N=1. Selector isolation passes.
+- Ten logger-free ABBA pairs: raw medians 367.390 us control versus 363.740 us
+  candidate (-0.99%). Pair median is -0.40%, bootstrap 95% interval
+  [-1.43%, +0.19%].
+- The stock CPU-reference corpus has no exact case (0/0), so correctness is
+  explicitly unproven rather than inferred.
+- Decision: **REJECT**. Statistical signal and global ceiling are too small to
+  justify the extra pipeline or a server campaign.
+
+## EXP-V4-SCHED-CHUNK128-PAIRED10 — KEEP engineering
+
+- Ten control/chunk128 pairs alternated A/B and B/A for three resident 8K
+  decoders plus one uncached 8K prefill. All 20 runs are VALID; no exclusions.
+- Median decode retention rises 1.455% -> 15.702%. Paired improvement is
+  +977.76%, bootstrap 95% interval [+973.09%, +984.93%].
+- Resident ITL p95 falls 2188.74 -> 89.23 ms: -95.923%, interval
+  [-95.932%, -95.900%]. New-user TTFT rises 4308.79 -> 5268.14 ms:
+  +22.44%, interval [+21.99%, +23.15%].
+- Same loaded artifacts and equal per-user event counts were verified in every
+  arm. Resident C4 and simultaneous-prefill guardrails remain -0.67% and
+  -1.42% respectively in their prior three-run checks.
+- Decision: **KEEP engineering/service value**. Do not make it the production
+  default until deterministic output/logit equivalence and reserved quality
+  validation are complete.
+
+Follow-up output identity:
+
+- A fixed-order control/chunk128 reproduction retained full text and
+  retokenized IDs. All 10 corresponding outputs match exactly, including six
+  768-token decoder outputs (baseline and interference).
+- Decision remains **KEEP engineering**. This closes an initial output-state
+  corruption check, but not logits equivalence or the service-EOS quality
+  corpus required for a production default.
+# V3 continuation: runtime remap and exact plugin microbenchmark
+
+## V3-RUNTIME-02 — deferred remap under active cancellation
+
+- Hypothesis: physical-ID densification can remove the sparse recurrent
+  allocator split without mixing request state.
+- Change: separate lowest-slot allocation from physical remapping; preserve
+  host/backend sampling policy; assert physical identity and recurrent
+  positions; move only after pending results are consumed.
+- Evidence: forced holes 0/1/3 with three live survivors and immediate reuse.
+  All 12 completed requests met their output budgets. R1 reduces the sparse
+  middle-hole cycle from 4526 ms to 2546 ms. Nine of twelve outputs are exactly
+  equal to R0; three differ under non-identical concurrent batch ordering.
+- Backend sampling: reproduced a double-initialization abort; R1 now rejects
+  that combination with HTTP 400.
+- Historical range error: not reproduced, not declared solved.
+- Decision: **STAGE** (host sampling only).
+
+## V3-KERNEL-01 — hybrid DMMV reduction by shape
+
+- Hypothesis: the four-subgroup hybrid reduction can improve FP4_FAST MMVQ at
+  N=2/4.
+- Pipeline: `quantize_q8_1_x4 -> mul_mat_vec_rocmfp4_fast_q8_1_f32` in the
+  actual plugin backend.
+- Microbenchmark: large wins 1.0–12.6% on selected M=2048/N=2 and N=4 shapes,
+  but loses 39–49% on M=6144/10752 at N=2. CPU-reference checks pass.
+- Server: K0 173.37 versus K1 164.20 aggregate tok/s at C4; C1 80.45 versus
+  80.04. All slow batches retained; clocks were variable.
+- Decision: **REJECT** for production. Preserve only as an experimental switch
+  and evidence for a timestamped shader-level follow-up.
+# V5 concurrency service checkpoint
+
+## EXP-V5-QUALITY-CHUNK128 — KEEP production
+
+- Service EOS: 7/7 valid in both arms; 7/7 exact outputs, finish reasons and
+  token counts, including 8886-token retrieval and long generation.
+- Evidence: `work/results/v5-quality-service-eos-r3`.
+
+## EXP-V5-SCHED-CHUNK96 — REJECT
+
+- ITL 89.190 -> 82.677 ms and retention 15.659% -> 16.627%, but TTFT
+  5270.945 -> 6646.088 ms (+26.09%). Remaining pairs cancelled by the declared
+  early-rejection rule.
+
+## EXP-V5-TIMELINE-CHUNK128 — KEEP diagnostic
+
+- 63 mixed 128-prompt/3-decode batches: 79.961 ms median, 87.554 ms p95.
+  Decode-only C3: 11.561 ms median. Mixed GPU work, not scheduler idle time,
+  dominates the 89-ms ITL.
+
+## EXP-V5-SHORTCONV-REBATCH — REJECT hypothesis
+
+- `6144x2048 N=1` is `[6144,n_seq_tokens=1,n_seqs=4]`. Twenty-two calls per
+  graph prove all four batch planes already share each recurrent-layer call.
+
+## EXP-V5-PREFILL8K-PROFILE — KEEP evidence
+
+- Final full N=128 tile: gate/up 23.500 ms (32.79%), down 16.684 ms (23.28%),
+  Flash Attention 16.566 ms (23.11%), short-conv 5.390 ms (7.52%).
+- Fenced profiler throughput is not a service baseline. Gate/up is the next
+  shader target; 8K Flash Attention is now material and remains open.
+
+## EXP-V5-KERNEL-GATEUP-N128-PACKED32 — REJECT
+
+- Changed only the real plugin shader for the medium FP4_FAST x Q8_1 MMQ path:
+  four byte loads became two aligned uint loads plus exact reconstruction.
+- Exact gate/up `10752x2048x128` correctness passed against the CPU reference.
+- Ten logger-free ABBA pairs: 427.475 us control versus 434.800 us candidate;
+  paired regression +1.880%, bootstrap 95% CI [+1.692%, +2.071%].
+- Decision: **REJECT**, no server run. ROCmFPX `d92f6a4` reverts the candidate
+  and reproduces the control library hash exactly. Preserve the evidence, but
+  do not retry this packed-read implementation.
+
+## EXP-V5-KERNEL-PREFILL-WIDE-N128 — REJECT
+
+- Changed the real plugin medium MMQ tile from 64x64 to 32x128, retaining 256
+  threads and all FP4_FAST values. Exact gate/up and down correctness pass.
+- Ten ABBA pairs: gate/up paired -0.125% with 95% CI
+  [-0.257%, +0.194%]; down +0.367% with CI [-0.068%, +0.541%].
+- Decision: **REJECT**, no server run. Neither shape reaches the 0.75% stage
+  threshold, and down trends in the wrong direction. ROCmFPX `a6dd6ad`
+  restores the production tile and exact control library hash.
+
+## EXP-V5-KERNEL-PREFILL-BKSTEP2-GLOBAL — REJECT / selective STAGE
+
+- FP4_FAST `BK_STEP=2` passes exact gate/up and down N128 correctness.
+- Ten ABBA pairs: gate/up improves -2.400% (95% CI
+  [-2.952%, -2.226%]); down regresses +4.712% ([+4.458%, +5.041%]).
+- The profile-weighted global estimate is a 0.310% regression, so the global
+  candidate is **REJECT** without a server run.
+- The gate-only result is a **STAGE hypothesis** with a measured ~0.787% global
+  ceiling. Follow up only with a distinct gate/up pipeline; never route down or
+  decode through BK_STEP=2. Control is restored at ROCmFPX `f7a53ab`.
+
+## EXP-V5-KERNEL-GATE-SELECTIVE-BKSTEP2 — ARCHIVE COMPOSABLE
+
+- Added a separate BK2 SPIR-V and exact shape selector, disabled by default.
+  Logs prove gate/up uses BK2 while down remains on the control pipeline.
+- Four CPU-reference cases pass: gate N120/128/129 and down N128.
+- Ten same-binary ABBA pairs: gate/up -2.601% (95% CI
+  [-2.862%, -2.211%]); down -0.005% ([-0.410%, +0.373%]).
+- Three-run simultaneous 8K C4: 48.084 -> 48.600 output tok/s and 1538.70 ->
+  1555.19 input tok/s (+1.072%); TTFT p95 improves 1.31%. Corresponding
+  generated texts, finish reasons and token counts match 12/12.
+- One 3D+1P guardrail is favorable on retention, ITL and TTFT, but is not a
+  statistical confirmation.
+- Final ten-pair AB/BA Profile B validation: all pairs valid and favorable;
+  aggregate throughput +0.486% median, 95% CI [+0.371%, +0.705%]; TTFT p95
+  -0.693%; E2E p95 -0.485%; exact corresponding outputs 10/10.
+- Decision under the current leverage policy: **ARCHIVE COMPOSABLE**. The
+  +0.486% effect is reproducible, correct and cheap enough to preserve, but it
+  is not promoted alone and receives no further tuning now. ROCmFPX `7838dd2`
+  removes it from the production build; candidate/revert patches, selector and
+  raw paired results are retained for later composition.
+
+## EXP-V5-FA-RDNA2-NO-OCCUPANCY-LIMIT — REJECT
+
+- Selection trace proves the executed path is the plugin scalar integer-dot
+  `flash_attn_f32_f16_aligned` shader with Q8_0/Q8_0 KV, HSK=HSV=64, wave32,
+  128 threads, Br=8/Bc=32/D_split=8 and aligned accesses.
+- Candidate removes the synthetic 26-KiB occupancy allocation only for RDNA2
+  large-N 64-wide prefill; all decode and other shapes stay on control.
+- Three logger-free 8K C4 runs: 1855.28 -> 1852.67 input tok/s median
+  (-0.141%). Timestamp-only common long tiles improve roughly 0.7–1.6% local,
+  giving at most ~0.35% predicted global leverage at the measured 23.11% share.
+- Decision: **REJECT**. Correct but below the 0.75% global threshold and no
+  server win. ROCmFPX `e7ec6c2` restores production.
+
+## EXP-V5-FA-RDNA2-BC64 — REJECT / FA closed for V5
+
+- Added an opt-in `Bc=64` scalar FA tile only for RDNA2, Q8/Q8,
+  HSK=HSV=64, N>=32 and KV>=1024.
+- Added exact CPU-reference and performance coverage for LFM2 C4 8K:
+  nh=8, `nr23=[4,4]`, KV=8192 and N=32. Both control and candidate pass.
+- Logger-free ABBA synchronized operation medians: Bc32 7626.41 us, Bc64
+  8738.13 us, or **+14.58% latency**.
+- Decision: **REJECT immediately**, without a server run. This exceeds the 5%
+  micro-regression cutoff. Patch and raw evidence are archived; ROCmFPX
+  `55dfdf0` restores the exact production backend hash. Flash Attention is
+  closed for V5 absent a new >0.75%-global-leverage hypothesis.
+
+## EXP-V5-KERNEL-DOWN-N4-HYBRID — REJECT
+
+- Hypothesis: isolate the existing four-subgroup hybrid reduction to the exact
+  decode down projection `M=2048,K=10752,N=4`, avoiding the rejected N-only
+  selector. Its measured MMV share is 21.08%, so a substantial local win would
+  have useful global leverage.
+- Selection logging proves `large_hybrid` executed only on the target shape;
+  control and candidate both pass the CPU-reference operation test.
+- Contemporary logger-free ABBA, 20 samples per arm: subgroup median 58.020 us,
+  hybrid median 68.315 us, **+17.744% latency**.
+- Decision: **REJECT immediately**, no server run. The historical -1.02%
+  signal does not reproduce on the current backend/build. Patch, selector proof
+  and all samples are retained; ROCmFPX `6f6a8ce` restores production.
+
+## EXP-V5-SCHED-DECODE-AWARE-IDLE — ARCHIVE COMPOSABLE / not production
+
+- Unlimited idle prefill was stopped after one pair: the first prompt filled
+  the 4096-token batch, harmed fairness and moved 48.684 -> 47.890 tok/s.
+- The bounded candidate uses 512 tokens per request when no decoder is active
+  and the production 128 when one or more decoders are active.
+- Three simultaneous-prefill ABBA pairs, all valid and output-identical:
+  aggregate input/output +0.259% median, observed range +0.099% to +0.390%;
+  E2E p95 -0.259%. TTFT p95 median -0.230%, with one pair at +0.033%.
+- One 3D+1P guardrail is slightly unfavorable: retention -0.475%, ITL p95
+  +0.713%, TTFT +0.321%. This is one pair and consistent with noise, but the
+  candidate does not improve the primary workload.
+- Decision: **ARCHIVE COMPOSABLE / INCONCLUSIVE guardrail**. Preserve the
+  low-cost patch and evidence, but keep fixed chunk128 in production. ROCmFPX
+  `cce47ba` restores the production scheduler.
+
+## EXP-V5-KERNEL-GATE-N4-ARITH-UNPACK — REJECT
+
+- Added a separate opt-in DMMV pipeline for exact gate/up decode
+  `10752x2048x4`; selection logs prove the normal one-wave reduction plus the
+  arithmetic unpack pipeline executed.
+- The candidate preserves every FP4_FAST code and scale. Both arms pass the
+  exact CPU-reference operation test.
+- Ten ABBA pairs: LUT median 65.075 us; arithmetic median 94.145 us;
+  **+44.672% latency**.
+- Decision: **REJECT**, without server testing. The attempted LDS-to-ALU trade
+  is decisively unfavorable on gfx1032. Patch, selector proof, correctness and
+  all raw samples are retained under
+  `work/results/v5-kernel-gate-n4-arith-unpack/`.
+
+## EXP-V5-KERNEL-GATE-N4-DUALACC — REJECT
+
+- Added an exact opt-in gate/up N=4 shader with two alternating accumulator
+  banks. Selection logging proves it kept the one-wave subgroup reduction and
+  executed only the target pipeline.
+- Control and candidate pass CPU-reference correctness.
+- Ten ABBA pairs: 64.680 us single-bank versus 71.065 us dual-bank,
+  **+9.872% latency**.
+- Decision: **REJECT**, without server testing. The extra live accumulators and
+  final merge cost more than the removed dependency pressure. Patch and raw
+  evidence are retained in `patches/` and
+  `work/results/v5-kernel-gate-n4-dualacc/`.
+- Production was rebuilt after the revert at ROCmFPX `7c4b5c0`; the backend
+  SHA-256 is `567bead1147b1215f7f0c968fabef1a0ca91e92596d7a68684e6dfac6ef641d0`.
+  An exact gate/up N=4 CPU-reference smoke test passes with all experimental
+  selector variables unset.
+
+## EXP-V6-ATREX-ADAPTER — KEEP tooling
+
+- Audited official Atrex at `d83b01a`; its supervisor/ABBA/memory concepts are
+  reusable, while its evaluator is coupled to `kernel.py`/Triton/FlyDSL.
+- Added a bounded exact-plugin adapter with reversible allowlisted patches,
+  taboo memory, hard correctness, route proof, artifact hashes, ABBA and
+  restoration checks.
+- A dry run exposed a stale-plugin flaw. The records are retained INVALID; the
+  fixed evaluator builds `ggml-rocmfpx-vulkan` and rejects identical patched
+  hashes. Decision: **KEEP tooling**.
+
+## EXP-V6-GATEUP-BK-SEARCH — selective BK3 STAGE
+
+- Automated focal search: BK1 +4.900%, BK3 -3.891%, BK5 +18.052%, BK8
+  +84.237% on `10752x2048x128`.
+- BK3 wins 3.85--4.29% at gate/up N=120/128/129 but regresses down N128 by
+  2.122%. Global BK3 is **REJECT**.
+- A gate/up-only BK3 pipeline improves 428.975 -> 412.940 us over five ABBA
+  pairs: -3.859%, 95% [-3.993%, -3.521%], with correctness and route proof.
+- Three valid Profile-B pairs all favor it: input/output +1.367% median, TTFT
+  p95 -1.240%, E2E p95 -1.347%, identical outputs 3/3.
+- Decision: **STAGE** pending ten pairs plus 3D+1P/resident/quality guardrails.
+  Production was restored to backend `40f6b9c...b25b40`.
+
+## EXP-V7-GATEUP-SELECTIVE-BK3 — KEEP production
+
+- Ten paired Profile-B runs: +1.1641% throughput, paired bootstrap 95% CI
+  [+0.8093%, +1.3767%], exact outputs 10/10.
+- Ten paired 3D+1P runs: retention +1.5442%, resident ITL p95 -1.4472% and
+  new-user TTFT -1.6769%; fairness remained effectively unchanged.
+- Resident C4 8K stayed above 260 tok/s in all candidate runs and did not route
+  through BK3. The paired median was -0.1467%, inside uncertainty.
+- Service-EOS quality passed 7/7 exact comparisons. Exact operation correctness
+  and local speedups were confirmed throughout N=65/96/112/120/126/127/128;
+  observed service N values were 112/120/126/128.
+- Decision: **KEEP production**. ROCmFPX `283a889`, backend
+  `5b3b36d...3edc763`. Same-binary BK4 control remains available with
+  `GGML_VK_ROCMFP4_FAST_MMQ_BK3_GATEUP=0`.
+
+## EXP-V7-GATEUP-BK3-UNROLL — REJECT_MICRO
+
+- Same-binary opt-in candidate, with BK3 production as control; exact
+  correctness and selector proof passed.
+- Five ABBA pairs: 412.735 -> 411.595 us, -0.159%, bootstrap 95% CI
+  [-0.652%, +0.107%].
+- Decision: **REJECT_MICRO**. The explicit directive adds no useful value over
+  the compiler's BK3 code generation; no server benchmark was run.
+
+## EXP-V7-DOWN-BM32-BN64 — REJECT_MICRO
+
+- Parametric evaluator pinned `M=2048,K=10752,N=128`; the candidate kept
+  BN64/BK32/BK_STEP4 but used BM32, WMITER1 and two wave32s.
+- Correctness and exact route proof passed. Five ABBA pairs measured
+  510.905 -> 621.560 us: +21.802%, 95% CI [+20.420%, +23.029%].
+- Decision: **REJECT_MICRO**. Halving the A row tile destroys useful reuse;
+  no server benchmark was run.
+
+## EXP-V8-DOWN-STRUCTURAL-SEARCH — ARCHIVE COMPOSABLE / converged
+
+- Added schema-2 evidence levels: only formal PASS results can update an
+  incumbent or convergence count. A campaign baseline mismatch now fails
+  closed. The exact down problem stayed pinned to `2048x10752x128`.
+- Captured safe RADV/ACO static evidence: wave32, workgroup 128, 18,960 bytes
+  shared memory and 2,754 static machine instructions. Occupancy/spills remain
+  unavailable and are not inferred.
+- Evaluated 11 formal candidates with correctness, route proof and five-pair
+  ABBA. `B-first` and stride hoisting generated identical SPIR-V and were
+  rejected. Standalone no-tail was -0.945%; Q8 group-of-four address reuse was
+  -1.793%.
+- Best: exact-shape no-tail + no-split + no-output-bounds, 512.425 -> 501.785
+  us median, **-2.1607%**, bootstrap 95% CI **[-2.3803%, -1.1936%]**.
+  SPIR-V instructions fell 16.40%.
+- The best predicted global ceiling is about 0.50% at the 23.28% down share,
+  below the predeclared 0.75% server gate. No service benchmark was run and no
+  candidate was promoted. Decision: **ARCHIVE COMPOSABLE; down structural
+  simplification family converged for this round**.
+- Search-bank source checkpoint: ROCmFPX `063446d`; same-binary default remains
+  production BK3 plus control down. Backend SHA-256:
+  `ec4f79bc5545bbecded47b05a2b9bde6fd690c005ca3ef5b7181b0e0a5ff8540`.
+
+## EXP-V8-GATEUP-BK3-EXACT-SHAPE — ARCHIVE COMPOSABLE
+
+- Evaluated five opt-in exact-shape/address-control candidates against
+  production selective BK3 at `10752x2048x128`; all passed CPU-reference
+  correctness, exact route proof and five-pair logger-free ABBA.
+- No-split crossed zero (-0.324%). Compile-time K=2048 also crossed zero
+  (-0.143%). No-output-bounds was -0.734% with favorable CI.
+- Best: exact M/N/K specialization, 412.820 -> 407.885 us median,
+  **-1.3163%**, bootstrap 95% CI **[-1.4474%, -0.4203%]**. SPIR-V instruction
+  count fell 3.64%, principally address chains, integer arithmetic, loads and
+  output-control branches.
+- At the 32.79% gate/up share the estimated global ceiling is only ~0.43%, below
+  the 0.75% server gate. No service benchmark was run. Decision: **ARCHIVE
+  COMPOSABLE; exact-shape gate control simplification is converged for V8**.
+- Search-bank checkpoint: ROCmFPX `91655b2`; backend SHA-256
+  `3fd66d51fba2d2f1e4ae0e2957d119a05df96ec7022db5364bb6907652bd68dd`.
+  All candidate selectors default off; production remains selective BK3.
+- Final default-route check selected `matmul_rocmfp4_fast_q8_1_bk3_m` and passed
+  exact CPU-reference correctness. The repository harness finished 26/26 tests.
+
+## EXP-V9-MIXED-GRAPH-PROFILE — KEEP evidence
+
+- Contemporary uninstrumented 3D+1P: 236.261 tok/s resident C3, 38.542 tok/s
+  during prefill, 16.313% retention, 88.471 ms ITL p95 and 5137.25 ms TTFT.
+- Sixty-three full 128-prompt + 3-decode batches measured 78.257 ms median and
+  86.479 ms p95; decode-only C3 measured 11.572 ms median.
+- A separate invasive operation profile proves each mixed batch has a decode
+  graph (16.51% of profiled time) and a prefill graph (83.49%). Within prefill,
+  gate/up is 35.34% and down 26.64%.
+- Decision: **KEEP evidence**. Profiler wall time is not a service metric.
+
+## EXP-V9-GATEUP-BK3-BPAIR — REJECT_MICRO
+
+- Opt-in exact pipeline prefetched both TN=2 Q8 columns into separate caches.
+  CPU-reference correctness and route proof passed.
+- Five ABBA pairs: 412.085 -> 413.485 us, +0.767% latency, bootstrap 95% CI
+  [-0.144%, +0.825%].
+- SPIR-V grew 4.15% in instructions and added 18 access chains, nine loads and
+  nine stores. The attempted ILP materialized extra traffic.
+- Decision: **REJECT_MICRO**, no server run.
+
+## EXP-V9-SCHED-TEMPORAL-EWMA65 — REJECT production
+
+- Opt-in same-binary scheduler estimates mixed-batch ms/prompt-token and clamps
+  chunks to 64--128; default remains disabled.
+- Three paired runs: retention +16.61%, ITL p95 -14.63%, but new-user TTFT
+  +47.97% (5150 -> 7583 ms).
+- Diagnostic chunks 64/65 took ~59.45 ms and 66/67 ~69--71 ms, exposing a
+  nonlinear shape cliff and weakness of the ratio estimator.
+- EWMA68 was stopped after one pair: ITL -13.12%, TTFT +44.64%.
+- Decision: **REJECT production**. The policy fails both <=70 ms ITL and
+  <=5.5 s TTFT. Fixed chunk128 remains KEEP.
+
+## EXP-V10-GATEUP-PADDED-LAYOUT — ARCHIVE COMPOSABLE
+
+- Reversible device-only expansion changed selected gate/up FP4_FAST blocks
+  from 17 to 20 bytes: four aligned code words and one aligned scale word.
+- Exact CPU-reference and route proof passed. Five ABBA pairs measured
+  412.250 -> 407.230 us: **-1.227%**, bootstrap 95% CI
+  **[-1.906%, -0.386%]**.
+- SPIR-V instructions fell 2.80%, but the predicted mixed-batch leverage is
+  only ~0.36%; selected tensor storage rises 17.65% and runtime conversion is
+  substantial. Decision: **ARCHIVE COMPOSABLE**, no server run.
+
+## EXP-V10-GATEUP-GLOBAL-PLANAR — REJECT_MICRO
+
+- Reordered unchanged codes into one aligned plane and unchanged scales into a
+  second plane at exactly 17 bytes/block.
+- Correctness and route proof passed, but five pairs measured 412.685 ->
+  588.300 us: **+43.150%**, CI **[+40.833%, +43.873%]**.
+- Decision: **REJECT_MICRO**. Scale/code locality is critical; do not repeat a
+  remote global scale plane.
+
+## EXP-V10-GATEUP-GROUP4-LAYOUT — REJECT_MICRO
+
+- Grouped four blocks as 64 aligned code bytes plus one adjacent four-scale
+  word, preserving exactly 17 bytes/block and restoring local scales.
+- Correctness and route proof passed. Five pairs measured 412.715 -> 428.005
+  us: **+3.851%**, CI **[+3.308%, +4.473%]**.
+- Decision: **REJECT_MICRO**. The tested aligned/prepacked layout family is
+  closed; no group-size sweep is justified.
+
+## EXP-V10-COMPOSE-V8-EXACT-GATE-DOWN — ARCHIVE COMPOSABLE
+
+- Composed the independent archived gate/up exact-shape and down exact-shape
+  selectors in the same binary; production BK3 remained the base gate kernel.
+- Three paired simultaneous-8K C4 runs: aggregate input/output throughput
+  **+0.549%**, bootstrap range **[+0.402%, +0.688%]**; TTFT p95 **-0.581%** and
+  E2E p95 **-0.549%**.
+- Output hashes were exact in 2/3 pairs; pair 1 diverged for one of four
+  requests. The gain is below the 0.75% promotion threshold.
+- Decision: **ARCHIVE COMPOSABLE / no promotion**. No 3D+1P or quality
+  expansion was run.
+# V11: format choice at the prefill-dominated shape
+
+## Summary
+
+Plain `Q4_0` beats `ROCmFP4_FAST` on the mixed 8K product workload that V4--V10
+optimised for. Three paired service runs give **new-user TTFT −6.98%**,
+**resident ITL p95 −7.16%** and **decode retention +11.61%**, paid for with
+**−3.96% resident decode throughput**. Every interval excludes zero.
+
+The format had been screened once, at 128/64 and 512/128, where decode
+dominates and FP4_FAST wins. Nobody re-screened it after the campaign changed
+its objective to an 8K prefill-dominated workload.
+
+## Why this was worth re-opening
+
+The campaign's format screen was run at shapes where output tokens dominate:
+128/64 has 128 input tokens against 64 output tokens, so decode is roughly 89%
+of the work and the decode ranking decides the winner. V9 then established that
+in the 8K mixed workload the **prefill graph is 83.49% of the mixed pair**, the
+opposite weighting. On a shape where prefill dominates, the format ranking can
+invert, because the prefill and decode kernels do not share a bottleneck.
+
+V2 already recorded the crossover at service level without acting on it: its
+workload table shows upstream Q4_0 winning 2048/256 (101.66 against 99.98 tok/s)
+and the exploratory 7680/512 (92.40 against 88.58), while FP4_FAST won the short
+shapes. `RESULTS.md` lists the ROCmFPX Q5--Q8 family as "inventoried, without
+speed qualification".
+
+## Step 1: direct screen
+
+`work/scripts/screen_format_prefill.sh`, device `ROCmFPXVulkan0`, three
+repetitions, same build for every format. Raw output in
+`work/results/format-screen-v11-prefill/`.
+
+| Model | Bytes | bpw | pp128 | pp512 | pp2048 | tg128 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| ROCmFP4_FAST | 1.34 GiB | 4.25 | 2271.27 | 2459.04 | 2389.32 | **132.74** |
+| Q8_0 | 2.67 GiB | 8.50 | 1907.07 | 2205.66 | 2174.76 | 76.03 |
+| Q4_0 | 1.48 GiB | 4.70 | **2621.13** | **2738.75** | **2668.87** | 123.87 |
+
+Two results, one of which refutes the hypothesis that motivated the screen:
+
+- **The no-unpack hypothesis is wrong.** Q8_0 removes FP4 code/scale
+  reconstruction from the inner loop, doubles the weight bytes, and comes out
+  16.0% *slower* at pp128 and 42.7% slower at tg128. The FP4 path is not
+  unpack-bound in a way more bits can buy back; extra bytes cost more than the
+  unpack arithmetic they remove.
+- **The format ranking inverts with shape.** Q4_0 is 15.4% faster than
+  FP4_FAST at pp128 and 11.7% faster at pp2048, while FP4_FAST keeps a 7.2%
+  decode advantage. That is exactly the trade V9's 83.49% prefill share says
+  should matter.
+
+## Step 2: paired service A/B at the product workload
+
+`work/scripts/run_format_interference_abba.sh`, three alternating pairs, both
+arms on the same binary, same flags, same KV type, differing only in the weight
+file. Raw evidence in `work/results/v11-format-abba-8k-mixed/`.
+
+| Metric | FP4_FAST (control) | Q4_0 (candidate) | Paired delta | 95% CI |
+| --- | ---: | ---: | ---: | --- |
+| New-user TTFT | 5197.42 ms | 4847.29 ms | **−6.982%** | [−7.056, −6.410] |
+| Resident ITL p95 during prefill | 88.53 ms | 82.97 ms | **−7.164%** | [−8.548, −3.799] |
+| Decode retention | 15.96% | 17.82% | **+11.612%** | [+11.320, +12.138] |
+| Resident aggregate (no prefill) | 238.94 tok/s | 229.48 tok/s | −3.96% | — |
+
+Per pair, the direction never changed:
+
+| Pair | Order | Retention delta | ITL p95 delta | TTFT delta |
+| ---: | --- | ---: | ---: | ---: |
+| 0 | control → candidate | +11.32% | −3.80% | −6.41% |
+| 1 | candidate → control | +11.61% | −7.16% | −6.98% |
+| 2 | control → candidate | +12.14% | −8.55% | −7.06% |
+
+All six arms report `VALID`; no arm was discarded.
+
+### Control validation
+
+The control arm reproduces the V9 published production numbers, which is what
+makes the deltas trustworthy:
+
+| Metric | V9 published | V11 control |
+| --- | ---: | ---: |
+| Resident aggregate, C3 | 236.26 tok/s | 238.94 tok/s |
+| ITL p95 during prefill | 88.47 ms | 88.53 ms |
+| Decode retention | 16.31% | 15.96% |
+| New-user TTFT | 5137.25 ms | 5197.42 ms |
+
+## What this does and does not achieve
+
+It does **not** reach the interactivity target. TTFT now clears its guardrail
+comfortably (4847 ms against 5500 ms), but resident ITL p95 is 82.97 ms against
+the ≤70 ms goal, so the target is still missed by 18.5%. One 128-token chunk
+plus one decode step still costs more than 70 ms on this GPU.
+
+It does move the Pareto front. Against the FP4_FAST incumbent, Q4_0 is better on
+TTFT, better on resident ITL, better on retention, and worse only on idle
+resident throughput. It is also a *higher* bit-width format (4.70 bpw against
+4.25), and Q4_0 is the campaign's standard baseline whose quality smoke tests
+pass, whereas FP4_FAST has never had a formal quality evaluation. So the switch
+trades idle decode throughput for interactive latency without introducing a new
+quality exposure.
+
+Both arms used the `LLAMA_SERVER_PREFILL_CHUNK_TOKENS=128` fixed chunk. Nothing
+in this experiment changes the scheduler, the runtime, the gate/up BK3
+selection, drivers, clocks or power settings.
+
+## Decision
+
+**KEEP as a candidate profile, split by objective.** The two formats win
+different workloads and there is still no universal winner:
+
+- `production-interactive`: Q4_0, KV q8, `b4096/ub128`, fixed chunk128 — best
+  TTFT, best ITL, best retention at 8K with four slots;
+- `production-throughput`: FP4_FAST, KV q8, `b512/ub128`, compact slots — best
+  idle resident throughput and the winner at the short 128/64 shape.
+
+The 128/64 primary metric still favours FP4_FAST end to end (see
+`PRIMARY_METRIC_V11.md`), so this is a workload-dependent split, not a
+replacement of the incumbent everywhere.
+
+## Next exact actions
+
+1. Re-run the 2048/256 and 7680/512 service shapes with both formats; V2's
+   table suggests Q4_0 already won there and the mixed-8K result should be
+   consistent with it.
+2. Turn the format screen into a small matrix across every shape already in
+   `BASELINES.json`, so the format decision follows the shape decision instead
+   of being made once at one shape.
+3. Do not re-run the FP4 block-layout family: V10 closed it, and this result
+   explains why it could never pay. The remaining FP4 headroom is not in the
+   block layout.
