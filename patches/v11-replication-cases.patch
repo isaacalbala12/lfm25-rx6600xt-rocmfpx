@@ -1,0 +1,31 @@
+diff --git a/tests/test-backend-ops.cpp b/tests/test-backend-ops.cpp
+index e3061f2..d7b3198 100644
+--- a/tests/test-backend-ops.cpp
++++ b/tests/test-backend-ops.cpp
+@@ -8577,6 +8577,26 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
+         test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n, 10752, {1, 1}, {1, 1}));
+     }
+ 
++    // V11 replication experiment, from the external review: the same GEMM
++    // replicated along the batch dimension with M, N, K, tile and shader fixed.
++    //   bs={1,1}, nr={1,R} -> A shared across replicas, B independent
++    //   bs={1,R}, nr={1,1} -> A and B both independent
++    // Both do R times the work; they differ only in whether the weight matrix is
++    // read from one set of addresses or from R separate ones. Content is
++    // identical across replicas in both, so the only variable is addressing.
++    // The review's third configuration, both operands shared, is not
++    // expressible as a ggml op: the output batch would have no distinct input.
++    {
++        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32, 10752, 128,  2048, {1, 1}, {1, 1}));
++        test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, 128, 10752, {1, 1}, {1, 1}));
++        for (int64_t r : {2, 3, 6}) {
++            test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32, 10752, 128,  2048, {1, 1}, {1, r}));
++            test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, 128, 10752, {1, 1}, {1, r}));
++            test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32, 10752, 128,  2048, {1, r}, {1, 1}));
++            test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, 128, 10752, {1, r}, {1, 1}));
++        }
++    }
++
+     // unary ops
+     for (ggml_type type : {GGML_TYPE_F16, GGML_TYPE_F32}) {
+         for (int v : {0, 1}) {
