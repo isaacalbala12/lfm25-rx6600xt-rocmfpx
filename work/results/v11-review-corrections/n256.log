@@ -1,0 +1,83 @@
+rocmfpx-plugin: info: registered 1 ROCmFPX Vulkan device(s)
+rocmfpx-plugin: info: loaded rocmfpx-vulkan-charlie 0.1.0 from /home/isaac/Documents/Codex/2026-09-16/recalcar-vas-a-estar-en-paralelo-2/work/builds/rocmfpx-vulkan-gfx1032-v3-instrumented/bin/rocmfpx-vulkan-plugin.so
+----------------
+Vulkan Timings:
+ADD: 58 x 59.656 us = 3460.08 us
+CONCAT: 22 x 48.86 us = 1074.92 us
+CPY: 22 x 27.03 us = 594.68 us
+FLASH_ATTN_EXT dst(64,32,16,1),  q(64,16,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,16,1,1): 8 x 54.51 us = 436.08 us (615.565 GFLOPS/s)
+GET_ROWS: 22 x 4.521 us = 99.48 us
+GLU: 29 x 262.033 us = 7598.96 us
+MUL: 44 x 58.64 us = 2580.2 us
+MUL_MAT f32 m=64 n=128 k=64: 16 x 25.612 us = 409.8 us (40.6202 GFLOPS/s)
+MUL_MAT f32 m=64 n=512 k=64: 16 x 50.417 us = 806.68 us (82.5415 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=10752 n=16 k=2048: 58 x 374.405 us = 21715.5 us (1881.57 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=2048 n=16 k=10752: 29 x 864.586 us = 25073 us (814.968 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=2048 n=16 k=2048: 38 x 154.808 us = 5882.72 us (866.781 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=512 n=16 k=2048: 16 x 85.155 us = 1362.48 us (393.943 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=6144 n=16 k=2048: 22 x 358.193 us = 7880.25 us (1123.85 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,16,1,1): 59 x 44.537 us = 2627.72 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,16,1): 8 x 51.005 us = 408.04 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,8,16,1): 8 x 15.125 us = 121 us
+SCALE: 22 x 5.787 us = 127.32 us
+SET_ROWS: 16 x 9.817 us = 157.08 us
+SSM_CONV: 22 x 39.325 us = 865.16 us
+Total time: 83281.2 us.
+
+llama_batched_bench: n_kv_max = 4096, n_batch = 512, n_ubatch = 256, flash_attn = 1, is_pp_shared = 0, is_tg_separate = 0, n_gpu_layers = 99, n_threads = 4, n_threads_batch = 4
+
+|    PP |     TG |    B |   N_KV |   T_PP s | S_PP t/s |   T_TG s | S_TG t/s |      T s |    S t/s |
+|-------|--------|------|--------|----------|----------|----------|----------|----------|----------|
+----------------
+Vulkan Timings:
+ADD: 59 x 693.561 us = 40920.1 us
+CONCAT: 22 x 528.501 us = 11627 us
+CPY: 22 x 45.209 us = 994.6 us
+FLASH_ATTN_EXT dst(64,32,256,1),  q(64,256,32,1),  k(64,256,8,1),  v(64,256,8,1),  m(256,256,1,1): 8 x 591.71 us = 4733.68 us (907.321 GFLOPS/s)
+GET_ROWS: 24 x 4.65 us = 111.6 us
+GLU: 30 x 3202.15 us = 96064.6 us
+MUL: 44 x 698.087 us = 30715.8 us
+MUL_MAT f32 m=64 n=2048 k=64: 16 x 166.665 us = 2666.64 us (99.8779 GFLOPS/s)
+MUL_MAT f32 m=64 n=8192 k=64: 16 x 703.277 us = 11252.4 us (94.6775 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=10752 n=256 k=2048: 58 x 2157.93 us = 125160 us (5223.31 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=2048 n=256 k=10752: 29 x 3013.3 us = 87385.8 us (3741.33 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=2048 n=256 k=2048: 38 x 723.831 us = 27505.6 us (2966.1 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=512 n=256 k=2048: 16 x 157.075 us = 2513.2 us (3417.09 GFLOPS/s)
+MUL_MAT q4_0_rocmfp4_fast m=6144 n=256 k=2048: 22 x 1558.61 us = 34289.5 us (4132.44 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=10752: 1 x 101.68 us = 101.68 us (433.105 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048: 2 x 92.58 us = 185.16 us (475.583 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=128000 n=1 k=2048: 1 x 1036.28 us = 1036.28 us (505.809 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,1,1,1): 2 x 10.8 us = 21.6 us
+RMS_NORM_MUL RMS_NORM(2048,256,1,1): 59 x 489.212 us = 28863.5 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,256,1): 8 x 425.445 us = 3403.56 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,8,256,1): 8 x 156.09 us = 1248.72 us
+SCALE: 22 x 5.121 us = 112.68 us
+SET_ROWS: 16 x 78.515 us = 1256.24 us
+SSM_CONV: 22 x 485.943 us = 10690.8 us
+Total time: 522861 us.
+----------------
+Vulkan Timings:
+ADD: 22 x 6.327 us = 139.2 us
+CONCAT: 22 x 9.785 us = 215.28 us
+CPY: 22 x 7.7 us = 169.4 us
+FLASH_ATTN_EXT dst(64,32,1,1),  q(64,1,32,1),  k(64,512,8,1),  v(64,512,8,1),  m(512,1,1,1): 8 x 129.287 us = 1034.3 us (32.4417 GFLOPS/s)
+GET_ROWS: 24 x 4.826 us = 115.84 us
+GLU: 30 x 20.253 us = 607.6 us
+MUL: 44 x 5.548 us = 244.12 us
+MUL_MAT f32 m=64 n=32 k=64: 16 x 9.817 us = 157.08 us (26.4931 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=10752: 30 x 86.548 us = 2596.44 us (508.829 GFLOPS/s)
+MUL_MAT_ADD MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=2048: 8 x 18.135 us = 145.08 us (462.452 GFLOPS/s)
+MUL_MAT_VEC f32 m=64 n=8 k=64: 16 x 8.225 us = 131.6 us (7.90565 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=10752 n=1 k=2048: 60 x 59.728 us = 3583.68 us (737.166 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=128000 n=1 k=2048: 1 x 559.4 us = 559.4 us (937.004 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=2048 n=1 k=2048: 30 x 17.166 us = 515 us (488.537 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=512 n=1 k=2048: 16 x 5.232 us = 83.72 us (400.696 GFLOPS/s)
+MUL_MAT_VEC q4_0_rocmfp4_fast m=6144 n=1 k=2048: 22 x 39.061 us = 859.36 us (644.099 GFLOPS/s)
+RMS_NORM_MUL RMS_NORM(2048,1,1,1): 61 x 6.851 us = 417.96 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,32,1,1): 8 x 6.43 us = 51.44 us
+RMS_NORM_MUL_ROPE RMS_NORM(64,8,1,1): 8 x 5.95 us = 47.6 us
+SET_ROWS: 16 x 3.925 us = 62.8 us
+SSM_CONV: 22 x 5.394 us = 118.68 us
+Total time: 11855.6 us.
+|   256 |      1 |    1 |    257 |    0.529 |   484.30 |    0.015 |    65.70 |    0.544 |   472.58 |
+

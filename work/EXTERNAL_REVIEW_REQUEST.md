@@ -275,9 +275,10 @@ más allá de lo ya autorizado, y no se usan contadores PMC.
    concreto lo explica y cómo se comprobaría?
 
 2. **¿Qué tasa real tiene `V_DOT4_I32_I8` en gfx1032** y cómo se mide de forma
-   fiable? Nuestro mejor kernel hace 7,2 TMAC/s, que es el 74% de 21 TOPS o el
-   18% de 42 TOPS. Saber cuál de los dos es cambia por completo si el prefill
-   tiene recorrido o no.
+   fiable? Nuestro mejor kernel hace 7,2 TMAC/s = 14,4 TOPS, que es el **34% de
+   un techo de 42,4 TOPS** a tasa completa o el **68% de 21,2 TOPS** a media
+   tasa. Saber cuál de los dos es cambia por completo si el prefill tiene
+   recorrido: 3x de margen o casi ninguno.
 
 3. **Patologías conocidas de RDNA2 en bucles FP4/int8**: conflictos de banco en
    LDS, wave32 contra wave64, algo específico de gfx1032 que no aparezca en
