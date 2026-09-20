@@ -50,12 +50,12 @@ attention has 127 queries against a context that varies from 256 to 8192 across
 the 64 entries, because each chunk sees a longer prefix than the last. We
 attributed the decode context to the prefill.
 
-Redone properly, the prefill attention moves 139,5 GMAC in 9.074 ms, which is
-**≈15,4 TMAC/s** — the *highest* rate of any family in the graph, not the
-lowest. The premise of question 5 ("attention measured at 56% of the matmul
-efficiency") is therefore wrong and the question is largely dissolved. Also, as
-the reviewer notes, comparing attention against the int8 ceiling is invalid
-anyway: it mixes quantized QK with fp32 PV and softmax.
+**The first correction of this figure was also wrong.** See
+`REVIEW_CORRECTIONS_2_V11.md`: summing the per-chunk MACs across the whole trace
+double-counts by a factor of eight. The correct rate is **1,91 TMAC/s**, so
+attention runs at 27% of the matmul rate and question 5 stands. Comparing it
+against the int8 ceiling is still invalid, as the reviewer notes, because it
+mixes quantized QK with fp32 PV and softmax.
 
 ### 4. The "gap narrows as n grows" curve mixes tile geometries
 
