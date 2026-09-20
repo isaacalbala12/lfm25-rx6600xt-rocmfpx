@@ -46,6 +46,32 @@ decode step, about 9.2 ms, is a fixed cost per batch, and the prefill work
 itself is only 6% cheaper per token at the larger size. **KEEP 128**, which
 remains the only setting oriented at the interactivity objective.
 
+## The ubatch cliff is real, and it is not the clock
+
+The campaign rejected `ubatch=512` after seeing C=1 at 68.03 and C=4 at 110.14
+tok/s together with an oscillating memory clock, and this note's first version
+hypothesised that the cliff *was* the clock state. Re-testing under the fixed
+power profile refutes that.
+
+Three runs per configuration, C=4, 128/64, 10 repetitions, interleaved:
+
+| Batch / ubatch | C=4 tok/s | TTFT p50 | E2E p95 |
+| --- | --- | ---: | ---: |
+| 512 / 128 | 249.16, 251.43, 253.72 | 320-344 ms | 1022-1066 ms |
+| 512 / 256 | 111.82, 111.79, **205.05** | 441-1151 ms | 1286-2324 ms |
+| 1024 / 512 | 114.96, 114.48, 114.35 | ~1090 ms | ~2260 ms |
+
+Five of six runs at `ubatch >= 256` collapse, and the signature differs from the
+clock state in a way that rules the clock out: the clock scales every metric by
+about 1.56x uniformly, while this costs 2.24x of throughput and **3.6x of
+TTFT**, so it damages prefill far more than decode. One `ubatch=256` run landed
+at an intermediate 205 tok/s, so the effect has a threshold rather than being
+cleanly binary.
+
+**Decision: KEEP `ubatch=128`**, and record that the campaign's original
+observation was correct while its stated cause was not. This is also the one
+place where an earlier V11 claim has been withdrawn rather than extended.
+
 ## KV cache dtype: q4_0 rejected
 
 | KV | TTFT | ITL p95 | Resident decode |

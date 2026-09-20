@@ -74,12 +74,17 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
 - **The host GPU is bimodal, and this invalidates unpaired measurements.** The
   RX 6600 XT randomly enters a state where MEMCLK oscillates between 1000 MHz
   and 541 MHz and every workload runs about 40% slower. It happened in 5 of 12
-  interleaved runs of identical commands. The campaign's `ubatch=512` "cliff"
-  was this state, and V3's 229.27-versus-233.99 discrepancy is consistent with
-  it. Every measurement from V11 onward states the mode it ran in; see
-  `work/GPU_BIMODAL_V11.md`. Pinning the power profile would remove the variance
-  for both benchmarks and the server, and has not been done because it is a
-  system power decision.
+  interleaved runs of identical commands. Every measurement from V11 onward
+  states the mode it ran in; see `work/GPU_BIMODAL_V11.md`. Pinning the power
+  profile cut the rate from 5 in 12 to 1 in 10; the remaining step is a
+  system-wide power decision and has not been taken.
+- **`ubatch=128` is load-bearing, and the cliff is not the clock.** Re-tested
+  under the fixed power profile: `ubatch=256` gives 111.8 tok/s at C=4 and
+  `ubatch=512` gives 114.4, against 251 at `ubatch=128`, in five runs out of
+  six. The signature is distinct from the clock state — 2.24x of throughput and
+  3.6x of TTFT, where the clock costs a uniform 1.56x. The campaign's original
+  `ubatch=512` observation was right; its correlation with the memory clock was
+  a coincidence. See `work/ROUND2_V11.md`.
 - **Four-slot decode was re-reading the weight matrix once per sequence.**
   The short-conv and SSM projections take a `(k, 1, 4)` input, so the backend
   dispatched them with `grid_y = 4` and each workgroup walked the whole weight

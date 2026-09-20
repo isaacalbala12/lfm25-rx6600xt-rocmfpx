@@ -48,10 +48,14 @@ production run that lands in the slow state serves at 60% of its capability.
 
 - `RESULTS.md` records a `ubatch=512` cliff in which C=1 fell to 68.03 and C=4
   to 110.14 tok/s and "the memory clock alternated between 541 and 1000 MHz",
-  while direct `llama-bench` did not reproduce it. That is this state. It was
-  attributed to `ubatch=512` and worked around with `ubatch=128`; the real
-  cause is that the GPU can enter it at any time, as the measurements above
-  show at `ubatch=128`.
+  while direct `llama-bench` did not reproduce it. **The clock correlation in
+  that record is a coincidence, not the cause.** `ROUND2_V11.md` re-tested the
+  cliff under the fixed power profile and it reproduces: at `ubatch=256` the
+  C=4 metric falls to 111.8 tok/s and at `ubatch=512` to 114.4, against 251 at
+  `ubatch=128`, five runs out of six. The signatures differ — the clock state
+  scales everything by 1.56x, the ubatch cliff costs 2.24x of throughput and
+  3.6x of TTFT — so they are two separate phenomena that happened to be observed
+  together. The campaign's workaround was right for the wrong reason.
 - V3 measured 229.27 tok/s where the published series said 233.99 and recorded
   the difference as an unexplained artifact-state mismatch. A low-state run is a
   plausible explanation for a swing of that size.
