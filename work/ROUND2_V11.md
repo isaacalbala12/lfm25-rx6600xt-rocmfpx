@@ -46,31 +46,33 @@ decode step, about 9.2 ms, is a fixed cost per batch, and the prefill work
 itself is only 6% cheaper per token at the larger size. **KEEP 128**, which
 remains the only setting oriented at the interactivity objective.
 
-## Harness reliability: one arm in five produces nothing
+## A withdrawn claim about harness reliability
 
-Across the paired interference runs made for V11, four arms out of eighteen
-produced no `n3.json`. The failure is not a GPU error: the arm's `server.log`
-stops mid-priming, `n3.stdout.json` is empty, and the runner exits successfully,
-so the summariser reports `pair-NN: incomplete` and drops the whole pair.
+An earlier version of this note reported that "four arms in eighteen produce no
+`n3.json`" and that the harness was silently dropping one pair in five. **That
+was wrong and is withdrawn.** The arms were still running when the result
+directory was read; every arm produces its file. Both format A/B runs summarise
+to two valid pairs with no invalid entries.
 
-| Run set | Valid pairs | Dropped |
-| --- | ---: | ---: |
-| `v11-format-abba-8k-mixed` | 3/3 | 0 |
-| `v11-decode-fold-8k-abba` | 2/2 | 0 |
-| `v11-format-abba-postfold` | 1/2 | 1 |
-| `v11-format-abba-stableclock` | 1/2 | 1 |
+The mistake is worth recording because it is the same failure mode the campaign
+kept hitting: reading a partial state as a final one. The rule it suggests is
+that a paired run is only complete when the runner's own final summary exists,
+not when the last arm's directory appears.
 
-The client's own request timeout is 1200 s and the arms die after about 18 s of
-server uptime, so a timeout is not the mechanism. Whatever it is, it costs
-roughly one pair in five, which is why several conclusions in this repository
-rest on one or two valid pairs rather than the three or ten they were designed
-for.
+## The 8K format finding, measured four times
 
-**Consequence for the record:** the paired results here are unbiased but
-underpowered. The format finding is the exception, because it has now been
-measured four times independently with consistent deltas (−6.98/−7.16,
-−6.89/−6.29, −6.82/−5.68 percent of TTFT/ITL), which is why it is stated with
-confidence despite the small pair counts.
+With both runs summarised correctly, Q4_0 against ROCmFP4_FAST on the mixed 8K
+profile:
+
+| Run | Pairs | TTFT | ITL p95 | Retention |
+| --- | ---: | ---: | ---: | ---: |
+| pre-fold | 3 | −6.98% | −7.16% | +11.6% |
+| post-fold | 2 | −9.02% [−11.15, −6.89] | −7.61% [−8.93, −6.29] | +15.1% |
+| stable clock | 2 | −6.38% [−6.82, −5.94] | −6.30% [−6.91, −5.68] | +12.2% |
+
+Four independent measurements, every confidence interval excluding zero, and the
+direction never changing. This is the most reproduced result in the repository
+and the basis for the `production-interactive` profile.
 
 ## The ubatch cliff is real, and it is not the clock
 

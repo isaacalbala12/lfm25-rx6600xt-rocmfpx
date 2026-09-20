@@ -61,8 +61,14 @@ each, all six in the fast clock state.
 
 | Format | TTFT | ITL p95 | Retention | Idle resident |
 | --- | ---: | ---: | ---: | ---: |
-| ROCmFP4_FAST + fold | 5102 ms | 86.7 ms | 14.9% | 260.4 tok/s |
-| **Q4_0 + fold** | **4772 ms** | **81.3 ms** | **16.9%** | 246.2 tok/s |
+| ROCmFP4_FAST + fold | 5107 ms | 87.1 ms | 15.0% | 258.0 tok/s |
+| **Q4_0 + fold** | **4781 ms** | **81.6 ms** | **16.9%** | 244.7 tok/s |
+
+Two valid pairs, stable clock: TTFT −6.38% [−6.82, −5.94], ITL p95 −6.30%
+[−6.91, −5.68], retention +12.2% [+11.2, +13.1]. The same comparison has now
+been measured four times independently (pre-fold, post-fold, and twice under the
+stable clock) with the direction never changing, which is what makes it the
+basis of the interactive profile.
 
 The interactivity target recorded in V8/V9 — ITL p95 ≤ 70 ms with TTFT ≤ 5.5 s —
 **is still not met**. TTFT clears its guardrail; ITL is 16% over. Closing it
