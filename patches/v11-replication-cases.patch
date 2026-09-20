@@ -1,10 +1,10 @@
 diff --git a/tests/test-backend-ops.cpp b/tests/test-backend-ops.cpp
-index e3061f2..d7b3198 100644
+index e3061f2..c3723e9 100644
 --- a/tests/test-backend-ops.cpp
 +++ b/tests/test-backend-ops.cpp
-@@ -8577,6 +8577,26 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
-         test_cases.emplace_back(new test_mul_mat(GGML_TYPE_Q4_0_ROCMFP4_FAST, GGML_TYPE_F32,  2048, n, 10752, {1, 1}, {1, 1}));
-     }
+@@ -10529,6 +10529,27 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
+ static std::vector<std::unique_ptr<test_case>> make_test_cases_perf() {
+     std::vector<std::unique_ptr<test_case>> test_cases;
  
 +    // V11 replication experiment, from the external review: the same GEMM
 +    // replicated along the batch dimension with M, N, K, tile and shader fixed.
@@ -26,6 +26,7 @@ index e3061f2..d7b3198 100644
 +        }
 +    }
 +
-     // unary ops
-     for (ggml_type type : {GGML_TYPE_F16, GGML_TYPE_F32}) {
-         for (int v : {0, 1}) {
++
+     // LFM2.5-2.6B ROCmFPX Vulkan decode census. These go through the normal
+     // graph planner and plugin selector, including Q8_1 RHS preparation. N=6
+     // covers the observed boundary/fallback case as well as the target N=1/2/4.
