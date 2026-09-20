@@ -84,3 +84,23 @@ from 5 clean runs), consistent with the +15.9% first observed and well above the
 
 **KEEP as a measurement gate, do not change the power profile without
 authorization.** Every subsequent result in this campaign states its mode split.
+
+## The power profile setting does not persist
+
+`echo 1 > pp_power_profile_mode` was applied during this session and cut the
+slow rate from 5 runs in 12 to 1 in 10. At the end of the session the GPU was
+back on `0 BOOTUP_DEFAULT` without any action having been taken to revert it:
+the setting is not durable across a driver reload or a GPU power-state change.
+
+Anything that depends on it must re-apply it and verify, and a permanent fix
+needs a udev rule or a systemd unit rather than a one-off write:
+
+```bash
+# verify before measuring
+grep '\*' /sys/class/drm/card1/device/pp_power_profile_mode | head -1
+# re-apply if it shows BOOTUP_DEFAULT
+echo 1 | sudo tee /sys/class/drm/card1/device/pp_power_profile_mode
+```
+
+The measurements reported in this repository were taken while it was applied and
+were checked against the clock sampler, so they stand. Future work must check.
