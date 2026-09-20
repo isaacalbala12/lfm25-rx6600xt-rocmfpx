@@ -43,7 +43,7 @@ GPU_RESERVATION_CONFIRMED=1 \
   --label v11-primary-128x64-plugin-compact-r10 \
   --port 18261 \
   --output "$OUTPUT" \
-  -- -dev ROCmFPXVulkan0 -c 4096 -b "${BATCH:-512}" -ub "${UBATCH:-128}" -ctk q8_0 -ctv q8_0
+  -- -dev "${DEVICE:-ROCmFPXVulkan0}" -c 4096 -b "${BATCH:-512}" -ub "${UBATCH:-128}" -ctk q8_0 -ctv q8_0 ${DRAFT_ARGS:-}
 
 python3 - "$OUTPUT" <<'PY'
 import json, sys

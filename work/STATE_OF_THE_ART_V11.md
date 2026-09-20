@@ -117,9 +117,10 @@ Do not re-open these; each cost real time and each has a measurement behind it.
   `ENGINE_SUPPORT_V11.md`.
 - **`ubatch >= 256`.** 2.24x slower. `ROUND2_V11.md`.
 - **KV cache `q4_0`.** 60% of resident decode throughput lost. `ROUND2_V11.md`.
-- **Speculative decoding at C=4.** The weights are already amortized across four
-  slots, and a 1.2B drafter adds ~49% traffic for ~2.2 tokens per sequence,
-  giving ~268 tok/s against 401. It would help at C=1, which is not the target.
+- **Speculative decoding.** Measured with the purpose-built DSpark drafter, not
+  assumed: 13% slower at a single sequence, broken at four (17 of 40 requests
+  fail with `Invalid input batch`), and the ROCmFPX backend aborts while loading
+  the draft graph. See `DSPARK_V11.md`.
 - **Split-k overrides** for the prefill shapes. Neutral to catastrophic.
   `PREFILL_LEADS_V11.md`.
 - **The FP4 block layout family** (padding, planar, grouped). V10.

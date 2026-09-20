@@ -173,6 +173,7 @@ chunk and 11.7% faster at 2048, while FP4_FAST keeps a 7.2% decode advantage.
   each quantized format.
 - `work/STATE_OF_THE_ART_V11.md`: the capstone. The configuration, the numbers,
   everything ruled out with its evidence, and the open leads.
+- `work/DSPARK_V11.md`: the DSpark drafter measured three ways, all negative.
 - `work/ENGINE_SUPPORT_V11.md`: why vLLM, SGLang and Lucebox cannot run on
   this GPU, measured rather than assumed.
 - `work/ROUND2_V11.md`: chunk re-tune, KV dtype rejection, and what the down
